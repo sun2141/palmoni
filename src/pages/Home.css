@@ -75,11 +75,10 @@
 }
 
 .hero-logo {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  margin-bottom: 0.5rem;
-  border-radius: 20px;
+  margin-bottom: 0.75rem;
 }
 
 .hero-icon {
@@ -153,9 +152,9 @@
 
 .pray-cta-btn {
   width: 100%;
-  padding: 0.875rem 1.5rem;
+  padding: 0;
   margin-top: 0.75rem;
-  background: linear-gradient(135deg, #e07a5f 0%, #c96b4a 100%);
+  background: transparent;
   color: white;
   border: none;
   border-radius: var(--radius-full, 9999px);
@@ -163,18 +162,27 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(201, 107, 74, 0.35);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.pray-btn-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-full, 9999px);
 }
 
 .pray-cta-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(201, 107, 74, 0.45);
+  opacity: 0.95;
 }
 
 .pray-cta-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  filter: grayscale(30%);
 }
 
 /* === Active Users === */

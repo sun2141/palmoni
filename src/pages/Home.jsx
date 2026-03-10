@@ -231,7 +231,7 @@ export function Home() {
 
             {/* Hero Section */}
             <div className="hero-section">
-                <img src="/images/logo.PNG" alt="Palmoni" className="hero-logo" />
+                <img src="/images/logo_app.png" alt="Palmoni" className="hero-logo" />
                 <h1 className="hero-title">PALMONI</h1>
                 <p className="hero-subtitle">
                     이름 없는 존재가<br />
@@ -264,7 +264,11 @@ export function Home() {
                     onClick={handleGenerate}
                     disabled={isGenerating || !topic.trim()}
                 >
-                    {isGenerating ? '🙏 기도하는 중...' : '🔥 기도 맡기기'}
+                    {isGenerating ? (
+                        '🙏 기도하는 중...'
+                    ) : (
+                        <img src="/images/pray-button.png" alt="기도 맡기기" className="pray-btn-img" />
+                    )}
                 </button>
             </div>
 

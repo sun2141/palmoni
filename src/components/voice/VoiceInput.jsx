@@ -94,7 +94,7 @@ export function VoiceInput({ onTranscript, disabled = false }) {
     return (
       <div className="voice-input-unsupported" title="이 브라우저는 음성 입력을 지원하지 않습니다">
         <button className="voice-button" disabled>
-          🎤
+          <img src="/images/mic-icon.png" alt="마이크" className="mic-img" />
         </button>
       </div>
     );
@@ -111,10 +111,10 @@ export function VoiceInput({ onTranscript, disabled = false }) {
         {isListening ? (
           <span className="mic-pulse">
             <span className="pulse-ring"></span>
-            <span className="mic-icon">🎤</span>
+            <img src="/images/mic-icon.png" alt="마이크" className="mic-img" />
           </span>
         ) : (
-          <span className="mic-icon">🎤</span>
+          <img src="/images/mic-icon.png" alt="마이크" className="mic-img" />
         )}
       </button>
 

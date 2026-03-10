@@ -87,6 +87,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithKakao = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'kakao',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error signing in with Kakao:', error);
+      return { data: null, error: error.message };
+    }
+  };
+
+  const signInWithApple = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error signing in with Apple:', error);
+      return { data: null, error: error.message };
+    }
+  };
+
   const signInWithEmail = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -102,15 +136,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signUpWithEmail = async (email, password, displayName) => {
+  const signUpWithEmail = async (email, password, displayName, birthDate) => {
     try {
+      // 동일 이름+생년월일 조합 중복 체크
+      const { data: existing, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('full_name', displayName)
+        .eq('birth_date', birthDate)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking duplicate:', checkError);
+      }
+
+      if (existing) {
+        return { data: null, error: '이미 동일한 이름과 생년월일로 가입된 계정이 있습니다' };
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            display_name: displayName
-          }
+            display_name: displayName,
+            full_name: displayName,
+            birth_date: birthDate
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
@@ -144,6 +197,8 @@ export const AuthProvider = ({ children }) => {
     session,
     loading,
     signInWithGoogle,
+    signInWithKakao,
+    signInWithApple,
     signInWithEmail,
     signUpWithEmail,
     signOut

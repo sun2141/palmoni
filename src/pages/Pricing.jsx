@@ -5,11 +5,9 @@ export function Pricing() {
   const navigate = useNavigate();
 
   const features = [
-    { icon: '🙏', text: '이름 없는 존재가 매일 당신을 위해 기도합니다' },
+    { icon: '🙏', text: '매일 팔모니가 당신을 위해 3번 기도합니다' },
     { icon: '📖', text: '기도문 무제한 생성 및 저장' },
     { icon: '📄', text: 'PDF 다운로드' },
-    { icon: '🔊', text: '음성 낭독 (TTS)' },
-    { icon: '⏰', text: '원하는 시간에 자동 기도 스케줄' },
     { icon: '🆘', text: '긴급 기도 (즉시 위로)' },
     { icon: '🔥', text: '기도 연속 스트릭' },
   ];
@@ -58,6 +56,33 @@ export function Pricing() {
         </div>
       </div>
 
+      {/* 오늘의 기도 설명 섹션 */}
+      <div className="daily-prayer-explanation">
+        <h2>매일 기도하는 습관</h2>
+        <div className="explanation-content">
+          <div className="explanation-step">
+            <span className="step-number">1</span>
+            <div className="step-text">
+              <strong>기도를 맡겨주세요</strong>
+              <p>마음에 담긴 기도 제목을 나눠주세요</p>
+            </div>
+          </div>
+          <div className="explanation-step">
+            <span className="step-number">2</span>
+            <div className="step-text">
+              <strong>팔모니가 하루 종일 기도합니다</strong>
+              <p>자정까지 3번에 걸쳐 당신을 위해 기도합니다</p>
+            </div>
+          </div>
+          <div className="explanation-step">
+            <span className="step-number">3</span>
+            <div className="step-text">
+              <strong>내일 다시 만나요</strong>
+              <p>매일 기도를 맡기며 기도 생활의 루틴을 만들어가세요</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="pricing-faq">
         <h2>자주 묻는 질문</h2>
@@ -72,10 +97,11 @@ export function Pricing() {
         </div>
 
         <div className="faq-item">
-          <h4>기도는 멈추지 않나요?</h4>
+          <h4>하루에 몇 번 기도하나요?</h4>
           <p>
-            원하는 시간을 설정하면 Palmoni가 매일 그 시간에 당신을 위해 기도합니다.
-            브라우저를 닫아도, 잠들어 있어도 기도는 멈추지 않습니다.
+            기도를 맡긴 시점부터 자정까지 남은 시간에 따라 1~3번 기도합니다.
+            아침에 일찍 기도를 맡기면 하루 종일 3번에 걸쳐 기도해드립니다.
+            시간이 얼마 남지 않았다면 1번 기도하고, 내일 다시 맡겨주시길 부탁드립니다.
           </p>
         </div>
 

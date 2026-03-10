@@ -13,11 +13,5 @@
       "memory": 1024,
       "maxDuration": 30
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/execute-prayers",
-      "schedule": "0 1 * * *"
-    }
-  ]
+  }
 }

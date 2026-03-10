@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
 import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
-import { TtsButton } from '../components/tts/TtsButton';
 import './MyPrayers.css';
 
 export function MyPrayers() {
@@ -295,7 +294,6 @@ export function MyPrayers() {
 
                 <div className="prayer-actions">
                   <PdfDownloadButton prayer={prayer} compact={true} />
-                  <TtsButton text={prayer.content} compact={true} />
                   <button
                     className="action-button"
                     onClick={() => handleShare(prayer)}

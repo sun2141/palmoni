@@ -1,22 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePrayerGeneration } from '../hooks/usePrayerGeneration';
+import { useTodaysPrayer } from '../hooks/useTodaysPrayer';
 import { PrayerProgress } from '../components/prayer/PrayerProgress';
 import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
 import { checkRateLimit, logUsage, savePrayer } from '../lib/supabaseClient';
-import { UpgradeBanner } from '../components/UpgradeBanner';
 import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
-import { TtsButton } from '../components/tts/TtsButton';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { VoiceInput } from '../components/voice/VoiceInput';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
-import { PrayerDashboard } from '../components/schedule/PrayerDashboard';
-import { PrayerNotification } from '../components/schedule/PrayerNotification';
-import { usePrayerCompanion } from '../hooks/usePrayerCompanion';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
 import './Home.css';
 
 export function Home() {
@@ -31,7 +26,6 @@ export function Home() {
     const [activeUsers, setActiveUsers] = useState(127);
 
     const { user, profile, loading: authLoading, signOut } = useAuth();
-    const { currentPrayer: companionPrayer, nextPrayerTime, unviewedPrayers } = usePrayerCompanion();
 
     const {
         title,
@@ -42,6 +36,19 @@ export function Home() {
         generatePrayer,
         reset
     } = usePrayerGeneration();
+
+    const {
+        todaysPrayer,
+        prayerStatus,
+        totalPrayers,
+        completedPrayers,
+        showPrayingAnimation,
+        submitPrayer,
+        dismissYesterdayMessage,
+        getNextPrayerInfo,
+        hasTodaysPrayer,
+        isYesterdayCompleted,
+    } = useTodaysPrayer();
 
     useEffect(() => {
         if (!authLoading) {
@@ -98,17 +105,6 @@ export function Home() {
         }
     }, [topic]);
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-
-        if (params.get('donation_success') === 'true') {
-            const amount = params.get('amount');
-            alert(`후원해주셔서 감사합니다! 💝\n${amount ? `₩${parseInt(amount).toLocaleString()}` : ''}\n더 나은 서비스로 보답하겠습니다.`);
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (params.get('donation_canceled') === 'true') {
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    }, []);
 
     const checkUserRateLimit = async () => {
         const userId = user?.id || null;
@@ -139,10 +135,28 @@ export function Home() {
             return;
         }
 
-        await generatePrayer(topic);
+        const result = await generatePrayer(topic);
         await logUsage(userId, anonymousId, 'prayer_generation');
         await checkUserRateLimit();
         setCurrentPrayerId(null);
+
+        // 오늘의 기도 시스템에 등록
+        if (result && result.title && result.content) {
+            const prayerInfo = submitPrayer({
+                topic,
+                title: result.title,
+                content: result.content,
+                emotion,
+            });
+
+            // 기도 횟수 안내
+            if (prayerInfo.totalPrayers === 1) {
+                // 3시간 미만 남음
+                setTimeout(() => {
+                    alert('자정까지 시간이 얼마 남지 않아 1번 기도합니다.\n내일 일찍 기도를 맡겨주시면 하루 종일 기도해드릴게요! 🙏');
+                }, 1000);
+            }
+        }
     };
 
     const handleSavePrayer = async (isPublic = false) => {
@@ -274,6 +288,34 @@ export function Home() {
                 지금 <strong>{activeUsers}명</strong>이 함께 기도하고 있어요
             </div>
 
+            {/* 어제 기도 완료 배너 */}
+            {isYesterdayCompleted && (
+                <div className="yesterday-banner">
+                    <div className="yesterday-content">
+                        <span className="yesterday-icon">✨</span>
+                        <span className="yesterday-text">
+                            <strong>어제의 기도가 완료되었습니다</strong>
+                            오늘도 기도를 맡겨주세요
+                        </span>
+                    </div>
+                    <button className="yesterday-dismiss" onClick={dismissYesterdayMessage}>
+                        확인
+                    </button>
+                </div>
+            )}
+
+            {/* 오늘의 기도 상태 */}
+            {hasTodaysPrayer && (
+                <TodaysPrayerStatus
+                    todaysPrayer={todaysPrayer}
+                    prayerStatus={prayerStatus}
+                    totalPrayers={totalPrayers}
+                    completedPrayers={completedPrayers}
+                    showPrayingAnimation={showPrayingAnimation}
+                    getNextPrayerInfo={getNextPrayerInfo}
+                />
+            )}
+
             {/* 회원가입 유도 (비로그인 사용자) */}
             {!user && (
                 <div className="signup-prompt">
@@ -289,9 +331,6 @@ export function Home() {
                     </button>
                 </div>
             )}
-
-            {/* Upgrade banner */}
-            <UpgradeBanner profile={profile} rateLimitInfo={rateLimitInfo} />
 
             {/* Error message */}
             {error && (
@@ -344,7 +383,6 @@ export function Home() {
                                 }}
                                 variant="icon"
                             />
-                            <TtsButton text={content} variant="icon" />
                             <button className="action-btn" onClick={handleReset}>
                                 <span className="action-icon">🙏</span>
                                 <span className="action-text">새 기도</span>
@@ -357,11 +395,6 @@ export function Home() {
             {/* 긴급 기도 버튼 */}
             <EmergencyPrayerButton />
 
-            {/* 기도 동반자 대시보드 - 로그인 사용자만 */}
-            {user && (
-                <PrayerDashboard />
-            )}
-
             {/* Login Modal */}
             <LoginModal
                 isOpen={showLoginModal}
@@ -370,12 +403,6 @@ export function Home() {
                     setShowLoginModal(false);
                     checkUserRateLimit();
                 }}
-            />
-
-            {/* 실시간 기도 알림 (화면 하단 고정) */}
-            <PrayerNotification
-                prayer={companionPrayer}
-                onDismiss={() => {}}
             />
         </div>
     );

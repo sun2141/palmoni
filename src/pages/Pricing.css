@@ -205,6 +205,68 @@
   border-color: var(--bronze-mid, #a67c52);
 }
 
+/* Daily Prayer Explanation */
+.daily-prayer-explanation {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(201, 168, 124, 0.08) 0%, rgba(255, 251, 245, 1) 100%);
+  border-radius: 24px;
+  border: 2px solid rgba(201, 168, 124, 0.2);
+}
+
+.daily-prayer-explanation h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--bronze-deep, #8b5e3c);
+  font-family: 'Cinzel', serif;
+}
+
+.explanation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.explanation-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.step-text {
+  flex: 1;
+}
+
+.step-text strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--bronze-deep, #8b5e3c);
+  margin-bottom: 0.25rem;
+}
+
+.step-text p {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #4a3f38);
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* FAQ */
 .pricing-faq {
   max-width: 800px;

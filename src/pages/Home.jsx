@@ -231,7 +231,7 @@ export function Home() {
 
             {/* Hero Section */}
             <div className="hero-section">
-                <div className="hero-icon">🍄</div>
+                <img src="/images/logo.PNG" alt="Palmoni" className="hero-logo" />
                 <h1 className="hero-title">PALMONI</h1>
                 <p className="hero-subtitle">
                     이름 없는 존재가<br />

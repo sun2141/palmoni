@@ -11,31 +11,34 @@
   gap: 0.5rem;
 }
 
-/* Voice Button */
+/* Voice Button - 시안 스타일 (심플한 아웃라인) */
 .voice-button {
-  width: 52px;
-  height: 52px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--accent-green, #4caf50);
-  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
-  color: white;
-  font-size: 1.375rem;
+  border: 2px solid rgba(201, 168, 124, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--bronze-mid, #a67c52);
+  font-size: 1rem;
   cursor: pointer;
   transition: all 150ms ease;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .voice-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--accent-green-dark, #388e3c) 0%, #1e8e82 100%);
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
+  transform: none;
 }
 
 .voice-button:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
 .voice-button:disabled {
@@ -46,8 +49,9 @@
 
 /* Listening State */
 .voice-button.listening {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: rgba(239, 68, 68, 0.1);
   border-color: #ef4444;
+  color: #ef4444;
   animation: pulse-glow 1.5s ease-in-out infinite;
 }
 
@@ -72,9 +76,9 @@
 
 .pulse-ring {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(239, 68, 68, 0.3);
   border-radius: 50%;
   animation: pulse-ring 1.5s ease-out infinite;
 }
@@ -189,14 +193,14 @@
 /* Mobile */
 @media (max-width: 640px) {
   .voice-button {
-    width: 48px;
-    height: 48px;
-    font-size: 1.25rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
   }
 
   .pulse-ring {
-    width: 54px;
-    height: 54px;
+    width: 36px;
+    height: 36px;
   }
 
   .voice-status {

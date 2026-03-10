@@ -1,20 +1,25 @@
+/* ========================================
+   Donate Button - Morning Prayer Theme
+   ======================================== */
+
 /* Trigger Button */
 .donate-trigger-btn {
   padding: 0.6rem 1.2rem;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, var(--bronze-light, #c9a87c) 0%, var(--bronze-mid, #a67c52) 100%);
   color: white;
-  border: none;
-  border-radius: 25px;
+  border: 2px solid var(--bronze-light, #c9a87c);
+  border-radius: var(--radius-full, 9999px);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+  box-shadow: 0 4px 15px rgba(201, 168, 124, 0.3);
 }
 
 .donate-trigger-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
+  box-shadow: 0 6px 20px rgba(201, 168, 124, 0.4);
+  background: linear-gradient(135deg, var(--bronze-mid, #a67c52) 0%, var(--bronze-deep, #8b5e3c) 100%);
 }
 
 .donate-trigger-btn:disabled {
@@ -30,12 +35,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(26, 21, 18, 0.5);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.2s ease;
+  padding: 1rem;
 }
 
 @keyframes fadeIn {
@@ -49,12 +56,13 @@
 
 /* Modal Content */
 .donate-modal {
-  background: white;
-  border-radius: 24px;
+  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
+  border-radius: var(--radius-lg, 24px);
   padding: 2.5rem;
   max-width: 500px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  box-shadow: 0 24px 48px rgba(139, 94, 60, 0.15);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   animation: slideUp 0.3s ease;
   position: relative;
 }
@@ -74,35 +82,39 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: none;
-  border: none;
+  background: rgba(255, 248, 240, 0.9);
+  border: 2px solid rgba(166, 124, 82, 0.2);
   font-size: 1.5rem;
-  color: #999;
+  color: var(--bronze-mid, #a67c52);
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: none;
 }
 
 .donate-modal-close:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
+  transform: none;
 }
 
 .donate-modal h3 {
   margin: 0 0 1rem 0;
   font-size: 1.8rem;
-  color: #333;
+  color: var(--bronze-deep, #8b5e3c);
   text-align: center;
+  font-family: 'Cinzel', 'Noto Serif KR', serif;
 }
 
 .donate-description {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary, #4a3f38);
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -118,18 +130,18 @@
 .donation-option {
   flex: 1;
   padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
-  border-radius: 16px;
+  border: 2px solid var(--accent-green, #4caf50);
+  border-radius: var(--radius-md, 16px);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
 }
 
 .donation-option:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
 }
 
 .donation-option:disabled {
@@ -146,25 +158,25 @@
 
 .donation-desc {
   font-size: 0.85rem;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 /* Footer */
 .donation-footer {
   text-align: center;
   padding-top: 1.5rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid rgba(201, 168, 124, 0.2);
 }
 
 .donation-footer p {
   margin: 0.5rem 0;
-  color: #666;
+  color: var(--text-secondary, #4a3f38);
   font-size: 0.9rem;
 }
 
 .donation-note {
   font-size: 0.8rem !important;
-  color: #999 !important;
+  color: var(--text-muted, #7a6f68) !important;
 }
 
 /* Mobile Responsive */

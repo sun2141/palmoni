@@ -1,3 +1,7 @@
+/* ========================================
+   Prayer Progress - Morning Prayer Theme
+   ======================================== */
+
 .prayer-progress {
   width: 100%;
   margin: 2rem 0;
@@ -17,7 +21,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  opacity: 0.3;
+  opacity: 0.4;
   transition: all 0.4s ease;
   flex: 0 0 auto;
 }
@@ -27,7 +31,7 @@
 }
 
 .progress-step.current .step-icon {
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: prayerPulse 1.5s ease-in-out infinite;
   transform: scale(1.1);
 }
 
@@ -39,46 +43,50 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(201, 168, 124, 0.15);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  border: 2px solid rgba(201, 168, 124, 0.3);
 }
 
 .progress-step.active .step-icon {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(38, 166, 154, 0.15));
+  border-color: var(--accent-green, #4caf50);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
 }
 
 .step-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--bronze-mid, #a67c52);
 }
 
 .progress-line {
   flex: 1;
   height: 2px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(201, 168, 124, 0.25);
   margin: 0 0.5rem;
   transition: all 0.4s ease;
   position: relative;
   top: -1rem;
+  border-radius: 1px;
 }
 
 .progress-line.active {
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.3)
+    var(--accent-green, #4caf50),
+    var(--accent-teal, #26a69a)
   );
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
 }
 
-@keyframes pulse {
+@keyframes prayerPulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 35px rgba(76, 175, 80, 0.5);
   }
 }
 

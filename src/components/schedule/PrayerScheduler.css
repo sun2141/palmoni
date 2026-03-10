@@ -1,7 +1,11 @@
+/* ========================================
+   Prayer Scheduler - Morning Prayer Theme
+   ======================================== */
+
 .scheduler-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(26, 21, 18, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -12,16 +16,17 @@
 }
 
 .scheduler-modal {
-  background: white;
+  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
   border-radius: var(--radius-xl, 32px);
   padding: 2rem;
   max-width: 500px;
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 24px 48px rgba(139, 94, 60, 0.2);
   animation: slideUp 0.3s ease;
   position: relative;
+  border: 2px solid rgba(201, 168, 124, 0.2);
 }
 
 .scheduler-close {
@@ -30,11 +35,11 @@
   right: 1rem;
   width: 36px;
   height: 36px;
-  border: none;
-  background: var(--violet-100, #ede9fe);
+  border: 2px solid rgba(201, 168, 124, 0.3);
+  background: rgba(255, 251, 245, 0.9);
   border-radius: 50%;
   font-size: 1.5rem;
-  color: var(--violet-600, #7c3aed);
+  color: var(--bronze-mid, #a67c52);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -45,7 +50,8 @@
 }
 
 .scheduler-close:hover {
-  background: var(--violet-200, #ddd6fe);
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
   transform: none;
 }
 
@@ -58,21 +64,19 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--violet-600, #7c3aed) 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: 'Cinzel', serif;
+  color: var(--bronze-deep, #8b5e3c);
 }
 
 .scheduler-header p {
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   font-size: 0.9rem;
 }
 
 .scheduler-loading {
   text-align: center;
   padding: 3rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 /* 활성화 토글 */
@@ -96,7 +100,7 @@
 .toggle-slider {
   width: 48px;
   height: 26px;
-  background: var(--muted, #e5e7eb);
+  background: rgba(201, 168, 124, 0.3);
   border-radius: 13px;
   position: relative;
   transition: background 0.2s ease;
@@ -112,11 +116,11 @@
   background: white;
   border-radius: 50%;
   transition: transform 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(139, 94, 60, 0.2);
 }
 
 .scheduler-toggle input:checked + .toggle-slider {
-  background: linear-gradient(135deg, var(--violet-500, #8b5cf6) 0%, var(--violet-600, #7c3aed) 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
 }
 
 .scheduler-toggle input:checked + .toggle-slider::after {
@@ -125,21 +129,22 @@
 
 .toggle-label {
   font-weight: 600;
-  color: var(--foreground, #111827);
+  color: var(--bronze-deep, #8b5e3c);
 }
 
 /* 섹션 */
 .scheduler-section {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: var(--muted, #f3f4f6);
+  background: rgba(255, 251, 245, 0.9);
+  border: 1px solid rgba(201, 168, 124, 0.2);
   border-radius: var(--radius-lg, 24px);
 }
 
 .scheduler-section h3 {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--foreground, #111827);
+  color: var(--bronze-deep, #8b5e3c);
   margin-bottom: 0.75rem;
 }
 
@@ -153,25 +158,27 @@
 .schedule-type-tabs button {
   flex: 1;
   padding: 0.625rem 1rem;
-  border: 2px solid transparent;
+  border: 2px solid rgba(201, 168, 124, 0.3);
   background: white;
   border-radius: var(--radius-md, 16px);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   box-shadow: none;
 }
 
 .schedule-type-tabs button:hover {
   transform: none;
+  border-color: var(--bronze-mid, #a67c52);
 }
 
 .schedule-type-tabs button.active {
-  background: linear-gradient(135deg, var(--violet-500, #8b5cf6) 0%, var(--violet-600, #7c3aed) 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 /* 고정 시간 프리셋 */
@@ -189,7 +196,7 @@
   gap: 0.25rem;
   padding: 0.75rem;
   background: white;
-  border: 2px solid transparent;
+  border: 2px solid rgba(201, 168, 124, 0.2);
   border-radius: var(--radius-md, 16px);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -198,12 +205,12 @@
 
 .time-preset:hover {
   transform: none;
-  border-color: var(--violet-200, #ddd6fe);
+  border-color: var(--bronze-mid, #a67c52);
 }
 
 .time-preset.selected {
-  background: var(--violet-100, #ede9fe);
-  border-color: var(--violet-400, #a78bfa);
+  background: rgba(76, 175, 80, 0.08);
+  border-color: var(--accent-green, #4caf50);
 }
 
 .preset-icon {
@@ -213,12 +220,12 @@
 .preset-label {
   font-weight: 600;
   font-size: 0.8rem;
-  color: var(--foreground, #111827);
+  color: var(--bronze-deep, #8b5e3c);
 }
 
 .preset-time {
   font-size: 0.75rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 /* 커스텀 시간 */
@@ -231,16 +238,22 @@
 .custom-time input {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 2px solid var(--border, #e5e7eb);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: var(--radius-sm, 10px);
   font-size: 0.875rem;
+  color: var(--text-primary, #1a1512);
+}
+
+.custom-time input:focus {
+  outline: none;
+  border-color: var(--bronze-mid, #a67c52);
 }
 
 .custom-time button {
   padding: 0.5rem 1rem;
-  background: var(--violet-600, #7c3aed);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: var(--radius-sm, 10px);
   font-size: 0.875rem;
   cursor: pointer;
@@ -261,7 +274,7 @@
 
 .selected-times .label {
   font-size: 0.8rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 .time-badge {
@@ -269,8 +282,8 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.5rem;
-  background: var(--violet-100, #ede9fe);
-  color: var(--violet-700, #6d28d9);
+  background: rgba(76, 175, 80, 0.12);
+  color: var(--accent-green, #4caf50);
   border-radius: var(--radius-full, 9999px);
   font-size: 0.8rem;
   font-weight: 500;
@@ -282,7 +295,7 @@
   padding: 0;
   background: transparent;
   border: none;
-  color: var(--violet-500, #8b5cf6);
+  color: var(--accent-green, #4caf50);
   cursor: pointer;
   font-size: 0.875rem;
   display: flex;
@@ -302,7 +315,7 @@
 .random-range label {
   display: block;
   font-size: 0.8rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   margin-bottom: 0.5rem;
 }
 
@@ -314,19 +327,19 @@
 .count-selector button {
   padding: 0.5rem 1rem;
   background: white;
-  border: 2px solid transparent;
+  border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: var(--radius-sm, 10px);
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.15s ease;
   box-shadow: none;
-  color: var(--foreground, #111827);
+  color: var(--text-secondary, #4a3f38);
 }
 
 .count-selector button.selected {
-  background: var(--violet-100, #ede9fe);
-  border-color: var(--violet-400, #a78bfa);
-  color: var(--violet-700, #6d28d9);
+  background: rgba(76, 175, 80, 0.1);
+  border-color: var(--accent-green, #4caf50);
+  color: var(--accent-green, #4caf50);
 }
 
 .range-inputs {
@@ -338,13 +351,19 @@
 .range-inputs input {
   flex: 1;
   padding: 0.5rem;
-  border: 2px solid var(--border, #e5e7eb);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: var(--radius-sm, 10px);
   font-size: 0.875rem;
+  color: var(--text-primary, #1a1512);
+}
+
+.range-inputs input:focus {
+  outline: none;
+  border-color: var(--bronze-mid, #a67c52);
 }
 
 .range-inputs span {
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 /* 기도문 소스 */
@@ -360,15 +379,15 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: white;
-  border: 2px solid transparent;
+  border: 2px solid rgba(201, 168, 124, 0.2);
   border-radius: var(--radius-md, 16px);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .prayer-source-options label.selected {
-  background: var(--violet-50, #f5f3ff);
-  border-color: var(--violet-300, #c4b5fd);
+  background: rgba(76, 175, 80, 0.05);
+  border-color: var(--accent-green, #4caf50);
 }
 
 .prayer-source-options input[type="radio"] {
@@ -387,12 +406,12 @@
 
 .option-text strong {
   font-size: 0.9rem;
-  color: var(--foreground, #111827);
+  color: var(--bronze-deep, #8b5e3c);
 }
 
 .option-text small {
   font-size: 0.75rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 /* 저장된 기도문 목록 */
@@ -404,7 +423,7 @@
 
 .list-hint {
   font-size: 0.8rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   margin-bottom: 0.5rem;
 }
 
@@ -414,7 +433,7 @@
   gap: 0.75rem;
   padding: 0.625rem;
   background: white;
-  border: 1px solid var(--border, #e5e7eb);
+  border: 2px solid rgba(201, 168, 124, 0.2);
   border-radius: var(--radius-sm, 10px);
   margin-bottom: 0.5rem;
   cursor: pointer;
@@ -422,30 +441,30 @@
 }
 
 .prayer-item:hover {
-  border-color: var(--violet-300, #c4b5fd);
+  border-color: var(--bronze-light, #c9a87c);
 }
 
 .prayer-item.selected {
-  background: var(--violet-50, #f5f3ff);
-  border-color: var(--violet-400, #a78bfa);
+  background: rgba(76, 175, 80, 0.05);
+  border-color: var(--accent-green, #4caf50);
 }
 
 .prayer-item input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--violet-600, #7c3aed);
+  accent-color: var(--accent-green, #4caf50);
 }
 
 .prayer-title {
   font-weight: 500;
   font-size: 0.875rem;
-  color: var(--foreground, #111827);
+  color: var(--bronze-deep, #8b5e3c);
   flex-shrink: 0;
 }
 
 .prayer-preview {
   font-size: 0.75rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -459,16 +478,22 @@
 .default-topic label {
   display: block;
   font-size: 0.8rem;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--text-secondary, #4a3f38);
   margin-bottom: 0.5rem;
 }
 
 .default-topic input {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  border: 2px solid var(--border, #e5e7eb);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: var(--radius-sm, 10px);
   font-size: 0.9rem;
+  color: var(--text-primary, #1a1512);
+}
+
+.default-topic input:focus {
+  outline: none;
+  border-color: var(--bronze-mid, #a67c52);
 }
 
 /* 알림 설정 */
@@ -487,12 +512,13 @@
   gap: 0.5rem;
   font-size: 0.875rem;
   cursor: pointer;
+  color: var(--text-secondary, #4a3f38);
 }
 
 .notification-section input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--violet-600, #7c3aed);
+  accent-color: var(--accent-green, #4caf50);
 }
 
 /* 액션 버튼 */
@@ -505,9 +531,9 @@
 .cancel-btn {
   flex: 1;
   padding: 0.875rem;
-  background: var(--muted, #f3f4f6);
-  color: var(--foreground, #111827);
-  border: none;
+  background: rgba(201, 168, 124, 0.15);
+  color: var(--bronze-mid, #a67c52);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: var(--radius-full, 9999px);
   font-size: 0.9rem;
   font-weight: 500;
@@ -517,27 +543,28 @@
 }
 
 .cancel-btn:hover {
-  background: var(--border, #e5e7eb);
+  background: rgba(201, 168, 124, 0.25);
+  border-color: var(--bronze-mid, #a67c52);
   transform: none;
 }
 
 .save-btn {
   flex: 2;
   padding: 0.875rem;
-  background: linear-gradient(135deg, var(--violet-500, #8b5cf6) 0%, var(--violet-600, #7c3aed) 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: var(--radius-full, 9999px);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 14px rgba(76, 175, 80, 0.35);
 }
 
 .save-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .save-btn:disabled {

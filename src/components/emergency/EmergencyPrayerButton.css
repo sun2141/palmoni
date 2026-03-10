@@ -1,25 +1,29 @@
+/* ========================================
+   Emergency Prayer Button - Morning Prayer Theme
+   ======================================== */
+
 /* Emergency Button */
 .emergency-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
   position: relative;
   overflow: hidden;
 }
 
 .emergency-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .emergency-button:active {
@@ -70,7 +74,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(26, 21, 18, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -82,15 +86,16 @@
 
 /* Modal */
 .emergency-modal {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(139, 94, 60, 0.2);
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
   animation: slideUp 0.3s ease;
+  border: 2px solid rgba(201, 168, 124, 0.2);
 }
 
 @keyframes slideUp {
@@ -112,9 +117,9 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: none;
-  background: #f3f4f6;
-  color: #6b7280;
+  border: 2px solid rgba(201, 168, 124, 0.3);
+  background: rgba(255, 251, 245, 0.9);
+  color: var(--bronze-mid, #a67c52);
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -122,11 +127,13 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
+  padding: 0;
+  box-shadow: none;
 }
 
 .emergency-modal-close:hover {
-  background: #e5e7eb;
-  color: #374151;
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
   transform: rotate(90deg);
 }
 
@@ -134,19 +141,20 @@
 .emergency-modal-header {
   padding: 2rem 2rem 1.5rem;
   text-align: center;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid rgba(201, 168, 124, 0.2);
 }
 
 .emergency-modal-header h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #dc2626;
+  color: var(--bronze-deep, #8b5e3c);
   margin: 0 0 0.5rem;
+  font-family: 'Cinzel', serif;
 }
 
 .emergency-modal-header p {
   font-size: 0.95rem;
-  color: #6b7280;
+  color: var(--text-secondary, #4a3f38);
   margin: 0;
 }
 
@@ -159,8 +167,8 @@
 }
 
 .emergency-option {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 2px solid transparent;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(38, 166, 154, 0.08) 100%);
+  border: 2px solid rgba(76, 175, 80, 0.2);
   border-radius: 16px;
   padding: 1.5rem;
   cursor: pointer;
@@ -169,13 +177,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.1);
 }
 
 .emergency-option:hover:not(:disabled) {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-color: #fbbf24;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+  border-color: var(--accent-green, #4caf50);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(38, 166, 154, 0.12) 100%);
 }
 
 .emergency-option:active:not(:disabled) {
@@ -196,13 +205,13 @@
 .option-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #92400e;
+  color: var(--bronze-deep, #8b5e3c);
   margin: 0;
 }
 
 .option-desc {
   font-size: 0.9rem;
-  color: #78350f;
+  color: var(--text-secondary, #4a3f38);
   margin: 0;
 }
 
@@ -228,8 +237,8 @@
 .prayer-loader {
   width: 60px;
   height: 60px;
-  border: 4px solid #fef3c7;
-  border-top: 4px solid #fbbf24;
+  border: 4px solid rgba(201, 168, 124, 0.2);
+  border-top: 4px solid var(--bronze-mid, #a67c52);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -245,7 +254,7 @@
 
 .generating-prayer p {
   font-size: 1rem;
-  color: #78350f;
+  color: var(--bronze-deep, #8b5e3c);
   font-weight: 600;
 }
 
@@ -271,7 +280,7 @@
 
 .prayer-ready p {
   font-size: 1.1rem;
-  color: #16a34a;
+  color: var(--accent-green, #4caf50);
   font-weight: 700;
 }
 
@@ -279,12 +288,12 @@
 .emergency-footer {
   padding: 1.5rem 2rem 2rem;
   text-align: center;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(201, 168, 124, 0.2);
 }
 
 .emergency-footer p {
   font-size: 0.95rem;
-  color: #dc2626;
+  color: var(--bronze-mid, #a67c52);
   font-weight: 600;
   margin: 0;
 }

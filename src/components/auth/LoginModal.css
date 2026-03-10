@@ -1,11 +1,15 @@
+/* ========================================
+   Login Modal - Morning Prayer Theme
+   ======================================== */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(17, 24, 39, 0.5);
-  backdrop-filter: blur(8px);
+  background: rgba(26, 21, 18, 0.4);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,14 +19,17 @@
 }
 
 .modal-content {
-  background: white;
+  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
   border-radius: var(--radius-lg, 24px);
   padding: 2.5rem;
   max-width: 420px;
   width: 100%;
   position: relative;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 24px 48px rgba(139, 94, 60, 0.15),
+    0 0 0 1px rgba(201, 168, 124, 0.2);
   animation: slideUp 0.3s ease;
+  border: 2px solid rgba(201, 168, 124, 0.3);
 }
 
 @keyframes fadeIn {
@@ -47,11 +54,11 @@
   right: 1rem;
   width: 36px;
   height: 36px;
-  border: none;
-  background: var(--bg-secondary, #F3F4F6);
+  border: 2px solid rgba(166, 124, 82, 0.2);
+  background: rgba(255, 248, 240, 0.9);
   border-radius: 50%;
   font-size: 1.25rem;
-  color: var(--text-secondary, #6B7280);
+  color: var(--bronze-mid, #a67c52);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -62,7 +69,8 @@
 }
 
 .modal-close:hover {
-  background: var(--border, #E5E7EB);
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
   transform: none;
 }
 
@@ -70,21 +78,22 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: var(--text-primary, #111827);
+  color: var(--bronze-deep, #8b5e3c);
   text-align: center;
+  font-family: 'Cinzel', 'Noto Serif KR', serif;
 }
 
 .modal-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary, #6B7280);
+  color: var(--text-secondary, #4a3f38);
   text-align: center;
   margin-bottom: 2rem;
 }
 
 .auth-error {
   background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: var(--error, #EF4444);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md, 16px);
   font-size: 0.875rem;
@@ -92,41 +101,66 @@
   text-align: center;
 }
 
-.google-signin-btn {
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.social-btn {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1px solid var(--border, #E5E7EB);
-  background: white;
+  border: 2px solid rgba(166, 124, 82, 0.25);
   border-radius: var(--radius-md, 16px);
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-primary, #111827);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   transition: all 150ms ease;
-  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary, #1a1512);
 }
 
-.google-signin-btn:hover {
-  background: var(--bg-secondary, #F3F4F6);
-  border-color: var(--border, #E5E7EB);
-  transform: none;
-  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
-}
-
-.google-signin-btn:disabled {
+.social-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Kakao */
+.kakao-btn {
+  background: #FEE500;
+  border-color: #FEE500;
+  color: #000000;
+}
+
+.kakao-btn:hover:not(:disabled) {
+  background: #F5DC00;
+  border-color: #F5DC00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(254, 229, 0, 0.35);
+}
+
+/* Google */
+.google-btn {
+  background: white;
+  color: var(--text-primary, #1a1512);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.google-btn:hover:not(:disabled) {
+  background: #fafafa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .divider {
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
-  color: var(--text-muted, #9CA3AF);
+  color: var(--text-muted, #7a6f68);
   font-size: 0.8rem;
 }
 
@@ -135,7 +169,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border, #E5E7EB);
+  background: linear-gradient(90deg, transparent, rgba(166, 124, 82, 0.3), transparent);
 }
 
 .divider span {
@@ -151,24 +185,24 @@ form {
 form input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--border, #E5E7EB);
+  border: 2px solid rgba(166, 124, 82, 0.25);
   border-radius: var(--radius-md, 16px);
   font-size: 1rem;
   font-family: inherit;
-  background: var(--bg-primary, #FAFBFC);
+  background: rgba(255, 255, 255, 0.9);
   transition: all 150ms ease;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary, #1a1512);
 }
 
 form input::placeholder {
-  color: var(--text-muted, #9CA3AF);
+  color: var(--text-muted, #7a6f68);
 }
 
 form input:focus {
   outline: none;
-  border-color: var(--accent, #7C3AED);
+  border-color: var(--accent-green, #4caf50);
   background: white;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15);
 }
 
 form input:disabled {
@@ -179,22 +213,22 @@ form input:disabled {
 .email-auth-btn {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: none;
-  background: var(--accent, #7C3AED);
+  border: 2px solid var(--accent-green, #4caf50);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
   border-radius: var(--radius-full, 9999px);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 150ms ease;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+  transition: all 200ms ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
   margin-top: 0.5rem;
 }
 
 .email-auth-btn:hover {
-  background: var(--accent-hover, #6D28D9);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  background: linear-gradient(135deg, var(--accent-green-dark, #388e3c) 0%, #1e8e82 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .email-auth-btn:disabled {
@@ -207,13 +241,13 @@ form input:disabled {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text-secondary, #6B7280);
+  color: var(--text-secondary, #4a3f38);
 }
 
 .toggle-mode button {
   background: none;
   border: none;
-  color: var(--accent, #7C3AED);
+  color: var(--accent-green, #4caf50);
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -224,14 +258,15 @@ form input:disabled {
 .toggle-mode button:hover {
   transform: none;
   text-decoration: underline;
+  color: var(--accent-green-dark, #388e3c);
 }
 
 .guest-btn {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--accent-soft, #EDE9FE);
-  background: var(--accent-soft, #EDE9FE);
-  color: var(--accent, #7C3AED);
+  border: 2px solid rgba(166, 124, 82, 0.3);
+  background: rgba(255, 248, 240, 0.8);
+  color: var(--bronze-mid, #a67c52);
   border-radius: var(--radius-full, 9999px);
   font-size: 0.9rem;
   font-weight: 500;
@@ -242,9 +277,66 @@ form input:disabled {
 }
 
 .guest-btn:hover {
-  background: #DDD6FE;
-  border-color: #DDD6FE;
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
   transform: none;
+}
+
+.birth-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.birth-date-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #4a3f38);
+  margin-left: 0.25rem;
+}
+
+.birth-date-field input[type="date"] {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid rgba(166, 124, 82, 0.25);
+  border-radius: var(--radius-md, 16px);
+  font-size: 1rem;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary, #1a1512);
+}
+
+.terms-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #4a3f38);
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.terms-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent-green, #4caf50);
+  cursor: pointer;
+}
+
+.terms-checkbox span {
+  line-height: 1.5;
+}
+
+.terms-checkbox a {
+  color: var(--accent-green, #4caf50);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.terms-checkbox a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 480px) {

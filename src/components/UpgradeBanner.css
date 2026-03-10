@@ -1,9 +1,14 @@
+/* ========================================
+   Upgrade Banner - Morning Prayer Theme
+   ======================================== */
+
 .upgrade-banner {
   margin: 1.5rem 0;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, var(--accent, #7C3AED) 0%, #A855F7 100%);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   border-radius: var(--radius-md, 16px);
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.25);
+  border: 2px solid var(--accent-green, #4caf50);
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25);
   animation: slideIn 0.4s ease;
 }
 
@@ -43,15 +48,15 @@
 .upgrade-text p {
   font-size: 0.85rem;
   margin: 0;
-  opacity: 0.9;
+  opacity: 0.95;
   line-height: 1.4;
 }
 
 .upgrade-button {
   padding: 0.625rem 1.25rem;
   background: white;
-  color: var(--accent, #7C3AED);
-  border: none;
+  color: var(--accent-green, #4caf50);
+  border: 2px solid white;
   border-radius: var(--radius-full, 9999px);
   font-size: 0.875rem;
   font-weight: 600;
@@ -63,7 +68,8 @@
 
 .upgrade-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 @media (max-width: 640px) {

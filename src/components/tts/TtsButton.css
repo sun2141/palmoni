@@ -1,9 +1,13 @@
+/* ========================================
+   TTS Button - Morning Prayer Theme
+   ======================================== */
+
 /* TTS Button */
 .tts-button {
   padding: 0.625rem 1.25rem;
-  background: var(--success, #10B981);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid var(--accent-green, #4caf50);
   border-radius: var(--radius-full, 9999px);
   font-size: 0.875rem;
   font-weight: 600;
@@ -13,14 +17,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
   min-width: 130px;
 }
 
 .tts-button:hover:not(:disabled) {
-  background: #059669;
+  background: linear-gradient(135deg, var(--accent-green-dark, #388e3c) 0%, #1e8e82 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .tts-button:disabled {
@@ -32,9 +36,9 @@
 /* Compact Button */
 .tts-button-compact {
   padding: 0.5rem;
-  background: var(--success, #10B981);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid var(--accent-green, #4caf50);
   border-radius: var(--radius-md, 16px);
   font-size: 1.125rem;
   cursor: pointer;
@@ -48,7 +52,7 @@
 }
 
 .tts-button-compact:hover:not(:disabled) {
-  background: #059669;
+  background: linear-gradient(135deg, var(--accent-green-dark, #388e3c) 0%, #1e8e82 100%);
   transform: none;
 }
 
@@ -62,9 +66,9 @@
   margin-top: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-sm, 8px);
-  color: var(--error, #EF4444);
+  color: #dc2626;
   font-size: 0.8rem;
   text-align: center;
 }
@@ -73,8 +77,8 @@
 .upgrade-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(26, 21, 18, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,12 +93,13 @@
 }
 
 .upgrade-modal {
-  background: white;
+  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
   border-radius: var(--radius-lg, 24px);
   padding: 2.5rem;
   max-width: 440px;
   width: 100%;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 24px 48px rgba(139, 94, 60, 0.15);
+  border: 2px solid rgba(201, 168, 124, 0.3);
   animation: slideUp 0.3s ease;
   position: relative;
   text-align: center;
@@ -115,10 +120,10 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: var(--bg-secondary, #F3F4F6);
-  border: none;
+  background: rgba(255, 248, 240, 0.9);
+  border: 2px solid rgba(166, 124, 82, 0.2);
   font-size: 1.25rem;
-  color: var(--text-secondary, #6B7280);
+  color: var(--bronze-mid, #a67c52);
   cursor: pointer;
   width: 36px;
   height: 36px;
@@ -132,7 +137,8 @@
 }
 
 .upgrade-modal-close:hover {
-  background: var(--border, #E5E7EB);
+  background: rgba(201, 168, 124, 0.15);
+  border-color: var(--bronze-mid, #a67c52);
   transform: none;
 }
 
@@ -145,11 +151,12 @@
   margin: 0 0 0.75rem 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary, #111827);
+  color: var(--bronze-deep, #8b5e3c);
+  font-family: 'Cinzel', 'Noto Serif KR', serif;
 }
 
 .upgrade-modal p {
-  color: var(--text-secondary, #6B7280);
+  color: var(--text-secondary, #4a3f38);
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
@@ -165,31 +172,32 @@
 
 .feature-item {
   font-size: 0.85rem;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary, #1a1512);
   padding: 0.625rem 0.75rem;
-  background: var(--bg-secondary, #F3F4F6);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(201, 168, 124, 0.2);
   border-radius: var(--radius-sm, 8px);
 }
 
 .upgrade-modal-cta {
   width: 100%;
   padding: 0.875rem 1.5rem;
-  background: var(--accent, #7C3AED);
+  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
   color: white;
-  border: none;
+  border: 2px solid var(--accent-green, #4caf50);
   border-radius: var(--radius-full, 9999px);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 150ms ease;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
   margin-bottom: 0.75rem;
 }
 
 .upgrade-modal-cta:hover {
-  background: var(--accent-hover, #6D28D9);
+  background: linear-gradient(135deg, var(--accent-green-dark, #388e3c) 0%, #1e8e82 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .upgrade-modal-cancel {
@@ -197,7 +205,7 @@
   padding: 0.625rem;
   background: none;
   border: none;
-  color: var(--text-muted, #9CA3AF);
+  color: var(--text-muted, #7a6f68);
   font-size: 0.875rem;
   cursor: pointer;
   transition: color 150ms ease;
@@ -205,7 +213,7 @@
 }
 
 .upgrade-modal-cancel:hover {
-  color: var(--text-secondary, #6B7280);
+  color: var(--text-secondary, #4a3f38);
   transform: none;
 }
 

@@ -17,6 +17,7 @@ import { PrayerNotification } from '../components/schedule/PrayerNotification';
 import { usePrayerCompanion } from '../hooks/usePrayerCompanion';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import './Home.css';
 
 export function Home() {
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ export function Home() {
     const [rateLimitInfo, setRateLimitInfo] = useState(null);
     const [saving, setSaving] = useState(false);
     const [currentPrayerId, setCurrentPrayerId] = useState(null);
+    const [activeUsers, setActiveUsers] = useState(127);
 
     const { user, profile, loading: authLoading, signOut } = useAuth();
     const { currentPrayer: companionPrayer, nextPrayerTime, unviewedPrayers } = usePrayerCompanion();
@@ -46,6 +48,17 @@ export function Home() {
             checkUserRateLimit();
         }
     }, [user, authLoading]);
+
+    // 실시간 사용자 수 시뮬레이션
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveUsers(prev => {
+                const change = Math.floor(Math.random() * 11) - 5;
+                return Math.max(80, Math.min(200, prev + change));
+            });
+        }, 8000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -182,7 +195,7 @@ export function Home() {
     };
 
     return (
-        <div className="container">
+        <div className="home-container">
             {/* Breathing ambience background */}
             <PrayerAmbience isActive={isGenerating} emotion={emotion} />
 
@@ -194,85 +207,91 @@ export function Home() {
                 </div>
             )}
 
-            {/* User Section */}
-            <div className="user-section">
-                {authLoading ? (
-                    <div className="user-loading">로딩 중...</div>
-                ) : user ? (
-                    <div className="user-profile">
-                        <span className="user-name">
-                            {profile?.display_name || user.email}
-                        </span>
-                        <StreakDisplay profile={profile} />
+            {/* Top bar - 무료로 시작하기 버튼 */}
+            <div className="top-bar">
+                {authLoading ? null : user ? (
+                    <div className="user-profile-bar">
+                        <StreakDisplay profile={profile} variant="compact" />
                         <button
-                            className="my-prayers-link"
+                            className="my-prayers-btn"
                             onClick={() => navigate('/my-prayers')}
                         >
                             📖 내 기도문
                         </button>
-                        <button className="logout-btn" onClick={handleLogout}>
+                        <button className="logout-btn-small" onClick={handleLogout}>
                             로그아웃
                         </button>
                     </div>
                 ) : (
-                    <button className="login-btn" onClick={() => setShowLoginModal(true)}>
-                        시작하기
+                    <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
+                        🌱 무료로 시작하기
                     </button>
                 )}
             </div>
 
-            {/* Header */}
-            <h1>Palmoni</h1>
-            <p className="subtitle">이름 없는 존재가 당신을 위해 기도합니다</p>
+            {/* Hero Section */}
+            <div className="hero-section">
+                <div className="hero-icon">🍄</div>
+                <h1 className="hero-title">PALMONI</h1>
+                <p className="hero-subtitle">
+                    이름 없는 존재가<br />
+                    당신을 위해 기도합니다
+                </p>
+            </div>
 
             {/* Progress indicator */}
             {isGenerating && progress > 0 && (
                 <PrayerProgress currentStep={progress} />
             )}
 
-            {/* Rate limit warning for anonymous users */}
-            {!user && rateLimitInfo && (
-                <div className="rate-limit-info">
+            {/* Input Section - 시안 스타일 */}
+            <div className="prayer-input-section">
+                <div className="input-header">
+                    <span className="input-icon">✏️</span>
+                    <span className="input-label">오늘의 기도</span>
+                    <VoiceInput onTranscript={handleVoiceTranscript} />
+                </div>
+                <textarea
+                    className="prayer-textarea"
+                    placeholder="마음에 담긴 이야기를 나눠주세요..."
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    disabled={isGenerating}
+                    rows={3}
+                />
+                <button
+                    className="pray-cta-btn"
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !topic.trim()}
+                >
+                    {isGenerating ? '🙏 기도하는 중...' : '🔥 기도 맡기기'}
+                </button>
+            </div>
+
+            {/* 실시간 사용자 수 */}
+            <div className="active-users">
+                <span className="active-dot"></span>
+                지금 <strong>{activeUsers}명</strong>이 함께 기도하고 있어요
+            </div>
+
+            {/* 회원가입 유도 (비로그인 사용자) */}
+            {!user && (
+                <div className="signup-prompt">
                     <p>
-                        ✨ 오늘 {rateLimitInfo.remaining || 0}회 남았습니다.{' '}
-                        <button
-                            className="inline-link-btn"
-                            onClick={() => setShowLoginModal(true)}
-                        >
-                            회원가입
-                        </button>
-                        하시면 더 많이 이용하실 수 있어요!
+                        <strong>무료 회원가입</strong>하고 기도문을 저장하고<br />
+                        나만의 기도 기록을 관리하세요
                     </p>
+                    <button
+                        className="signup-cta-btn"
+                        onClick={() => setShowLoginModal(true)}
+                    >
+                        ✨ 회원가입하기
+                    </button>
                 </div>
             )}
 
             {/* Upgrade banner */}
             <UpgradeBanner profile={profile} rateLimitInfo={rateLimitInfo} />
-
-            {/* Input section */}
-            <div className="input-section">
-                <div className="input-with-voice">
-                    <textarea
-                        placeholder="당신의 마음을 들려주세요. Palmoni가 당신을 위해 기도합니다..."
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
-                        disabled={isGenerating}
-                    />
-                    <VoiceInput onTranscript={handleVoiceTranscript} />
-                </div>
-                <div className="action-buttons">
-                    <Button
-                        onClick={handleGenerate}
-                        disabled={isGenerating || !topic.trim()}
-                        isLoading={isGenerating}
-                        className="generate-button"
-                        size="lg"
-                    >
-                        {isGenerating ? '🙏 기도하는 중...' : '✨ 기도 맡기기'}
-                    </Button>
-                    <EmergencyPrayerButton />
-                </div>
-            </div>
 
             {/* Error message */}
             {error && (
@@ -281,29 +300,39 @@ export function Home() {
                 </div>
             )}
 
-            {/* Prayer result */}
+            {/* Prayer result - 시안 스타일 */}
             {(title || content) && (
-                <div className="prayer-result">
-                    {title && <h2>{title}</h2>}
+                <div className="prayer-result-card">
+                    <div className="result-header">
+                        <span className="result-icon">✨</span>
+                        <span className="result-label">오늘의 기도</span>
+                    </div>
+
+                    {title && <h2 className="result-title">{title}</h2>}
+
                     {content && (
-                        <div className="prayer-content">
+                        <div className="result-content">
                             {content}
                         </div>
                     )}
+
                     {!isGenerating && (title || content) && (
-                        <div className="prayer-actions">
+                        <div className="result-actions">
                             {user && !currentPrayerId && (
-                                <Button
+                                <button
+                                    className="action-btn"
                                     onClick={() => handleSavePrayer(false)}
                                     disabled={saving}
-                                    isLoading={saving}
-                                    size="sm"
                                 >
-                                    {saving ? '저장 중...' : '💾 저장하기'}
-                                </Button>
+                                    <span className="action-icon">💾</span>
+                                    <span className="action-text">저장</span>
+                                </button>
                             )}
                             {currentPrayerId && (
-                                <span className="saved-indicator">✓ 저장됨</span>
+                                <div className="action-btn saved">
+                                    <span className="action-icon">✓</span>
+                                    <span className="action-text">저장됨</span>
+                                </div>
                             )}
                             <PdfDownloadButton
                                 prayer={{
@@ -313,15 +342,20 @@ export function Home() {
                                     emotion,
                                     created_at: new Date().toISOString()
                                 }}
+                                variant="icon"
                             />
-                            <TtsButton text={content} />
-                            <Button variant="outline" size="sm" onClick={handleReset}>
-                                새로운 기도문
-                            </Button>
+                            <TtsButton text={content} variant="icon" />
+                            <button className="action-btn" onClick={handleReset}>
+                                <span className="action-icon">🙏</span>
+                                <span className="action-text">새 기도</span>
+                            </button>
                         </div>
                     )}
                 </div>
             )}
+
+            {/* 긴급 기도 버튼 */}
+            <EmergencyPrayerButton />
 
             {/* 기도 동반자 대시보드 - 로그인 사용자만 */}
             {user && (

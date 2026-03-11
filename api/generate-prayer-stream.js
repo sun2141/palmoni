@@ -1,20 +1,25 @@
-export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+import { setupCors, handlePreflight } from './lib/cors.js';
+import { checkRateLimit, applyRateLimitHeaders, sendRateLimitExceeded } from './lib/rateLimit.js';
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
+export default async function handler(req, res) {
+  // Setup CORS with domain restriction
+  setupCors(req, res);
+
+  // Handle preflight
+  if (handlePreflight(req, res)) {
     return;
   }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check rate limit
+  const limitResult = checkRateLimit(req, 'prayer_generation');
+  applyRateLimitHeaders(res, limitResult, 'prayer_generation');
+
+  if (!limitResult.allowed) {
+    return sendRateLimitExceeded(res, limitResult);
   }
 
   const { topic } = req.query;
@@ -27,6 +32,20 @@ export default async function handler(req, res) {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+
+  // Handle client disconnect
+  let isConnected = true;
+  req.on('close', () => {
+    isConnected = false;
+  });
+
+  // Set timeout for the request (25 seconds)
+  const timeout = setTimeout(() => {
+    if (isConnected) {
+      res.write(`data: ${JSON.stringify({ error: 'Request timeout' })}\n\n`);
+      res.end();
+    }
+  }, 25000);
 
   try {
     const apiKey = process.env.GOOGLE_API_KEY;
@@ -61,7 +80,7 @@ JSON 형식으로 응답하세요. 줄바꿈은 실제 줄바꿈 문자가 아�
             }]
           }],
           generationConfig: {
-            temperature: 0.9,
+            temperature: 0.7,
             maxOutputTokens: 2048,
             responseMimeType: 'application/json',
             responseSchema: {
@@ -83,11 +102,15 @@ JSON 형식으로 응답하세요. 줄바꿈은 실제 줄바꿈 문자가 아�
       }
     );
 
+    clearTimeout(timeout);
+
     if (!response.ok) {
       const errorData = await response.text();
       console.error('Gemini API error:', errorData);
-      res.write(`data: ${JSON.stringify({ error: 'Failed to generate prayer' })}\n\n`);
-      res.end();
+      if (isConnected) {
+        res.write(`data: ${JSON.stringify({ error: 'Failed to generate prayer' })}\n\n`);
+        res.end();
+      }
       return;
     }
 
@@ -99,32 +122,39 @@ JSON 형식으로 응답하세요. 줄바꿈은 실제 줄바꿈 문자가 아�
       const prayerData = JSON.parse(text);
       const fullText = `${prayerData.title}\n\n${prayerData.content}`;
 
-      // Stream the text character by character with typing effect
-      // Simulate 40ms delay per character for smooth typing effect
-      const words = fullText.split('');
+      // Stream the text in chunks for better performance
+      const chunkSize = 10;
+      const chars = fullText.split('');
 
-      for (let i = 0; i < words.length; i++) {
-        res.write(`data: ${JSON.stringify({ chunk: words[i] })}\n\n`);
+      for (let i = 0; i < chars.length && isConnected; i += chunkSize) {
+        const chunk = chars.slice(i, i + chunkSize).join('');
+        res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
 
-        // Small delay to simulate typing (Vercel serverless functions handle this differently)
-        // In production, we send chunks in batches for efficiency
-        if (i % 5 === 0) {
-          await new Promise(resolve => setTimeout(resolve, 30));
+        // Small delay for typing effect
+        if (i % 30 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 50));
         }
       }
 
       // Send completion signal
-      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-      res.end();
+      if (isConnected) {
+        res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+        res.end();
+      }
 
     } catch (parseError) {
       console.error('Parse error:', parseError);
-      res.write(`data: ${JSON.stringify({ error: 'Failed to parse prayer response' })}\n\n`);
-      res.end();
+      if (isConnected) {
+        res.write(`data: ${JSON.stringify({ error: 'Failed to parse prayer response' })}\n\n`);
+        res.end();
+      }
     }
   } catch (error) {
+    clearTimeout(timeout);
     console.error('Error generating prayer:', error);
-    res.write(`data: ${JSON.stringify({ error: 'Internal server error during prayer generation' })}\n\n`);
-    res.end();
+    if (isConnected) {
+      res.write(`data: ${JSON.stringify({ error: 'Internal server error during prayer generation' })}\n\n`);
+      res.end();
+    }
   }
 }

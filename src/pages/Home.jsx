@@ -9,9 +9,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { checkRateLimit, logUsage, savePrayer } from '../lib/supabaseClient';
 import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
-import { VoiceInput } from '../components/voice/VoiceInput';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
+import { useToast } from '../components/common/Toast';
 import './Home.css';
 
 export function Home() {
@@ -26,6 +26,7 @@ export function Home() {
     const [activeUsers, setActiveUsers] = useState(127);
 
     const { user, profile, loading: authLoading, signOut } = useAuth();
+    const toast = useToast();
 
     const {
         title,
@@ -128,7 +129,7 @@ export function Home() {
         const limitCheck = await checkRateLimit(userId, anonymousId);
 
         if (!limitCheck.allowed) {
-            alert(limitCheck.message);
+            toast.warning(limitCheck.message);
             if (!user) {
                 setShowLoginModal(true);
             }
@@ -153,7 +154,7 @@ export function Home() {
             if (prayerInfo.totalPrayers === 1) {
                 // 3시간 미만 남음
                 setTimeout(() => {
-                    alert('자정까지 시간이 얼마 남지 않아 1번 기도합니다.\n내일 일찍 기도를 맡겨주시면 하루 종일 기도해드릴게요! 🙏');
+                    toast.info('자정까지 시간이 얼마 남지 않아 1번 기도합니다. 내일 일찍 기도를 맡겨주시면 하루 종일 기도해드릴게요!', { duration: 5000 });
                 }, 1000);
             }
         }
@@ -161,13 +162,13 @@ export function Home() {
 
     const handleSavePrayer = async (isPublic = false) => {
         if (!user) {
-            alert('기도문을 저장하려면 로그인이 필요합니다.');
+            toast.info('기도문을 저장하려면 로그인이 필요합니다.');
             setShowLoginModal(true);
             return;
         }
 
         if (!title || !content) {
-            alert('저장할 기도문이 없습니다.');
+            toast.warning('저장할 기도문이 없습니다.');
             return;
         }
 
@@ -185,10 +186,10 @@ export function Home() {
         setSaving(false);
 
         if (result.error) {
-            alert(`저장 실패: ${result.error}`);
+            toast.error(`저장 실패: ${result.error}`);
         } else {
             setCurrentPrayerId(result.data.id);
-            alert('기도문이 저장되었습니다!');
+            toast.success('기도문이 저장되었습니다!');
         }
     };
 
@@ -204,9 +205,6 @@ export function Home() {
         handleReset();
     };
 
-    const handleVoiceTranscript = (transcript, isFinal) => {
-        setTopic(transcript);
-    };
 
     return (
         <div className="home-container">
@@ -263,7 +261,6 @@ export function Home() {
                 <div className="input-header">
                     <span className="input-icon">✏️</span>
                     <span className="input-label">오늘의 기도</span>
-                    <VoiceInput onTranscript={handleVoiceTranscript} />
                 </div>
                 <textarea
                     className="prayer-textarea"

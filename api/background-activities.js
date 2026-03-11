@@ -1,3 +1,6 @@
+import { setupCors, handlePreflight } from './lib/cors.js';
+import { checkRateLimit, applyRateLimitHeaders, sendRateLimitExceeded } from './lib/rateLimit.js';
+
 const backgroundActivities = [
   "누군가의 '가족의 건강'을 위한 기도가 진행 중입니다.",
   "방금 '취업 준비'로 힘들어하는 분의 마음이 전달되었습니다.",
@@ -8,22 +11,24 @@ const backgroundActivities = [
 ];
 
 export default function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  // Setup CORS with domain restriction
+  setupCors(req, res);
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
+  // Handle preflight
+  if (handlePreflight(req, res)) {
     return;
   }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check rate limit
+  const limitResult = checkRateLimit(req, 'general');
+  applyRateLimitHeaders(res, limitResult, 'general');
+
+  if (!limitResult.allowed) {
+    return sendRateLimitExceeded(res, limitResult);
   }
 
   const randomActivity = backgroundActivities[Math.floor(Math.random() * backgroundActivities.length)];

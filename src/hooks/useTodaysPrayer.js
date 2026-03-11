@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { saveTodaysPrayerSession, getTodaysPrayerSession } from '../lib/supabaseClient';
 
 /**
  * 오늘의 기도 시스템 훅
@@ -9,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
  * 2. 3시간 이상 남았으면 3번 기도 (즉시 + 2번 추가)
  * 3. 3시간 미만이면 1번만 기도
  * 4. 다음날 접속 시 "어제의 기도가 완료되었습니다" 메시지
+ * 5. 로그인 사용자는 Supabase에 백업 (localStorage 손실 방지)
  */
 export function useTodaysPrayer() {
     const { user } = useAuth();
@@ -17,6 +19,10 @@ export function useTodaysPrayer() {
     const [prayerStatus, setPrayerStatus] = useState('idle'); // idle, praying, completed
     const [currentPrayerIndex, setCurrentPrayerIndex] = useState(0);
     const [showPrayingAnimation, setShowPrayingAnimation] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // 초기 로드 완료 여부 (중복 로드 방지)
+    const initialLoadDone = useRef(false);
 
     // localStorage 키
     const STORAGE_KEY = 'palmoni_todays_prayer';
@@ -44,34 +50,81 @@ export function useTodaysPrayer() {
         return times;
     };
 
-    // 저장된 오늘의 기도 불러오기
+    // 저장된 오늘의 기도 불러오기 (localStorage + Supabase 백업)
     useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                const savedDate = new Date(data.date).toDateString();
-                const today = new Date().toDateString();
+        if (initialLoadDone.current) return;
 
-                if (savedDate === today) {
-                    // 오늘 기도가 있으면 복원
-                    setTodaysPrayer(data.prayer);
-                    setPrayerTimes(data.times.map(t => new Date(t)));
-                    setCurrentPrayerIndex(data.currentIndex);
-                    setPrayerStatus(data.status);
-                } else if (savedDate < today && data.status !== 'idle') {
-                    // 어제 기도가 있었으면 완료 상태로 표시
-                    setPrayerStatus('yesterday_completed');
-                    localStorage.removeItem(STORAGE_KEY);
+        const loadPrayerSession = async () => {
+            setIsLoading(true);
+            let loaded = false;
+
+            // 1. 먼저 localStorage에서 로드 시도
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    const savedDate = new Date(data.date).toDateString();
+                    const today = new Date().toDateString();
+
+                    if (savedDate === today) {
+                        setTodaysPrayer(data.prayer);
+                        setPrayerTimes(data.times.map(t => new Date(t)));
+                        setCurrentPrayerIndex(data.currentIndex);
+                        setPrayerStatus(data.status);
+                        loaded = true;
+                    } else if (savedDate < today && data.status !== 'idle') {
+                        setPrayerStatus('yesterday_completed');
+                        localStorage.removeItem(STORAGE_KEY);
+                        loaded = true;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse saved prayer:', e);
+                    // 파싱 실패해도 localStorage 유지 (서버에서 복구 시도)
                 }
-            } catch (e) {
-                console.error('Failed to parse saved prayer:', e);
-                localStorage.removeItem(STORAGE_KEY);
             }
-        }
-    }, []);
 
-    // 기도 시간 체크 (1분마다)
+            // 2. 로그인 사용자: Supabase에서 복구 시도 (localStorage 없거나 손상된 경우)
+            if (!loaded && user) {
+                try {
+                    const { data, isYesterday, error } = await getTodaysPrayerSession(user.id);
+                    if (data && !error) {
+                        if (isYesterday) {
+                            setPrayerStatus('yesterday_completed');
+                        } else {
+                            setTodaysPrayer(data.prayer);
+                            setPrayerTimes(data.times.map(t => new Date(t)));
+                            setCurrentPrayerIndex(data.currentIndex);
+                            setPrayerStatus(data.status);
+
+                            // localStorage에도 복원
+                            const localData = {
+                                prayer: data.prayer,
+                                times: data.times,
+                                currentIndex: data.currentIndex,
+                                status: data.status,
+                                date: new Date().toISOString(),
+                            };
+                            try {
+                                localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+                            } catch (storageError) {
+                                console.warn('localStorage save failed:', storageError);
+                            }
+                        }
+                        loaded = true;
+                    }
+                } catch (e) {
+                    console.error('Failed to load from Supabase:', e);
+                }
+            }
+
+            setIsLoading(false);
+            initialLoadDone.current = true;
+        };
+
+        loadPrayerSession();
+    }, [user]);
+
+    // 기도 시간 체크 (더 정밀한 타이밍)
     useEffect(() => {
         if (prayerStatus !== 'praying' || prayerTimes.length === 0) return;
 
@@ -100,26 +153,53 @@ export function useTodaysPrayer() {
             }
         };
 
-        const interval = setInterval(checkPrayerTime, 60000); // 1분마다 체크
+        // 다음 기도 시간까지의 정확한 간격 계산
+        const now = new Date();
+        const nextPrayerTime = prayerTimes[currentPrayerIndex];
+        let checkInterval = 60000; // 기본 1분
+
+        if (nextPrayerTime) {
+            const timeUntilNext = nextPrayerTime - now;
+            if (timeUntilNext > 0 && timeUntilNext < 60000) {
+                // 1분 이내면 더 정밀하게 체크
+                checkInterval = Math.min(10000, timeUntilNext);
+            }
+        }
+
+        const interval = setInterval(checkPrayerTime, checkInterval);
         checkPrayerTime(); // 즉시 한 번 체크
 
         return () => clearInterval(interval);
     }, [prayerStatus, prayerTimes, currentPrayerIndex]);
 
-    // localStorage에 저장
+    // localStorage + Supabase 백업에 저장
     const saveToStorage = useCallback((updates = {}) => {
+        const prayer = updates.prayer || todaysPrayer;
+        const times = updates.times || prayerTimes.map(t => t.toISOString());
+
         const data = {
-            prayer: todaysPrayer,
-            times: prayerTimes.map(t => t.toISOString()),
-            currentIndex: currentPrayerIndex,
-            status: prayerStatus,
+            prayer,
+            times,
+            currentIndex: updates.currentIndex ?? currentPrayerIndex,
+            status: updates.status || prayerStatus,
             date: new Date().toISOString(),
-            ...updates,
-            prayer: updates.prayer || todaysPrayer,
-            times: updates.times || prayerTimes.map(t => t.toISOString()),
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }, [todaysPrayer, prayerTimes, currentPrayerIndex, prayerStatus]);
+
+        // localStorage에 저장 (에러 핸들링)
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('localStorage save failed:', e);
+            // QuotaExceededError 등의 경우에도 Supabase 백업은 진행
+        }
+
+        // 로그인 사용자: Supabase 백업
+        if (user) {
+            saveTodaysPrayerSession(user.id, data).catch(e => {
+                console.error('Supabase backup failed:', e);
+            });
+        }
+    }, [todaysPrayer, prayerTimes, currentPrayerIndex, prayerStatus, user]);
 
     // 새 기도 맡기기
     const submitPrayer = useCallback((prayer) => {
@@ -142,7 +222,7 @@ export function useTodaysPrayer() {
             }
         }, 5000);
 
-        // localStorage에 저장
+        // 저장 데이터 준비
         const data = {
             prayer,
             times: times.map(t => t.toISOString()),
@@ -150,14 +230,27 @@ export function useTodaysPrayer() {
             status: times.length > 1 ? 'praying' : 'completed',
             date: now.toISOString(),
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+        // localStorage에 저장
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('localStorage save failed:', e);
+        }
+
+        // 로그인 사용자: Supabase 백업
+        if (user) {
+            saveTodaysPrayerSession(user.id, data).catch(e => {
+                console.error('Supabase backup failed:', e);
+            });
+        }
 
         return {
             totalPrayers: times.length,
             nextPrayerTime: times.length > 1 ? times[1] : null,
             minutesUntilMidnight: getMinutesUntilMidnight(),
         };
-    }, []);
+    }, [user]);
 
     // 어제 기도 완료 메시지 확인
     const dismissYesterdayMessage = useCallback(() => {
@@ -196,6 +289,7 @@ export function useTodaysPrayer() {
         prayerStatus,
         currentPrayerIndex,
         showPrayingAnimation,
+        isLoading,
         submitPrayer,
         dismissYesterdayMessage,
         getNextPrayerInfo,

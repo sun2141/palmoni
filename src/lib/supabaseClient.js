@@ -356,3 +356,141 @@ export async function getPrayerStats(userId) {
     lastPrayerDate: profile?.last_prayer_date
   };
 }
+
+// =============================================
+// 오늘의 기도 세션 (Today's Prayer Session)
+// localStorage 백업용 Supabase 연동
+// =============================================
+
+/**
+ * 오늘의 기도 세션 저장 (Supabase 백업)
+ */
+export async function saveTodaysPrayerSession(userId, sessionData) {
+  if (!userId) return { error: 'User not logged in' };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  // 기존 세션 확인
+  const { data: existing } = await supabase
+    .from('todays_prayer_sessions')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('session_date', today)
+    .single();
+
+  const payload = {
+    user_id: userId,
+    session_date: today,
+    prayer_topic: sessionData.prayer?.topic || '',
+    prayer_title: sessionData.prayer?.title || '',
+    prayer_content: sessionData.prayer?.content || '',
+    prayer_emotion: sessionData.prayer?.emotion || 'peace',
+    prayer_times: sessionData.times || [],
+    current_index: sessionData.currentIndex || 0,
+    status: sessionData.status || 'idle',
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existing) {
+    // 업데이트
+    const { data, error } = await supabase
+      .from('todays_prayer_sessions')
+      .update(payload)
+      .eq('id', existing.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating prayer session:', error);
+      return { data: null, error: error.message };
+    }
+    return { data, error: null };
+  } else {
+    // 새로 생성
+    const { data, error } = await supabase
+      .from('todays_prayer_sessions')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating prayer session:', error);
+      return { data: null, error: error.message };
+    }
+    return { data, error: null };
+  }
+}
+
+/**
+ * 오늘의 기도 세션 불러오기 (Supabase에서)
+ */
+export async function getTodaysPrayerSession(userId) {
+  if (!userId) return { data: null, error: 'User not logged in' };
+
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+  // 오늘 세션 확인
+  const { data: todaySession, error: todayError } = await supabase
+    .from('todays_prayer_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('session_date', today)
+    .single();
+
+  if (todayError && todayError.code !== 'PGRST116') {
+    console.error('Error fetching today session:', todayError);
+  }
+
+  if (todaySession) {
+    return {
+      data: {
+        prayer: {
+          topic: todaySession.prayer_topic,
+          title: todaySession.prayer_title,
+          content: todaySession.prayer_content,
+          emotion: todaySession.prayer_emotion,
+        },
+        times: todaySession.prayer_times,
+        currentIndex: todaySession.current_index,
+        status: todaySession.status,
+        date: todaySession.session_date,
+      },
+      isYesterday: false,
+      error: null,
+    };
+  }
+
+  // 어제 세션 확인 (완료된 기도 표시용)
+  const { data: yesterdaySession, error: yesterdayError } = await supabase
+    .from('todays_prayer_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('session_date', yesterday)
+    .single();
+
+  if (yesterdayError && yesterdayError.code !== 'PGRST116') {
+    console.error('Error fetching yesterday session:', yesterdayError);
+  }
+
+  if (yesterdaySession && yesterdaySession.status !== 'idle') {
+    return {
+      data: {
+        prayer: {
+          topic: yesterdaySession.prayer_topic,
+          title: yesterdaySession.prayer_title,
+          content: yesterdaySession.prayer_content,
+          emotion: yesterdaySession.prayer_emotion,
+        },
+        times: yesterdaySession.prayer_times,
+        currentIndex: yesterdaySession.current_index,
+        status: 'yesterday_completed',
+        date: yesterdaySession.session_date,
+      },
+      isYesterday: true,
+      error: null,
+    };
+  }
+
+  return { data: null, isYesterday: false, error: null };
+}

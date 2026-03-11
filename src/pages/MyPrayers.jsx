@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
 import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
+import { useToast } from '../components/common/Toast';
 import './MyPrayers.css';
 
 export function MyPrayers() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const toast = useToast();
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -110,7 +112,7 @@ export function MyPrayers() {
     const { error } = await deletePrayer(prayerId, user.id);
 
     if (error) {
-      alert('삭제 중 오류가 발생했습니다.');
+      toast.error('삭제 중 오류가 발생했습니다.');
       return;
     }
 
@@ -136,7 +138,7 @@ export function MyPrayers() {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(shareText);
-      alert('기도문이 클립보드에 복사되었습니다!');
+      toast.success('기도문이 클립보드에 복사되었습니다!');
     }
   };
 

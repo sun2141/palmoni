@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../common/Toast';
 import './LoginModal.css';
 
 export function LoginModal({ isOpen, onClose, onSuccess }) {
@@ -13,6 +14,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }) {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const { signInWithGoogle, signInWithKakao, signInWithEmail, signUpWithEmail } = useAuth();
+  const toast = useToast();
 
   const handleSocialSignIn = async (provider) => {
     setLoading(true);
@@ -87,7 +89,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }) {
       if (mode === 'signup') {
         setError('');
         setMode('signin');
-        alert('회원가입이 완료되었습니다. 이메일을 확인해주세요.');
+        toast.success('회원가입이 완료되었습니다. 이메일을 확인해주세요.');
       } else {
         onSuccess?.();
         onClose();

@@ -1,20 +1,25 @@
-export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+import { setupCors, handlePreflight } from './lib/cors.js';
+import { checkRateLimit, applyRateLimitHeaders, sendRateLimitExceeded } from './lib/rateLimit.js';
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
+export default async function handler(req, res) {
+  // Setup CORS with domain restriction
+  setupCors(req, res);
+
+  // Handle preflight
+  if (handlePreflight(req, res)) {
     return;
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check rate limit
+  const limitResult = checkRateLimit(req, 'prayer_generation');
+  applyRateLimitHeaders(res, limitResult, 'prayer_generation');
+
+  if (!limitResult.allowed) {
+    return sendRateLimitExceeded(res, limitResult);
   }
 
   const { topic } = req.body;
@@ -29,7 +34,7 @@ export default async function handler(req, res) {
     if (!apiKey) {
       return res.status(500).json({
         error: 'API configuration error',
-        details: 'GOOGLE_API_KEY is not configured'
+        details: 'Server configuration issue'
       });
     }
 
@@ -57,7 +62,7 @@ JSON 형식으로 응답하세요. 줄바꿈은 실제 줄바꿈 문자가 아�
             }]
           }],
           generationConfig: {
-            temperature: 0.9,
+            temperature: 0.7,
             maxOutputTokens: 2048,
             responseMimeType: 'application/json',
             responseSchema: {
@@ -92,22 +97,18 @@ JSON 형식으로 응답하세요. 줄바꿈은 실제 줄바꿈 문자가 아�
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     try {
-      // The response is already a JSON string, just parse it directly
       const prayerData = JSON.parse(text);
       return res.status(200).json(prayerData);
     } catch (parseError) {
-      // Return raw response for debugging
-      return res.status(200).json({
-        debug: true,
-        rawText: text,
-        parseError: parseError.message
+      console.error('Parse error:', parseError.message);
+      return res.status(500).json({
+        error: 'Failed to parse prayer response'
       });
     }
   } catch (error) {
     console.error('Error generating prayer:', error);
     return res.status(500).json({
-      error: 'Internal server error during prayer generation',
-      details: error.message
+      error: 'Internal server error during prayer generation'
     });
   }
 }

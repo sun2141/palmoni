@@ -44,6 +44,7 @@ export function usePrayerGeneration() {
 
       setProgress(4); // Step 4: Complete
 
+      return { title: data.title, content: data.content };
     } catch (err) {
       console.error('Error generating prayer:', err);
       setError('기도문을 생성하는 중 오류가 발생했습니다.');

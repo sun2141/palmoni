@@ -21,19 +21,8 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
   const today = new Date().toISOString().split('T')[0];
 
   if (userId) {
-    // Check subscription tier and daily usage for registered users
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('subscription_tier, daily_prayer_count, last_prayer_date')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching profile:', error);
-      return { allowed: false, error: 'Failed to check rate limit' };
-    }
-
     // 로그인 사용자는 무제한 (도네이션 모델)
+    // 프로필 조회 없이 바로 허용 - 신규 가입자도 즉시 사용 가능
     return { allowed: true, tier: 'free' };
   } else if (anonymousId) {
     // Check usage for anonymous users (3/day)

@@ -70,6 +70,7 @@
     color: var(--text-secondary, #4a3f38);
     margin: 0;
     font-style: italic;
+    word-break: keep-all;
 }
 
 .praying-waves {
@@ -195,6 +196,7 @@
     margin: 0;
     padding-top: 0.75rem;
     border-top: 1px solid rgba(201, 168, 124, 0.15);
+    word-break: keep-all;
 }
 
 /* === Completed === */

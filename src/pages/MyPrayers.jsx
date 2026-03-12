@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
-import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
 import { useToast } from '../components/common/Toast';
 import './MyPrayers.css';
 
@@ -120,6 +119,13 @@ export function MyPrayers() {
     // Remove from local state
     setPrayers(prev => prev.filter(p => p.id !== prayerId));
     setTotalCount(prev => prev - 1);
+  };
+
+  // Handle copy
+  const handleCopy = async (prayer) => {
+    const text = `${prayer.title}\n\n${prayer.content}\n\n- Palmoni가 당신을 위해 기도했습니다`;
+    await navigator.clipboard.writeText(text);
+    toast.success('기도문이 복사되었습니다!');
   };
 
   // Handle share
@@ -305,7 +311,13 @@ export function MyPrayers() {
                 )}
 
                 <div className="prayer-actions">
-                  <PdfDownloadButton prayer={prayer} />
+                  <button
+                    className="action-button"
+                    onClick={() => handleCopy(prayer)}
+                    title="복사하기"
+                  >
+                    <span>📋</span> 복사
+                  </button>
                   <button
                     className="action-button"
                     onClick={() => handleShare(prayer)}
@@ -371,7 +383,14 @@ export function MyPrayers() {
             </div>
 
             <div className="prayer-modal-actions">
-              <PdfDownloadButton prayer={selectedPrayer} />
+              <button
+                className="action-button"
+                onClick={() => {
+                  handleCopy(selectedPrayer);
+                }}
+              >
+                <span>📋</span> 복사
+              </button>
               <button
                 className="action-button"
                 onClick={() => {

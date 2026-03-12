@@ -88,6 +88,8 @@
   color: var(--text-secondary, #4a3f38);
   text-align: center;
   margin-bottom: 2rem;
+  line-height: 1.6;
+  word-break: keep-all;
 }
 
 .auth-error {

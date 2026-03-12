@@ -100,8 +100,9 @@
 .hero-subtitle {
   font-size: 0.95rem;
   color: var(--text-secondary, #4a3f38);
-  line-height: 1.6;
+  line-height: 1.8;
   margin: 0;
+  letter-spacing: 0.02em;
 }
 
 /* === Prayer Input Section === */
@@ -292,10 +293,13 @@
 .result-content {
   font-family: 'Noto Serif KR', serif;
   font-size: 0.95rem;
-  line-height: 1.9;
+  line-height: 2;
   color: var(--text-primary, #1a1512);
   white-space: pre-wrap;
   margin-bottom: 1.25rem;
+  text-align: justify;
+  word-break: keep-all;
+  letter-spacing: -0.01em;
 }
 
 /* === Result Actions (하단 버튼들) === */

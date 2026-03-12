@@ -7,7 +7,6 @@ import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
 import { checkRateLimit, logUsage, savePrayer } from '../lib/supabaseClient';
-import { PdfDownloadButton } from '../components/pdf/PdfDownloadButton';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
@@ -370,16 +369,36 @@ export function Home() {
                                     <span className="action-text">저장됨</span>
                                 </div>
                             )}
-                            <PdfDownloadButton
-                                prayer={{
-                                    title,
-                                    content,
-                                    topic,
-                                    emotion,
-                                    created_at: new Date().toISOString()
+                            <button
+                                className="action-btn"
+                                onClick={async () => {
+                                    const text = `${title}\n\n${content}\n\n- Palmoni가 당신을 위해 기도했습니다`;
+                                    await navigator.clipboard.writeText(text);
+                                    toast.success('기도문이 복사되었습니다!');
                                 }}
-                                compact
-                            />
+                            >
+                                <span className="action-icon">📋</span>
+                                <span className="action-text">복사</span>
+                            </button>
+                            <button
+                                className="action-btn"
+                                onClick={async () => {
+                                    const shareText = `${title}\n\n${content}`;
+                                    if (navigator.share) {
+                                        try {
+                                            await navigator.share({ title, text: shareText });
+                                        } catch (err) {
+                                            console.log('Share cancelled');
+                                        }
+                                    } else {
+                                        await navigator.clipboard.writeText(shareText);
+                                        toast.success('기도문이 복사되었습니다!');
+                                    }
+                                }}
+                            >
+                                <span className="action-icon">📤</span>
+                                <span className="action-text">공유</span>
+                            </button>
                             <button className="action-btn" onClick={handleReset}>
                                 <span className="action-icon">🙏</span>
                                 <span className="action-text">새 기도</span>

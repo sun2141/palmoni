@@ -308,10 +308,12 @@
 
 .prayer-preview {
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.8;
   color: var(--text-secondary, #4a3f38);
   margin: 0;
   flex: 1;
+  word-break: keep-all;
+  letter-spacing: -0.01em;
 }
 
 .prayer-actions {
@@ -443,11 +445,14 @@
 
 .prayer-modal-content {
   font-size: 1rem;
-  line-height: 1.9;
+  line-height: 2;
   color: var(--text-primary, #1a1512);
   white-space: pre-wrap;
   margin: 1rem 0 1.5rem;
   font-family: 'Noto Serif KR', serif;
+  text-align: justify;
+  word-break: keep-all;
+  letter-spacing: -0.01em;
 }
 
 .prayer-modal-actions {

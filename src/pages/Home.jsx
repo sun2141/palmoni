@@ -220,6 +220,13 @@ export function Home() {
 
             {/* Top bar - 무료로 시작하기 버튼 */}
             <div className="top-bar">
+                <button
+                    className="refresh-btn"
+                    onClick={() => window.location.reload()}
+                    title="새로고침"
+                >
+                    🔄
+                </button>
                 {authLoading ? null : user ? (
                     <div className="user-profile-bar">
                         <StreakDisplay profile={profile} variant="compact" />
@@ -243,7 +250,16 @@ export function Home() {
             {/* Hero Section */}
             <div className="hero-section">
                 <span className="hero-icon">🍄</span>
-                <h1 className="hero-title">PALMONI</h1>
+                <h1
+                    className="hero-title clickable"
+                    onClick={() => {
+                        handleReset();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    title="홈으로"
+                >
+                    PALMONI
+                </h1>
                 <p className="hero-subtitle">
                     이름 없는 존재가<br />
                     당신을 위해 기도합니다

@@ -9,12 +9,22 @@ const LazyPrayerPdfDocument = lazy(() =>
   import('./PrayerPdfDocument').then(mod => ({ default: mod.PrayerPdfDocument }))
 );
 
+// Compact button content helper
+function CompactContent({ loading }) {
+  return (
+    <>
+      <span className="pdf-icon">{loading ? '⏳' : '📄'}</span>
+      <span className="pdf-text">{loading ? '준비중' : 'PDF'}</span>
+    </>
+  );
+}
+
 // Wrapper component that loads PDF module on demand
 function PdfDownloadLinkWrapper({ prayer, fileName, compact }) {
   return (
     <Suspense fallback={
       <span className={compact ? 'pdf-download-btn-compact' : 'pdf-download-btn'}>
-        {compact ? '⏳' : '📄 PDF 모듈 로딩...'}
+        {compact ? <CompactContent loading /> : '📄 PDF 모듈 로딩...'}
       </span>
     }>
       <LazyPDFDownloadLink
@@ -27,10 +37,10 @@ function PdfDownloadLinkWrapper({ prayer, fileName, compact }) {
         className={compact ? 'pdf-download-btn-compact' : 'pdf-download-btn'}
       >
         {({ loading }) =>
-          loading ? (
-            compact ? '⏳' : '📄 PDF 준비 중...'
+          compact ? (
+            <CompactContent loading={loading} />
           ) : (
-            compact ? '📄' : '📄 PDF 다운로드'
+            loading ? '📄 PDF 준비 중...' : '📄 PDF 다운로드'
           )
         }
       </LazyPDFDownloadLink>
@@ -55,7 +65,14 @@ export function PdfDownloadButton({ prayer, compact = false }) {
         className={compact ? 'pdf-download-btn-compact' : 'pdf-download-btn'}
         title="PDF 다운로드"
       >
-        {compact ? '📄' : '📄 PDF 다운로드'}
+        {compact ? (
+          <>
+            <span className="pdf-icon">📄</span>
+            <span className="pdf-text">PDF</span>
+          </>
+        ) : (
+          '📄 PDF 다운로드'
+        )}
       </button>
     );
   }

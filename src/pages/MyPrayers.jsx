@@ -18,6 +18,7 @@ export function MyPrayers() {
   const [emotionFilter, setEmotionFilter] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [selectedPrayer, setSelectedPrayer] = useState(null);
   const observerTarget = useRef(null);
 
   const LIMIT = 20;
@@ -294,8 +295,17 @@ export function MyPrayers() {
                   {prayer.content.length > 150 && '...'}
                 </p>
 
+                {prayer.content.length > 150 && (
+                  <button
+                    className="view-full-btn"
+                    onClick={() => setSelectedPrayer(prayer)}
+                  >
+                    전체보기
+                  </button>
+                )}
+
                 <div className="prayer-actions">
-                  <PdfDownloadButton prayer={prayer} compact={true} />
+                  <PdfDownloadButton prayer={prayer} />
                   <button
                     className="action-button"
                     onClick={() => handleShare(prayer)}
@@ -326,6 +336,53 @@ export function MyPrayers() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Prayer Detail Modal */}
+      {selectedPrayer && (
+        <div className="prayer-modal-overlay" onClick={() => setSelectedPrayer(null)}>
+          <div className="prayer-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="prayer-modal-close"
+              onClick={() => setSelectedPrayer(null)}
+            >
+              ✕
+            </button>
+
+            <div className="prayer-modal-header">
+              <div
+                className="emotion-badge"
+                style={{ backgroundColor: getEmotionInfo(selectedPrayer.emotion).color }}
+              >
+                {getEmotionInfo(selectedPrayer.emotion).icon} {getEmotionInfo(selectedPrayer.emotion).label}
+              </div>
+              <span className="prayer-date">{formatDate(selectedPrayer.created_at)}</span>
+            </div>
+
+            <h2 className="prayer-modal-title">{selectedPrayer.title}</h2>
+
+            <div className="prayer-topic">
+              <span className="topic-label">주제:</span> {selectedPrayer.topic}
+            </div>
+
+            <div className="prayer-modal-content">
+              {selectedPrayer.content}
+            </div>
+
+            <div className="prayer-modal-actions">
+              <PdfDownloadButton prayer={selectedPrayer} />
+              <button
+                className="action-button"
+                onClick={() => {
+                  handleShare(selectedPrayer);
+                  setSelectedPrayer(null);
+                }}
+              >
+                <span>📤</span> 공유
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

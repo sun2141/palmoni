@@ -2,69 +2,77 @@
    PDF Download Button - Morning Prayer Theme
    ======================================== */
 
-/* PDF Download Button */
+/* PDF Download Button - matches action-button style in MyPrayers */
 .pdf-download-btn {
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, var(--bronze-mid, #a67c52) 0%, var(--bronze-deep, #8b5e3c) 100%);
-  color: white;
-  border: 2px solid var(--bronze-mid, #a67c52);
-  border-radius: var(--radius-full, 9999px);
-  font-size: 0.875rem;
-  font-weight: 600;
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: 2px solid rgba(201, 168, 124, 0.3);
+  background: white;
+  border-radius: 12px;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 150ms ease;
-  text-decoration: none;
-  display: inline-flex;
+  transition: all 0.2s ease;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(166, 124, 82, 0.3);
+  box-shadow: none;
+  color: var(--text-secondary, #4a3f38);
+  text-decoration: none;
 }
 
 .pdf-download-btn:hover {
-  background: linear-gradient(135deg, var(--bronze-deep, #8b5e3c) 0%, #7a5035 100%);
+  background: rgba(76, 175, 80, 0.05);
+  border-color: var(--accent-green, #4caf50);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(166, 124, 82, 0.4);
+  color: var(--accent-green, #4caf50);
 }
 
 .pdf-download-btn.locked {
-  background: var(--text-muted, #7a6f68);
-  border-color: var(--text-muted, #7a6f68);
-  box-shadow: none;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pdf-download-btn.locked:hover {
-  background: #6a5f58;
+  background: white;
+  border-color: rgba(201, 168, 124, 0.3);
   transform: none;
+  color: var(--text-secondary, #4a3f38);
 }
 
-/* Compact Button */
+/* Compact Button - matches action-btn style in Home.jsx */
 .pdf-download-btn-compact {
-  padding: 0.5rem;
-  background: linear-gradient(135deg, var(--bronze-mid, #a67c52) 0%, var(--bronze-deep, #8b5e3c) 100%);
-  color: white;
-  border: 2px solid var(--bronze-mid, #a67c52);
-  border-radius: var(--radius-md, 16px);
-  font-size: 1.125rem;
-  cursor: pointer;
-  transition: all 150ms ease;
-  text-decoration: none;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  color: inherit;
   box-shadow: none;
 }
 
 .pdf-download-btn-compact:hover {
-  background: linear-gradient(135deg, var(--bronze-deep, #8b5e3c) 0%, #7a5035 100%);
-  transform: none;
+  transform: translateY(-2px);
+  background: transparent;
+}
+
+.pdf-download-btn-compact .pdf-icon {
+  font-size: 1.25rem;
+}
+
+.pdf-download-btn-compact .pdf-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary, #4a3f38);
 }
 
 .pdf-download-btn-compact.locked {
-  background: var(--text-muted, #7a6f68);
-  border-color: var(--text-muted, #7a6f68);
+  opacity: 0.5;
 }
 
 /* Upgrade Modal - shared with TtsButton.css */

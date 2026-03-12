@@ -378,7 +378,7 @@ export function Home() {
                                     emotion,
                                     created_at: new Date().toISOString()
                                 }}
-                                variant="icon"
+                                compact
                             />
                             <button className="action-btn" onClick={handleReset}>
                                 <span className="action-icon">🙏</span>

@@ -15,17 +15,50 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 /**
  * Rate limiting helper
- * Checks if user can generate another prayer based on their tier and usage
+ *
+ * 전략:
+ * - 비로그인: 기도문 미리보기만 가능 (저장 안됨), 하루 3회
+ * - 로그인(무료): 하루 3회 기도맡기기 (자동 저장)
+ * - 프리미엄: 무제한 (추후)
  */
 export async function checkRateLimit(userId = null, anonymousId = null) {
   const today = new Date().toISOString().split('T')[0];
+  const DAILY_LIMIT_FREE = 3;
+  const DAILY_LIMIT_ANONYMOUS = 3;
 
   if (userId) {
-    // 로그인 사용자는 무제한 (도네이션 모델)
-    // 프로필 조회 없이 바로 허용 - 신규 가입자도 즉시 사용 가능
-    return { allowed: true, tier: 'free' };
+    // 로그인 사용자: 하루 3회 제한
+    const { count, error } = await supabase
+      .from('usage_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gte('created_at', `${today}T00:00:00Z`);
+
+    if (error) {
+      console.error('Error checking user usage:', error);
+      return { allowed: false, error: 'Failed to check rate limit' };
+    }
+
+    if (count >= DAILY_LIMIT_FREE) {
+      return {
+        allowed: false,
+        tier: 'free',
+        limit: DAILY_LIMIT_FREE,
+        used: count,
+        remaining: 0,
+        message: `오늘의 기도맡기기 횟수(${DAILY_LIMIT_FREE}회)를 모두 사용하셨습니다. 더 기도하고 싶으시다면 직접 기도해보시는 것은 어떨까요? 내일 다시 기도를 맡겨주세요!`
+      };
+    }
+
+    return {
+      allowed: true,
+      tier: 'free',
+      limit: DAILY_LIMIT_FREE,
+      used: count,
+      remaining: DAILY_LIMIT_FREE - count
+    };
   } else if (anonymousId) {
-    // Check usage for anonymous users (3/day)
+    // 비로그인 사용자: 미리보기만 가능, 하루 3회
     const { count, error } = await supabase
       .from('usage_logs')
       .select('*', { count: 'exact', head: true })
@@ -37,19 +70,24 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
       return { allowed: false, error: 'Failed to check rate limit' };
     }
 
-    if (count >= 5) {
+    if (count >= DAILY_LIMIT_ANONYMOUS) {
       return {
         allowed: false,
         tier: 'anonymous',
-        limit: 5,
-        message: '오늘의 기도 체험 횟수(5회)를 모두 사용하셨습니다. 회원가입하시면 무제한으로 기도를 맡길 수 있습니다.'
+        limit: DAILY_LIMIT_ANONYMOUS,
+        used: count,
+        remaining: 0,
+        message: '오늘의 기도문 체험 횟수를 모두 사용하셨습니다. 회원가입하시면 기도문이 저장되고, 매일 3회 기도를 맡길 수 있습니다!'
       };
     }
 
     return {
       allowed: true,
       tier: 'anonymous',
-      remaining: 5 - count
+      limit: DAILY_LIMIT_ANONYMOUS,
+      used: count,
+      remaining: DAILY_LIMIT_ANONYMOUS - count,
+      previewOnly: true // 미리보기만 가능 (저장 안됨)
     };
   }
 

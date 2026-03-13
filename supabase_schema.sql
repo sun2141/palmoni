@@ -6,6 +6,8 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   display_name TEXT,
+  full_name TEXT,
+  birth_date DATE,
   avatar_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -13,8 +15,16 @@ CREATE TABLE profiles (
   subscription_expires_at TIMESTAMPTZ,
   daily_prayer_count INTEGER DEFAULT 0,
   last_prayer_date DATE,
-  total_prayers_generated INTEGER DEFAULT 0
+  total_prayers_generated INTEGER DEFAULT 0,
+  -- 스트릭(연속 기도) 관련 필드
+  current_streak INTEGER DEFAULT 0,
+  longest_streak INTEGER DEFAULT 0,
+  total_prayer_days INTEGER DEFAULT 0
 );
+
+-- 인덱스
+CREATE INDEX IF NOT EXISTS idx_profiles_streak ON profiles(current_streak DESC);
+CREATE INDEX IF NOT EXISTS idx_profiles_name_birth ON profiles(full_name, birth_date);
 
 -- Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -32,8 +42,26 @@ CREATE POLICY "Users can update own profile"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, display_name)
-  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'display_name');
+  INSERT INTO public.profiles (
+    id,
+    email,
+    display_name,
+    full_name,
+    birth_date,
+    current_streak,
+    longest_streak,
+    total_prayer_days
+  )
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name'),
+    NEW.raw_user_meta_data->>'full_name',
+    (NEW.raw_user_meta_data->>'birth_date')::DATE,
+    0,
+    0,
+    0
+  );
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

@@ -6,7 +6,7 @@ import { PrayerProgress } from '../components/prayer/PrayerProgress';
 import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
-import { checkRateLimit, logUsage, savePrayer } from '../lib/supabaseClient';
+import { checkRateLimit, logUsage, savePrayer, deletePrayer } from '../lib/supabaseClient';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
@@ -20,7 +20,6 @@ export function Home() {
     const [emotion, setEmotion] = useState('peace');
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [rateLimitInfo, setRateLimitInfo] = useState(null);
-    const [saving, setSaving] = useState(false);
     const [currentPrayerId, setCurrentPrayerId] = useState(null);
     const [activeUsers, setActiveUsers] = useState(127);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -175,7 +174,7 @@ export function Home() {
         if (!limitCheck.allowed) {
             toast.warning(limitCheck.message);
             if (!user) {
-                setShowLoginModal(true);
+                setTimeout(() => setShowLoginModal(true), 500);
             }
             return;
         }
@@ -183,15 +182,29 @@ export function Home() {
         const result = await generatePrayer(topic);
         await logUsage(userId, anonymousId, 'prayer_generation');
         await checkUserRateLimit();
-        setCurrentPrayerId(null);
 
         // 프로필(스트릭) 새로고침
         if (userId) {
             await refreshProfile();
         }
 
-        // 오늘의 기도 시스템에 등록
-        if (result && result.title && result.content) {
+        // 로그인 사용자: 자동 저장 + 기도맡기기
+        if (userId && result && result.title && result.content) {
+            const saveResult = await savePrayer({
+                userId,
+                title: result.title,
+                content: result.content,
+                topic,
+                emotion,
+                isPublic: false
+            });
+
+            if (saveResult.data) {
+                setCurrentPrayerId(saveResult.data.id);
+                toast.success(`기도가 저장되었습니다! (오늘 ${limitCheck.used + 1}/${limitCheck.limit}회)`);
+            }
+
+            // 오늘의 기도 시스템에 등록 (로그인 사용자만)
             const prayerInfo = submitPrayer({
                 topic,
                 title: result.title,
@@ -199,47 +212,31 @@ export function Home() {
                 emotion,
             });
 
-            // 기도 횟수 안내
             if (prayerInfo.totalPrayers === 1) {
-                // 3시간 미만 남음
                 setTimeout(() => {
                     toast.info('자정까지 시간이 얼마 남지 않아 1번 기도합니다. 내일 일찍 기도를 맡겨주시면 하루 종일 기도해드릴게요!', { duration: 5000 });
                 }, 1000);
             }
+        } else if (!userId && result && result.title && result.content) {
+            // 비로그인 사용자: 미리보기만 (저장 안됨)
+            setCurrentPrayerId(null);
+            setTimeout(() => {
+                toast.info('회원가입하시면 기도문이 저장되고, 하루 종일 기도를 대신해드립니다!', { duration: 4000 });
+            }, 1500);
         }
     };
 
-    const handleSavePrayer = async (isPublic = false) => {
-        if (!user) {
-            toast.info('기도문을 저장하려면 로그인이 필요합니다.');
-            setShowLoginModal(true);
-            return;
+    // 기도문 다시 생성 (기존 기도문 삭제 후 재생성)
+    const handleRegenerate = async () => {
+        if (!topic.trim()) return;
+
+        // 기존 저장된 기도문 삭제
+        if (currentPrayerId && user) {
+            await deletePrayer(currentPrayerId, user.id);
         }
 
-        if (!title || !content) {
-            toast.warning('저장할 기도문이 없습니다.');
-            return;
-        }
-
-        setSaving(true);
-
-        const result = await savePrayer({
-            userId: user.id,
-            title,
-            content,
-            topic,
-            emotion,
-            isPublic
-        });
-
-        setSaving(false);
-
-        if (result.error) {
-            toast.error(`저장 실패: ${result.error}`);
-        } else {
-            setCurrentPrayerId(result.data.id);
-            toast.success('기도문이 저장되었습니다!');
-        }
+        // 새로 생성
+        await handleGenerate();
     };
 
     const handleReset = () => {
@@ -340,8 +337,13 @@ export function Home() {
                     onClick={handleGenerate}
                     disabled={isGenerating || !topic.trim()}
                 >
-                    {isGenerating ? '🙏 기도하는 중...' : '🙏 기도 맡기기'}
+                    {isGenerating ? '🙏 기도하는 중...' : user ? '🙏 기도 맡기기' : '🙏 기도문 미리보기'}
                 </button>
+                {rateLimitInfo && user && (
+                    <div className="remaining-count">
+                        오늘 남은 횟수: <strong>{rateLimitInfo.remaining || 0}</strong>/{rateLimitInfo.limit || 3}회
+                    </div>
+                )}
             </div>
 
             {/* 실시간 사용자 수 */}
@@ -382,14 +384,19 @@ export function Home() {
             {!user && (
                 <div className="signup-prompt">
                     <p>
-                        <strong>무료 회원가입</strong>하고 기도문을 저장하고<br />
-                        나만의 기도 기록을 관리하세요
+                        <strong>무료 회원가입</strong>하시면<br />
+                        기도문이 저장되고, 하루 종일 기도를 대신해드립니다
                     </p>
+                    <div className="signup-benefits">
+                        <span className="benefit-item">✓ 매일 3회 기도맡기기</span>
+                        <span className="benefit-item">✓ 기도문 자동 저장</span>
+                        <span className="benefit-item">✓ 연속 기도 기록</span>
+                    </div>
                     <button
                         className="signup-cta-btn"
                         onClick={() => setShowLoginModal(true)}
                     >
-                        ✨ 회원가입하기
+                        ✨ 무료로 시작하기
                     </button>
                 </div>
             )}
@@ -419,21 +426,15 @@ export function Home() {
 
                     {!isGenerating && (title || content) && (
                         <div className="result-actions">
-                            {user && !currentPrayerId && (
+                            {user && currentPrayerId && (
                                 <button
                                     className="action-btn"
-                                    onClick={() => handleSavePrayer(false)}
-                                    disabled={saving}
+                                    onClick={handleRegenerate}
+                                    disabled={isGenerating}
                                 >
-                                    <span className="action-icon">💾</span>
-                                    <span className="action-text">저장</span>
+                                    <span className="action-icon">🔄</span>
+                                    <span className="action-text">다시 생성</span>
                                 </button>
-                            )}
-                            {currentPrayerId && (
-                                <div className="action-btn saved">
-                                    <span className="action-icon">✓</span>
-                                    <span className="action-text">저장됨</span>
-                                </div>
                             )}
                             <button
                                 className="action-btn"

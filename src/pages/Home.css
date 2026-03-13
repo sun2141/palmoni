@@ -223,6 +223,18 @@
   transform: none;
 }
 
+.remaining-count {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted, #7a6f68);
+  margin-top: 0.5rem;
+}
+
+.remaining-count strong {
+  color: var(--accent-green, #4caf50);
+  font-weight: 600;
+}
+
 /* === Active Users === */
 .active-users {
   display: flex;
@@ -271,11 +283,27 @@
   font-size: 0.9rem;
   color: var(--text-secondary, #4a3f38);
   line-height: 1.6;
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
 }
 
 .signup-prompt strong {
   color: var(--bronze-deep, #8b5e3c);
+}
+
+.signup-benefits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.benefit-item {
+  font-size: 0.75rem;
+  color: var(--accent-green, #4caf50);
+  background: rgba(76, 175, 80, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 
 .signup-cta-btn {

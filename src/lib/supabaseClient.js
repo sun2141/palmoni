@@ -74,7 +74,7 @@ export async function logUsage(userId = null, anonymousId = null, action = 'pray
     console.error('Error logging usage:', error);
   }
 
-  // Increment daily counter for registered users
+  // Increment daily counter and update streak for registered users
   if (userId) {
     const { error: updateError } = await supabase.rpc('increment_prayer_count', {
       user_id_param: userId
@@ -83,7 +83,79 @@ export async function logUsage(userId = null, anonymousId = null, action = 'pray
     if (updateError) {
       console.error('Error incrementing prayer count:', updateError);
     }
+
+    // 스트릭 업데이트
+    await updateStreak(userId);
   }
+}
+
+/**
+ * 스트릭(연속 기도 일수) 업데이트
+ */
+export async function updateStreak(userId) {
+  if (!userId) return { error: 'User not logged in' };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  // 현재 프로필 가져오기
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('current_streak, longest_streak, total_prayer_days, last_prayer_date')
+    .eq('id', userId)
+    .single();
+
+  if (profileError) {
+    console.error('Error fetching profile for streak:', profileError);
+    return { error: profileError.message };
+  }
+
+  const lastPrayerDate = profile?.last_prayer_date;
+  let newStreak = profile?.current_streak || 0;
+  let longestStreak = profile?.longest_streak || 0;
+  let totalDays = profile?.total_prayer_days || 0;
+
+  // 오늘 이미 기도한 경우 업데이트하지 않음
+  if (lastPrayerDate === today) {
+    return { data: profile, error: null };
+  }
+
+  // 어제 기도한 경우 스트릭 증가
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (lastPrayerDate === yesterday) {
+    newStreak += 1;
+  } else {
+    // 연속이 끊긴 경우 1부터 다시 시작
+    newStreak = 1;
+  }
+
+  // 총 기도한 날 증가
+  totalDays += 1;
+
+  // 최장 기록 갱신
+  if (newStreak > longestStreak) {
+    longestStreak = newStreak;
+  }
+
+  // 프로필 업데이트
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({
+      current_streak: newStreak,
+      longest_streak: longestStreak,
+      total_prayer_days: totalDays,
+      last_prayer_date: today,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating streak:', error);
+    return { error: error.message };
+  }
+
+  return { data, error: null };
 }
 
 /**

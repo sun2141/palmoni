@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePrayerGeneration } from '../hooks/usePrayerGeneration';
 import { useTodaysPrayer } from '../hooks/useTodaysPrayer';
@@ -23,8 +23,13 @@ export function Home() {
     const [saving, setSaving] = useState(false);
     const [currentPrayerId, setCurrentPrayerId] = useState(null);
     const [activeUsers, setActiveUsers] = useState(127);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [pullDistance, setPullDistance] = useState(0);
+    const containerRef = useRef(null);
+    const touchStartY = useRef(0);
+    const isPulling = useRef(false);
 
-    const { user, profile, loading: authLoading, signOut } = useAuth();
+    const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
     const toast = useToast();
 
     const {
@@ -105,6 +110,46 @@ export function Home() {
         }
     }, [topic]);
 
+    // Pull-to-Refresh 핸들러
+    const handleRefresh = useCallback(async () => {
+        setIsRefreshing(true);
+        try {
+            await refreshProfile();
+            await checkUserRateLimit();
+        } catch (err) {
+            console.error('Refresh error:', err);
+        } finally {
+            setIsRefreshing(false);
+            setPullDistance(0);
+        }
+    }, [refreshProfile]);
+
+    const handleTouchStart = useCallback((e) => {
+        if (containerRef.current?.scrollTop === 0) {
+            touchStartY.current = e.touches[0].clientY;
+            isPulling.current = true;
+        }
+    }, []);
+
+    const handleTouchMove = useCallback((e) => {
+        if (!isPulling.current) return;
+
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - touchStartY.current;
+
+        if (diff > 0 && containerRef.current?.scrollTop === 0) {
+            setPullDistance(Math.min(diff * 0.5, 80));
+        }
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (pullDistance > 60) {
+            handleRefresh();
+        } else {
+            setPullDistance(0);
+        }
+        isPulling.current = false;
+    }, [pullDistance, handleRefresh]);
 
     const checkUserRateLimit = async () => {
         const userId = user?.id || null;
@@ -139,6 +184,11 @@ export function Home() {
         await logUsage(userId, anonymousId, 'prayer_generation');
         await checkUserRateLimit();
         setCurrentPrayerId(null);
+
+        // 프로필(스트릭) 새로고침
+        if (userId) {
+            await refreshProfile();
+        }
 
         // 오늘의 기도 시스템에 등록
         if (result && result.title && result.content) {
@@ -206,7 +256,25 @@ export function Home() {
 
 
     return (
-        <div className="home-container">
+        <div
+            className="home-container"
+            ref={containerRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {/* Pull-to-Refresh 인디케이터 */}
+            {(pullDistance > 0 || isRefreshing) && (
+                <div
+                    className="pull-refresh-indicator"
+                    style={{ height: isRefreshing ? 50 : pullDistance }}
+                >
+                    <div className={`refresh-spinner ${isRefreshing ? 'spinning' : ''}`}>
+                        {isRefreshing ? '🙏' : pullDistance > 60 ? '↓ 놓으면 새로고침' : '↓ 당겨서 새로고침'}
+                    </div>
+                </div>
+            )}
+
             {/* Breathing ambience background */}
             <PrayerAmbience isActive={isGenerating} emotion={emotion} />
 
@@ -238,13 +306,6 @@ export function Home() {
                         🌱 무료로 시작하기
                     </button>
                 )}
-                <button
-                    className="refresh-btn"
-                    onClick={() => window.location.reload()}
-                    title="새로고침"
-                >
-                    🔄
-                </button>
             </div>
 
             {/* Hero Section */}

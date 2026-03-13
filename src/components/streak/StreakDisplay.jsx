@@ -121,20 +121,21 @@ export function StreakDisplay({ compact = false }) {
         </div>
       )}
 
-      {/* Encouragement */}
+      {/* Encouragement - 오늘 처음 기도하는 경우 */}
       {currentStreak === 0 && (
         <div className="streak-encouragement">
           <span className="encouragement-icon">💪</span>
           <span className="encouragement-text">
-            오늘 기도하고 스트릭을 시작하세요!
+            위에서 기도를 맡기면 연속 기도가 시작됩니다!
           </span>
         </div>
       )}
 
+      {/* Motivation - 연속 기도 중인 경우 */}
       {currentStreak > 0 && (
         <div className="streak-motivation">
           <span className="motivation-text">
-            내일도 기도하고 {currentStreak + 1}일 스트릭을 달성하세요! 🔥
+            {currentStreak}일 연속 기도 중! 내일도 이어가세요 🔥
           </span>
         </div>
       )}

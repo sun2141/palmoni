@@ -70,6 +70,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshProfile = async () => {
+    if (user?.id) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (!error && data) {
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error('Error refreshing profile:', err);
+      }
+    }
+  };
+
   const signInWithGoogle = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -196,6 +214,7 @@ export const AuthProvider = ({ children }) => {
     profile,
     session,
     loading,
+    refreshProfile,
     signInWithGoogle,
     signInWithKakao,
     signInWithApple,

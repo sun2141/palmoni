@@ -20,19 +20,21 @@
 }
 
 .refresh-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   padding: 0;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid rgba(201, 168, 124, 0.3);
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 1.125rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: none;
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.1);
+  flex-shrink: 0;
 }
 
 .refresh-btn:hover {
@@ -326,13 +328,14 @@
 .result-content {
   font-family: 'Noto Serif KR', serif;
   font-size: 0.95rem;
-  line-height: 2;
+  line-height: 1.9;
   color: var(--text-primary, #1a1512);
   white-space: pre-wrap;
   margin-bottom: 1.25rem;
-  text-align: justify;
+  text-align: left;
   word-break: keep-all;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.3px;
+  padding: 0 4px;
 }
 
 /* === Result Actions (하단 버튼들) === */

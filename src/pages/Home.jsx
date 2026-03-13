@@ -220,13 +220,6 @@ export function Home() {
 
             {/* Top bar - 무료로 시작하기 버튼 */}
             <div className="top-bar">
-                <button
-                    className="refresh-btn"
-                    onClick={() => window.location.reload()}
-                    title="새로고침"
-                >
-                    🔄
-                </button>
                 {authLoading ? null : user ? (
                     <div className="user-profile-bar">
                         <StreakDisplay profile={profile} variant="compact" />
@@ -245,6 +238,13 @@ export function Home() {
                         🌱 무료로 시작하기
                     </button>
                 )}
+                <button
+                    className="refresh-btn"
+                    onClick={() => window.location.reload()}
+                    title="새로고침"
+                >
+                    🔄
+                </button>
             </div>
 
             {/* Hero Section */}

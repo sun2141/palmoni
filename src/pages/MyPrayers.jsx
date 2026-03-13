@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
@@ -7,7 +7,7 @@ import './MyPrayers.css';
 
 export function MyPrayers() {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const toast = useToast();
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,11 +196,6 @@ export function MyPrayers() {
           <span className="stat">
             <strong>{totalCount}</strong>개의 기도문
           </span>
-          {profile && (
-            <span className="stat">
-              <strong>{profile.total_prayers_generated || 0}</strong>개 생성됨
-            </span>
-          )}
         </div>
       </div>
 

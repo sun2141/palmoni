@@ -439,6 +439,58 @@
   animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
+/* === Bottom Navigation === */
+.bottom-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(201, 168, 124, 0.2);
+  border-radius: var(--radius-lg, 24px);
+}
+
+.bottom-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(201, 168, 124, 0.1);
+  border: 1px solid rgba(201, 168, 124, 0.25);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--bronze-deep, #8b5e3c);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-btn:hover {
+  background: rgba(201, 168, 124, 0.2);
+  border-color: var(--bronze-mid, #a67c52);
+}
+
+.bottom-nav-btn.logout {
+  background: transparent;
+  border-color: rgba(201, 168, 124, 0.15);
+  color: var(--text-muted, #7a6f68);
+}
+
+.bottom-nav-btn.logout:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+.nav-icon {
+  font-size: 1rem;
+}
+
+.nav-text {
+  font-size: 0.85rem;
+}
+
 /* === Mobile Responsive === */
 @media (max-width: 480px) {
   .home-container {

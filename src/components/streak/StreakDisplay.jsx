@@ -3,9 +3,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import './StreakDisplay.css';
 
 const STREAK_MILESTONES = [
-  { days: 3, icon: '🔥', label: '3일 연속', color: '#f97316' },
   { days: 7, icon: '⭐', label: '1주일!', color: '#eab308' },
   { days: 14, icon: '💫', label: '2주 달성!', color: '#a855f7' },
+  { days: 21, icon: '🔥', label: '3주 달성!', color: '#f97316' },
   { days: 30, icon: '🏆', label: '한 달!', color: '#10b981' },
   { days: 100, icon: '👑', label: '100일!', color: '#ef4444' },
 ];
@@ -31,19 +31,21 @@ export function StreakDisplay({ compact = false }) {
 
   const getStreakIcon = () => {
     if (currentStreak === 0) return '🌱';
-    if (currentStreak < 3) return '🔥';
-    if (currentStreak < 7) return '⭐';
-    if (currentStreak < 14) return '💫';
-    if (currentStreak < 30) return '🏆';
+    if (currentStreak < 7) return '🔥';
+    if (currentStreak < 14) return '⭐';
+    if (currentStreak < 21) return '💫';
+    if (currentStreak < 30) return '🔥';
+    if (currentStreak < 100) return '🏆';
     return '👑';
   };
 
   const getStreakColor = () => {
     if (currentStreak === 0) return '#94a3b8';
-    if (currentStreak < 3) return '#f97316';
-    if (currentStreak < 7) return '#eab308';
-    if (currentStreak < 14) return '#a855f7';
-    if (currentStreak < 30) return '#10b981';
+    if (currentStreak < 7) return '#f97316';
+    if (currentStreak < 14) return '#eab308';
+    if (currentStreak < 21) return '#a855f7';
+    if (currentStreak < 30) return '#f97316';
+    if (currentStreak < 100) return '#10b981';
     return '#ef4444';
   };
 

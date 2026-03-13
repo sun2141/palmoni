@@ -286,21 +286,10 @@ export function Home() {
                 </div>
             )}
 
-            {/* Top bar - 무료로 시작하기 버튼 */}
+            {/* Top bar - 스트릭 표시 (로그인 시) 또는 무료로 시작하기 버튼 */}
             <div className="top-bar">
                 {authLoading ? null : user ? (
-                    <div className="user-profile-bar">
-                        <StreakDisplay profile={profile} variant="compact" />
-                        <button
-                            className="my-prayers-btn"
-                            onClick={() => navigate('/my-prayers')}
-                        >
-                            📖 내 기도문
-                        </button>
-                        <button className="logout-btn-small" onClick={handleLogout}>
-                            로그아웃
-                        </button>
-                    </div>
+                    <StreakDisplay profile={profile} variant="compact" />
                 ) : (
                     <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
                         🌱 무료로 시작하기
@@ -487,6 +476,23 @@ export function Home() {
 
             {/* 긴급 기도 버튼 */}
             <EmergencyPrayerButton />
+
+            {/* 하단 네비게이션 (로그인 시) */}
+            {user && (
+                <div className="bottom-nav">
+                    <button
+                        className="bottom-nav-btn"
+                        onClick={() => navigate('/my-prayers')}
+                    >
+                        <span className="nav-icon">📖</span>
+                        <span className="nav-text">내 기도문</span>
+                    </button>
+                    <button className="bottom-nav-btn logout" onClick={handleLogout}>
+                        <span className="nav-icon">👋</span>
+                        <span className="nav-text">로그아웃</span>
+                    </button>
+                </div>
+            )}
 
             {/* Login Modal */}
             <LoginModal

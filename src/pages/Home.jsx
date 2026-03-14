@@ -530,7 +530,15 @@ export function Home() {
             )}
 
             {/* 긴급 기도 버튼 */}
-            <EmergencyPrayerButton />
+            <EmergencyPrayerButton
+                onPrayerGenerated={(prayer) => {
+                    // 긴급 기도문을 메인 화면에 표시
+                    setPrayer(prayer.title, prayer.content);
+                    setTopic('긴급 기도');
+                    setCurrentPrayerId(null); // 긴급 기도는 저장 안함
+                    toast.success('기도가 준비되었습니다');
+                }}
+            />
 
             {/* 하단 네비게이션 (로그인 시) */}
             {user && (

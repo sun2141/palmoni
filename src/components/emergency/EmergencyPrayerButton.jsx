@@ -16,6 +16,11 @@ const EMERGENCY_PRAYERS = [
     situation: 'strength',
     title: '힘의 기도',
     prayer: '하나님, 더 이상 견딜 힘이 없습니다.\n\n당신의 힘을 주소서.\n\n저의 약함 가운데 당신의 능력이 온전하게 나타나기를 기도합니다.\n\n한 걸음씩, 당신과 함께 나아가게 하소서.\n\n저는 할 수 있습니다. 당신이 함께하시니까요.\n\n아멘.'
+  },
+  {
+    situation: 'gratitude',
+    title: '감사의 기도',
+    prayer: '하나님, 오늘 하루도 감사합니다.\n\n당연한 것이 없음을 알게 하시고, 작은 것에도 감사할 수 있는 마음을 주셨습니다.\n\n숨 쉴 수 있음에, 사랑하는 사람들이 있음에, 오늘을 살아갈 수 있음에 감사합니다.\n\n이 감사의 마음이 넘쳐 주변에 흘러가게 하소서.\n\n모든 것이 은혜입니다.\n\n아멘.'
   }
 ];
 
@@ -105,6 +110,16 @@ export function EmergencyPrayerButton({ onPrayerGenerated }) {
                   <div className="option-icon">💪</div>
                   <div className="option-title">지칠 때</div>
                   <div className="option-desc">힘이 필요해요</div>
+                </button>
+
+                <button
+                  className="emergency-option gratitude"
+                  onClick={() => handleSelectPrayer(EMERGENCY_PRAYERS[3])}
+                  disabled={isGenerating}
+                >
+                  <div className="option-icon">🙏</div>
+                  <div className="option-title">감사할 때</div>
+                  <div className="option-desc">감사의 기도를 드려요</div>
                 </button>
               </div>
             ) : (

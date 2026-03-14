@@ -202,6 +202,18 @@
   transform: none;
 }
 
+/* Gratitude option - warm golden style */
+.emergency-option.gratitude {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.12) 0%, rgba(255, 152, 0, 0.08) 100%);
+  border-color: rgba(255, 193, 7, 0.3);
+}
+
+.emergency-option.gratitude:hover:not(:disabled) {
+  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.18) 0%, rgba(255, 152, 0, 0.12) 100%);
+}
+
 .option-icon {
   font-size: clamp(1.75rem, 6vw, 2.5rem);
   line-height: 1;

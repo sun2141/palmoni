@@ -304,6 +304,185 @@
     background: rgba(76, 175, 80, 0.1);
 }
 
+/* === Multiple Prayers Container === */
+.todays-prayers-container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(201, 168, 124, 0.25);
+    border-radius: var(--radius-lg, 24px);
+    padding: clamp(0.875rem, 3vw, 1.25rem);
+    margin: 1rem 0;
+    box-shadow: 0 4px 20px rgba(139, 94, 60, 0.08);
+}
+
+.prayers-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(201, 168, 124, 0.15);
+}
+
+.prayers-icon {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+}
+
+.prayers-title {
+    font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+    font-weight: 600;
+    color: var(--bronze-deep, #8b5e3c);
+}
+
+.prayers-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 2vw, 0.75rem);
+}
+
+/* === Single Prayer Status (in list) === */
+.single-prayer-status {
+    background: rgba(255, 251, 245, 0.8);
+    border: 1.5px solid rgba(201, 168, 124, 0.2);
+    border-radius: var(--radius-md, 16px);
+    padding: clamp(0.75rem, 3vw, 1rem);
+    display: flex;
+    gap: clamp(0.5rem, 2vw, 0.75rem);
+    align-items: flex-start;
+}
+
+.single-prayer-status.praying-animation {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(38, 166, 154, 0.08) 100%);
+    border-color: var(--accent-green, #4caf50);
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.single-prayer-status.in-progress {
+    background: linear-gradient(135deg, rgba(201, 168, 124, 0.08) 0%, rgba(255, 251, 245, 1) 100%);
+}
+
+.single-prayer-status.completed {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.06) 0%, rgba(255, 251, 245, 0.9) 100%);
+    border-color: rgba(76, 175, 80, 0.2);
+}
+
+.prayer-number {
+    width: clamp(28px, 8vw, 36px);
+    height: clamp(28px, 8vw, 36px);
+    background: linear-gradient(135deg, var(--bronze-light, #c9a87c) 0%, var(--bronze-mid, #a67c52) 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.prayer-number.completed {
+    background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
+}
+
+.prayer-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.prayer-content .prayer-topic-display {
+    text-align: left;
+    border-top: none;
+    padding-top: 0;
+    margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+}
+
+.prayer-content .prayer-progress-bar {
+    margin: clamp(0.5rem, 2vw, 0.75rem) 0;
+}
+
+.prayer-content .progress-track {
+    justify-content: flex-start;
+    gap: clamp(0.5rem, 2vw, 0.75rem);
+}
+
+.prayer-content .progress-dot {
+    width: clamp(24px, 6vw, 30px);
+    height: clamp(24px, 6vw, 30px);
+    font-size: clamp(0.65rem, 2vw, 0.75rem);
+}
+
+.prayer-content .progress-text {
+    text-align: left;
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+}
+
+.prayer-content .next-prayer-info {
+    padding: clamp(0.5rem, 2vw, 0.625rem);
+    margin: clamp(0.5rem, 2vw, 0.75rem) 0 0;
+    justify-content: flex-start;
+}
+
+.prayer-content .next-label {
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+}
+
+.prayer-content .next-time {
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+}
+
+/* Completed Badge */
+.completed-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem);
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: var(--radius-full, 9999px);
+    width: fit-content;
+}
+
+.completed-icon {
+    font-size: clamp(0.85rem, 3vw, 1rem);
+}
+
+.completed-text {
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+    font-weight: 600;
+    color: var(--accent-green, #4caf50);
+}
+
+/* === Yesterday Completed State === */
+.todays-prayer-status.yesterday-completed {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(255, 251, 245, 1) 100%);
+    text-align: center;
+}
+
+.yesterday-message {
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    color: var(--text-secondary, #4a3f38);
+    margin: 0.75rem 0;
+}
+
+.dismiss-button {
+    padding: clamp(0.5rem, 2vw, 0.625rem) clamp(1rem, 4vw, 1.5rem);
+    background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
+    border: none;
+    border-radius: var(--radius-full, 9999px);
+    color: white;
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dismiss-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
 /* === Mobile === */
 @media (max-width: 480px) {
     .todays-prayer-status {
@@ -323,5 +502,36 @@
     .yesterday-banner {
         flex-direction: column;
         text-align: center;
+    }
+}
+
+/* === Very small screens === */
+@media (max-width: 360px) {
+    .todays-prayers-container {
+        padding: 0.75rem;
+    }
+
+    .single-prayer-status {
+        padding: 0.625rem;
+    }
+
+    .prayer-number {
+        width: 24px;
+        height: 24px;
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 300px) {
+    .prayers-header {
+        gap: 0.25rem;
+    }
+
+    .prayers-icon {
+        font-size: 0.9rem;
+    }
+
+    .prayers-title {
+        font-size: 0.75rem;
     }
 }

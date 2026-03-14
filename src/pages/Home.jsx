@@ -45,11 +45,9 @@ export function Home() {
     } = usePrayerGeneration();
 
     const {
-        todaysPrayer,
-        prayerStatus,
-        totalPrayers,
-        completedPrayers,
+        todaysPrayers,
         showPrayingAnimation,
+        activePrayerIndex,
         submitPrayer,
         dismissYesterdayMessage,
         getNextPrayerInfo,
@@ -422,15 +420,15 @@ export function Home() {
                 </div>
             )}
 
-            {/* 오늘의 기도 상태 */}
-            {hasTodaysPrayer && (
+            {/* 오늘의 기도 상태 (여러 기도 지원) */}
+            {(hasTodaysPrayer || isYesterdayCompleted) && (
                 <TodaysPrayerStatus
-                    todaysPrayer={todaysPrayer}
-                    prayerStatus={prayerStatus}
-                    totalPrayers={totalPrayers}
-                    completedPrayers={completedPrayers}
+                    todaysPrayers={todaysPrayers}
                     showPrayingAnimation={showPrayingAnimation}
+                    activePrayerIndex={activePrayerIndex}
                     getNextPrayerInfo={getNextPrayerInfo}
+                    isYesterdayCompleted={isYesterdayCompleted}
+                    dismissYesterdayMessage={dismissYesterdayMessage}
                 />
             )}
 

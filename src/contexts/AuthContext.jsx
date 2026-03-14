@@ -240,6 +240,11 @@ export const AuthProvider = ({ children }) => {
       setProfile(null);
       setSession(null);
 
+      // 로그아웃 시 로컬 기도 데이터 초기화
+      localStorage.removeItem('palmoni_todays_prayers');
+      localStorage.removeItem('palmoni_todays_prayer'); // 기존 형식도 삭제
+      localStorage.removeItem('palmoni_pending_prayer');
+
       return { error: null };
     } catch (error) {
       console.error('Error signing out:', error);

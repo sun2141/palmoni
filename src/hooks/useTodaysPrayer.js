@@ -24,9 +24,23 @@ export function useTodaysPrayer() {
 
     // 초기 로드 완료 여부 (중복 로드 방지)
     const initialLoadDone = useRef(false);
+    const previousUserId = useRef(user?.id);
 
     // localStorage 키
     const STORAGE_KEY = 'palmoni_todays_prayers'; // 복수형으로 변경
+
+    // 로그아웃 감지하여 상태 초기화
+    useEffect(() => {
+        // 로그아웃 (user가 있었다가 없어진 경우)
+        if (previousUserId.current && !user) {
+            setTodaysPrayers([]);
+            setIsYesterdayCompleted(false);
+            setShowPrayingAnimation(false);
+            setActivePrayerIndex(-1);
+            initialLoadDone.current = false;
+        }
+        previousUserId.current = user?.id;
+    }, [user]);
 
     // 자정까지 남은 시간(분) 계산
     const getMinutesUntilMidnight = () => {

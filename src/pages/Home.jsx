@@ -222,7 +222,11 @@ export function Home() {
 
         const result = await generatePrayer(topic);
         await logUsage(userId, anonymousId, 'prayer_generation');
-        await checkUserRateLimit();
+
+        // 짧은 딜레이 후 rate limit 다시 체크 (DB 반영 대기)
+        setTimeout(async () => {
+            await checkUserRateLimit();
+        }, 500);
 
         // 프로필(스트릭) 새로고침
         if (userId) {

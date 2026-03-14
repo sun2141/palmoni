@@ -78,6 +78,13 @@ export function usePrayerGeneration() {
     setIsGenerating(false);
   }, []);
 
+  // 외부에서 기도문 설정 (복원용)
+  const setPrayer = useCallback((prayerTitle, prayerContent) => {
+    setTitle(prayerTitle);
+    setContent(prayerContent);
+    setProgress(4); // 완료 상태로 표시
+  }, []);
+
   return {
     title,
     content,
@@ -85,6 +92,7 @@ export function usePrayerGeneration() {
     error,
     progress,
     generatePrayer,
-    reset
+    reset,
+    setPrayer
   };
 }

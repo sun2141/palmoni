@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const AuthContext = createContext({});
@@ -16,28 +16,65 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // 로그인 성공 시 호출할 콜백 저장
+  const onLoginSuccessRef = useRef(null);
+
+  // 세션 초기화 및 복원
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    let mounted = true;
 
-      if (session?.user) {
-        loadUserProfile(session.user.id);
-      } else {
-        setLoading(false);
+    const initializeAuth = async () => {
+      try {
+        // 저장된 세션 복원 시도
+        const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('Session restore error:', error);
+        }
+
+        if (mounted) {
+          if (restoredSession?.user) {
+            setSession(restoredSession);
+            setUser(restoredSession.user);
+            await loadUserProfile(restoredSession.user.id);
+          } else {
+            setLoading(false);
+          }
+          setIsInitialized(true);
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+        if (mounted) {
+          setLoading(false);
+          setIsInitialized(true);
+        }
       }
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+      async (event, newSession) => {
+        if (!mounted) return;
 
-        if (session?.user) {
-          await loadUserProfile(session.user.id);
+        console.log('Auth state changed:', event);
+
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+
+        if (newSession?.user) {
+          await loadUserProfile(newSession.user.id);
+
+          // 로그인 성공 콜백 실행
+          if (event === 'SIGNED_IN' && onLoginSuccessRef.current) {
+            setTimeout(() => {
+              onLoginSuccessRef.current?.(newSession.user);
+              onLoginSuccessRef.current = null;
+            }, 100);
+          }
         } else {
           setProfile(null);
           setLoading(false);
@@ -46,6 +83,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -209,18 +247,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // 로그인 성공 콜백 등록
+  const setOnLoginSuccess = useCallback((callback) => {
+    onLoginSuccessRef.current = callback;
+  }, []);
+
   const value = {
     user,
     profile,
     session,
     loading,
+    isInitialized,
     refreshProfile,
     signInWithGoogle,
     signInWithKakao,
     signInWithApple,
     signInWithEmail,
     signUpWithEmail,
-    signOut
+    signOut,
+    setOnLoginSuccess
   };
 
   return (

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palmoni - 디자인 시안 미리보기</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Noto+Serif+KR:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== Reset ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== Color System ===== */
+        :root {
+            /* 밝은 새벽 하늘 - 더 따뜻하고 부드럽게 */
+            --sky-cream: #fffbf5;
+            --sky-peach: #fff0e3;
+            --sky-blush: #ffe4d6;
+            --sky-rose: #ffd6c9;
+
+            /* 골드/브론즈 악센트 - 더 선명하게 */
+            --bronze-light: #c9a87c;
+            --bronze-mid: #a67c52;
+            --bronze-deep: #8b5e3c;
+            --warm-coral: #c96b4a;
+
+            /* 강조 색상 - 싱그러운 그린 계열 */
+            --accent-green: #4caf50;
+            --accent-green-light: #66bb6a;
+            --accent-green-dark: #388e3c;
+            --accent-teal: #26a69a;
+
+            /* 텍스트 - 더 진하고 명확하게 */
+            --text-primary: #1a1512;
+            --text-secondary: #4a3f38;
+            --text-muted: #7a6f68;
+
+            /* 서피스 */
+            --surface-white: rgba(255, 255, 255, 0.92);
+            --surface-glass: rgba(255, 255, 255, 0.7);
+            --border-soft: rgba(185, 149, 111, 0.15);
+
+            /* 글로우 */
+            --glow-warm: rgba(201, 168, 124, 0.2);
+            --glow-soft: rgba(212, 137, 108, 0.12);
+        }
+
+        /* ===== Body & Background ===== */
+        body {
+            font-family: 'Inter', 'Noto Serif KR', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(
+                170deg,
+                var(--sky-cream) 0%,
+                var(--sky-peach) 35%,
+                var(--sky-blush) 65%,
+                var(--sky-rose) 100%
+            );
+            background-size: 200% 200%;
+            animation: breathingBackground 25s ease infinite;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        @keyframes breathingBackground {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        /* ===== Soft Light Orbs ===== */
+        .light-overlay {
+            position: fixed;
+            top: -15%;
+            right: -5%;
+            width: 45%;
+            height: 45%;
+            background: radial-gradient(circle at center, rgba(201, 168, 124, 0.2) 0%, transparent 70%);
+            animation: floatOrb 18s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(60px);
+        }
+
+        .light-overlay-2 {
+            position: fixed;
+            bottom: -5%;
+            left: -8%;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(circle at center, rgba(212, 137, 108, 0.15) 0%, transparent 70%);
+            animation: floatOrb 22s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(70px);
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(20px, -20px) scale(1.05); }
+            66% { transform: translate(-10px, 10px) scale(0.98); }
+        }
+
+        /* ===== Star Particles (로고의 별 심볼에서 영감) ===== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            color: var(--bronze-light);
+            opacity: 0.4;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        .star::before {
+            content: '✦';
+            font-size: inherit;
+        }
+
+        .star:nth-child(1) { left: 12%; top: 20%; font-size: 12px; animation-delay: 0s; }
+        .star:nth-child(2) { left: 88%; top: 15%; font-size: 8px; animation-delay: 1s; }
+        .star:nth-child(3) { left: 75%; top: 60%; font-size: 10px; animation-delay: 2s; }
+        .star:nth-child(4) { left: 20%; top: 70%; font-size: 6px; animation-delay: 0.5s; }
+        .star:nth-child(5) { left: 92%; top: 45%; font-size: 14px; animation-delay: 1.5s; }
+        .star:nth-child(6) { left: 8%; top: 50%; font-size: 9px; animation-delay: 2.5s; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        /* ===== Main Container ===== */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+
+        /* 회원가입/시작하기 통합 버튼 - 그린 강조 */
+        .signup-main-btn {
+            padding: 0.75rem 1.8rem;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            border: 2px solid transparent;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 4px 18px rgba(76, 175, 80, 0.35),
+                0 2px 8px rgba(38, 166, 154, 0.2);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .signup-main-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow:
+                0 6px 25px rgba(76, 175, 80, 0.45),
+                0 3px 12px rgba(38, 166, 154, 0.25);
+        }
+
+        .signup-main-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 기도하는 사람 아이콘 (로고에서 영감) */
+        .hero-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-icon svg {
+            width: 48px;
+            height: 48px;
+            color: var(--bronze-mid);
+            opacity: 0.85;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--bronze-deep);
+            margin-bottom: 0.6rem;
+            text-shadow: 0 2px 15px rgba(139, 94, 60, 0.2);
+        }
+
+        .hero-subtitle {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.03em;
+            opacity: 0.85;
+        }
+
+        /* ===== Prayer Input Card ===== */
+        .prayer-card {
+            background: var(--surface-white);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 2px solid rgba(201, 168, 124, 0.2);
+            border-radius: 28px;
+            padding: 0;
+            margin-bottom: 1.5rem;
+            box-shadow:
+                0 8px 32px rgba(166, 124, 82, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+            overflow: hidden;
+        }
+
+        .input-header {
+            background: linear-gradient(135deg, rgba(212, 162, 74, 0.1), rgba(224, 90, 58, 0.05));
+            padding: 1.1rem 1.5rem;
+            border-bottom: 2px solid rgba(201, 168, 124, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.95rem;
+            color: var(--bronze-deep);
+            font-weight: 600;
+        }
+
+        .input-label svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .voice-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--bronze-light);
+            color: var(--bronze-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(166, 124, 82, 0.15);
+        }
+
+        .voice-btn:hover {
+            background: var(--bronze-mid);
+            border-color: var(--bronze-mid);
+            color: white;
+            transform: scale(1.08);
+            box-shadow: 0 4px 18px rgba(166, 124, 82, 0.3);
+        }
+
+        .voice-btn:active {
+            transform: scale(0.95);
+        }
+
+        .input-body {
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1rem;
+            line-height: 1.9;
+            resize: none;
+            outline: none;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ===== CTA Button ===== */
+        .cta-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .pray-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1.1rem 2.8rem;
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-teal) 100%);
+            color: white;
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow:
+                0 6px 25px rgba(76, 175, 80, 0.4),
+                0 3px 10px rgba(38, 166, 154, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .pray-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .pray-btn:hover::before {
+            left: 100%;
+        }
+
+        .pray-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow:
+                0 10px 35px rgba(76, 175, 80, 0.5),
+                0 5px 15px rgba(38, 166, 154, 0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .pray-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* ===== Live Activity ===== */
+        .live-activity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+            padding: 0.75rem 1.3rem;
+            background: var(--surface-white);
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.08);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.3); }
+        }
+
+        /* ===== Divider ===== */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-soft), transparent);
+            margin: 1.5rem 0;
+        }
+
+        /* ===== Prayer Result ===== */
+        .prayer-result {
+            background: var(--surface-white);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(201, 168, 124, 0.2);
+            border-radius: 24px;
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+            box-shadow: 0 6px 28px rgba(166, 124, 82, 0.1);
+        }
+
+        .prayer-result::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--accent-green), var(--accent-teal));
+            border-radius: 5px 0 0 5px;
+        }
+
+        .prayer-result-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .prayer-result-icon {
+            color: var(--bronze-light);
+        }
+
+        .prayer-result-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--bronze-deep);
+        }
+
+        .prayer-result-content {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1rem;
+            line-height: 2;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(201, 168, 124, 0.06), rgba(212, 137, 108, 0.03));
+            border-radius: 16px;
+            border: 2px solid rgba(201, 168, 124, 0.12);
+        }
+
+        .prayer-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.1rem;
+            background: white;
+            border: 2px solid var(--bronze-light);
+            border-radius: 50px;
+            color: var(--bronze-deep);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(166, 124, 82, 0.1);
+        }
+
+        .action-btn:hover {
+            background: var(--bronze-mid);
+            color: white;
+            border-color: var(--bronze-mid);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(166, 124, 82, 0.25);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ===== Design Comparison Toggle ===== */
+        .comparison-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .toggle-btn {
+            padding: 0.7rem 1.2rem;
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 50px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            color: white;
+            border-color: transparent;
+        }
+
+        /* ===== Sign Up CTA Section (입력칸 아래) ===== */
+        .signup-section {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(38, 166, 154, 0.05));
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.7s backwards;
+        }
+
+        .signup-section-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .signup-section-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .signup-section-btn {
+            padding: 0.7rem 1.6rem;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .signup-section-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* ===== Info Banner ===== */
+        .info-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            color: white;
+            text-align: center;
+            padding: 0.65rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.25);
+        }
+
+        /* ===== Mobile Responsive ===== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 2.75rem;
+            }
+
+            .prayer-card {
+                padding: 1.25rem;
+            }
+
+            .pray-btn {
+                padding: 0.9rem 2rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Info Banner -->
+    <div class="info-banner">
+        ✦ 디자인 시안 - 싱그러운 그린 테마 + 간결한 구조
+    </div>
+
+    <!-- Light Overlays -->
+    <div class="light-overlay"></div>
+    <div class="light-overlay-2"></div>
+
+    <!-- Star Particles (로고의 별 심볼) -->
+    <div class="particles">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header with Sign Up -->
+        <div class="header">
+            <button class="signup-main-btn">✨ 무료로 시작하기</button>
+        </div>
+
+        <!-- Hero Section - 더 컴팩트하게 -->
+        <div class="hero">
+            <div class="hero-icon">
+                <!-- 기도하는 사람 실루엣 (로고에서 영감) -->
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 10c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z" fill="currentColor"/>
+                    <path d="M32 22c0-2-1.5-3.5-3.5-3.5h-9c-2 0-3.5 1.5-3.5 3.5v10h3v14h10V32h3V22z" fill="currentColor" opacity="0.85"/>
+                    <path d="M18 20c-1 0-2 .5-2.5 1.5L12 28l2.5 1.5 3-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M30 20c1 0 2 .5 2.5 1.5L36 28l-2.5 1.5-3-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h1 class="hero-title">PALMONI</h1>
+            <p class="hero-subtitle">이름 없는 존재가<br>당신을 위해 기도합니다</p>
+        </div>
+
+        <!-- Prayer Input Card -->
+        <div class="prayer-card">
+            <div class="input-header">
+                <div class="input-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
+                    </svg>
+                    오늘의 기도
+                </div>
+                <button class="voice-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="input-body">
+                <textarea placeholder="마음에 담긴 이야기를 나눠주세요..."></textarea>
+            </div>
+        </div>
+
+        <!-- CTA Button -->
+        <div class="cta-container">
+            <button class="pray-btn">
+                🙏 기도 맡기기
+            </button>
+        </div>
+
+        <!-- Live Activity -->
+        <div class="live-activity">
+            <span class="live-dot"></span>
+            지금 127명이 함께 기도하고 있어요
+        </div>
+
+        <!-- Sign Up Section (비로그인 사용자용) -->
+        <div class="signup-section">
+            <p class="signup-section-text">
+                <strong>무료 회원가입</strong>하고 기도문을 저장하고<br>
+                나만의 기도 기록을 관리하세요
+            </p>
+            <button class="signup-section-btn">✨ 회원가입하기</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Prayer Result (Sample) -->
+        <div class="prayer-result">
+            <div class="prayer-result-header">
+                <span class="prayer-result-icon">✦</span>
+                <h2 class="prayer-result-title">오늘의 기도</h2>
+            </div>
+            <div class="prayer-result-content">사랑의 하나님,
+
+오늘 하루도 주님의 은혜 안에서 시작합니다.
+마음속 깊은 곳에 있는 걱정과 두려움을
+주님께 내려놓습니다.
+
+주님의 평안이 저와 함께하시고,
+오늘 만나는 모든 이에게
+따뜻한 미소를 전할 수 있게 하소서.
+
+아멘.</div>
+            <div class="prayer-actions">
+                <button class="action-btn">💾 저장</button>
+                <button class="action-btn">📄 PDF</button>
+                <button class="action-btn">🔊 듣기</button>
+                <button class="action-btn">✨ 새 기도</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Toggle -->
+    <div class="comparison-toggle">
+        <button class="toggle-btn active" onclick="alert('현재 새 디자인 시안입니다')">새 디자인</button>
+        <button class="toggle-btn" onclick="window.location.href='/'">현재 디자인</button>
+    </div>
+</body>
+</html>

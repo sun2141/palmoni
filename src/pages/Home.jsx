@@ -7,6 +7,7 @@ import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
 import { checkRateLimit, logUsage, savePrayer, deletePrayer } from '../lib/supabaseClient';
+import { savePendingPrayer, getPendingPrayer, clearPendingPrayer, getOrCreateAnonymousId } from '../lib/localStorage';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
@@ -28,8 +29,9 @@ export function Home() {
     const touchStartY = useRef(0);
     const isPulling = useRef(false);
 
-    const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
+    const { user, profile, loading: authLoading, signOut, refreshProfile, setOnLoginSuccess, isInitialized } = useAuth();
     const toast = useToast();
+    const pendingPrayerProcessed = useRef(false);
 
     const {
         title,
@@ -38,7 +40,8 @@ export function Home() {
         error,
         progress,
         generatePrayer,
-        reset
+        reset,
+        setPrayer
     } = usePrayerGeneration();
 
     const {
@@ -55,10 +58,49 @@ export function Home() {
     } = useTodaysPrayer();
 
     useEffect(() => {
-        if (!authLoading) {
+        if (!authLoading && isInitialized) {
             checkUserRateLimit();
         }
-    }, [user, authLoading]);
+    }, [user, authLoading, isInitialized]);
+
+    // 로그인 후 미리보기 기도문 복원 및 저장
+    useEffect(() => {
+        if (user && isInitialized && !pendingPrayerProcessed.current) {
+            const pendingPrayer = getPendingPrayer();
+            if (pendingPrayer && pendingPrayer.title && pendingPrayer.content) {
+                pendingPrayerProcessed.current = true;
+
+                // 기존 기도문 표시
+                setTopic(pendingPrayer.topic || '');
+                setEmotion(pendingPrayer.emotion || 'peace');
+                setPrayer(pendingPrayer.title, pendingPrayer.content);
+
+                // 자동 저장
+                (async () => {
+                    const saveResult = await savePrayer({
+                        userId: user.id,
+                        title: pendingPrayer.title,
+                        content: pendingPrayer.content,
+                        topic: pendingPrayer.topic,
+                        emotion: pendingPrayer.emotion,
+                        isPublic: false
+                    });
+
+                    if (saveResult.data) {
+                        setCurrentPrayerId(saveResult.data.id);
+                        toast.success('미리보기 기도문이 저장되었습니다!');
+
+                        // 로그 사용량 기록 및 스트릭 업데이트
+                        await logUsage(user.id, null, 'prayer_generation');
+                        await refreshProfile();
+                    }
+
+                    // 임시 저장 삭제
+                    clearPendingPrayer();
+                })();
+            }
+        }
+    }, [user, isInitialized, setPrayer]);
 
     // 실시간 사용자 수 시뮬레이션
     useEffect(() => {
@@ -159,8 +201,7 @@ export function Home() {
     };
 
     const getAnonymousId = () => {
-        const fingerprint = `${navigator.userAgent}_${screen.width}x${screen.height}`;
-        return btoa(fingerprint).substring(0, 32);
+        return getOrCreateAnonymousId();
     };
 
     const handleGenerate = async () => {
@@ -218,8 +259,17 @@ export function Home() {
                 }, 1000);
             }
         } else if (!userId && result && result.title && result.content) {
-            // 비로그인 사용자: 미리보기만 (저장 안됨)
+            // 비로그인 사용자: 미리보기만 (저장 안됨) + 임시 저장
             setCurrentPrayerId(null);
+
+            // 로컬에 임시 저장 (로그인 후 복원용)
+            savePendingPrayer({
+                title: result.title,
+                content: result.content,
+                topic,
+                emotion
+            });
+
             setTimeout(() => {
                 toast.info('회원가입하시면 기도문이 저장되고, 하루 종일 기도를 대신해드립니다!', { duration: 4000 });
             }, 1500);

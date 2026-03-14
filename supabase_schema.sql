@@ -186,6 +186,14 @@ CREATE POLICY "Users can view own usage logs"
   ON usage_logs FOR SELECT
   USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can insert own usage logs"
+  ON usage_logs FOR INSERT
+  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+CREATE POLICY "Anonymous users can insert usage logs"
+  ON usage_logs FOR INSERT
+  WITH CHECK (user_id IS NULL AND anonymous_id IS NOT NULL);
+
 -- 6. Helper function to increment prayer count
 CREATE OR REPLACE FUNCTION increment_prayer_count(user_id_param UUID)
 RETURNS void AS $$

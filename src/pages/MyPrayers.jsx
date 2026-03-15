@@ -16,9 +16,9 @@ export function MyPrayers() {
   const [searchQuery, setSearchQuery] = useState('');
   const [emotionFilter, setEmotionFilter] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
-  const [offset, setOffset] = useState(0);
   const [selectedPrayer, setSelectedPrayer] = useState(null);
   const observerTarget = useRef(null);
+  const offsetRef = useRef(0);
 
   const LIMIT = 20;
 
@@ -30,7 +30,7 @@ export function MyPrayers() {
     { value: 'hope', label: '희망', icon: '🌟', color: '#86efac' }
   ];
 
-  // Load prayers
+  // Load prayers - useRef로 offset 관리하여 dependency 문제 해결
   const loadPrayers = useCallback(async (reset = false) => {
     if (!user) {
       navigate('/');
@@ -39,14 +39,14 @@ export function MyPrayers() {
 
     if (reset) {
       setLoading(true);
-      setOffset(0);
+      offsetRef.current = 0;
       setPrayers([]);
     } else {
       setLoadingMore(true);
     }
 
     try {
-      const currentOffset = reset ? 0 : offset;
+      const currentOffset = reset ? 0 : offsetRef.current;
       const { data, error, count } = await getUserPrayers(user.id, {
         limit: LIMIT,
         offset: currentOffset,
@@ -55,53 +55,57 @@ export function MyPrayers() {
 
       if (error) {
         console.error('Error loading prayers:', error);
+        setLoading(false);
+        setLoadingMore(false);
         return;
       }
 
       setTotalCount(count);
 
       if (reset) {
-        setPrayers(data);
+        setPrayers(data || []);
       } else {
-        setPrayers(prev => [...prev, ...data]);
+        setPrayers(prev => [...prev, ...(data || [])]);
       }
 
-      setHasMore(data.length === LIMIT && currentOffset + LIMIT < count);
-      setOffset(currentOffset + LIMIT);
+      const newOffset = currentOffset + LIMIT;
+      offsetRef.current = newOffset;
+      setHasMore((data?.length || 0) === LIMIT && newOffset < count);
     } catch (err) {
       console.error('Error:', err);
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [user, offset, emotionFilter, navigate]);
+  }, [user, emotionFilter, navigate]);
 
-  // Initial load
+  // Initial load - user와 emotionFilter가 변경될 때만 리셋
   useEffect(() => {
-    loadPrayers(true);
-  }, [emotionFilter]);
+    if (user) {
+      loadPrayers(true);
+    }
+  }, [user, emotionFilter]);
 
   // Intersection observer for infinite scroll
   useEffect(() => {
+    const currentTarget = observerTarget.current;
+    if (!currentTarget) return;
+
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
           loadPrayers(false);
         }
       },
       { threshold: 0.1 }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
+    observer.observe(currentTarget);
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
+      observer.unobserve(currentTarget);
     };
-  }, [hasMore, loadingMore, loadPrayers]);
+  }, [hasMore, loadingMore, loading, loadPrayers]);
 
   // Handle delete
   const handleDelete = async (prayerId) => {

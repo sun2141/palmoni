@@ -219,6 +219,12 @@ export function Home() {
         }
 
         const result = await generatePrayer(topic);
+
+        // 오류 발생 시 usage 차감하지 않음
+        if (!result || !result.title || !result.content) {
+            return;
+        }
+
         await logUsage(userId, anonymousId, 'prayer_generation');
 
         // 짧은 딜레이 후 rate limit 다시 체크 (DB 반영 대기)

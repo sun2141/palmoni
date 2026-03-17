@@ -78,6 +78,25 @@ export function useTodaysPrayer() {
         return times;
     };
 
+    // localStorage에 저장 (내부용 - useEffect보다 먼저 정의)
+    const saveToStorageInternal = useCallback((prayers) => {
+        const data = {
+            prayers: prayers.map(p => ({
+                prayer: p.prayer,
+                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
+                currentIndex: p.currentIndex,
+                status: p.status
+            })),
+            date: new Date().toISOString(),
+        };
+
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('localStorage save failed:', e);
+        }
+    }, [STORAGE_KEY]);
+
     // 저장된 오늘의 기도들 불러오기 (로그인 사용자: Supabase 우선, 비로그인: localStorage)
     useEffect(() => {
         if (initialLoadDone.current) return;
@@ -112,12 +131,17 @@ export function useTodaysPrayer() {
                             }
 
                             // localStorage에도 동기화
-                            saveToStorageInternal(data.prayers || [data]);
+                            try {
+                                saveToStorageInternal(data.prayers || [data]);
+                            } catch (syncError) {
+                                console.warn('Failed to sync to localStorage:', syncError);
+                            }
                         }
                         loaded = true;
                     }
                 } catch (e) {
                     console.error('Failed to load from Supabase:', e);
+                    // Supabase 실패해도 계속 진행 (localStorage 시도)
                 }
             }
 
@@ -147,7 +171,6 @@ export function useTodaysPrayer() {
                                 };
                                 setTodaysPrayers([singlePrayer]);
                             }
-                            loaded = true;
                         } else if (savedDate < today) {
                             // 어제 데이터가 있으면
                             const hadPrayers = data.prayers?.length > 0 || data.prayer;
@@ -155,7 +178,6 @@ export function useTodaysPrayer() {
                                 setIsYesterdayCompleted(true);
                             }
                             localStorage.removeItem(STORAGE_KEY);
-                            loaded = true;
                         }
                     } catch (e) {
                         console.error('Failed to parse saved prayer:', e);
@@ -168,7 +190,7 @@ export function useTodaysPrayer() {
         };
 
         loadPrayerSession();
-    }, [user]);
+    }, [user, saveToStorageInternal]);
 
     // 각 기도의 시간 체크 (모든 진행 중인 기도를 독립적으로 관리)
     // 현재 처리 중인 기도 인덱스를 추적하여 중복 트리거 방지
@@ -229,25 +251,6 @@ export function useTodaysPrayer() {
 
         return () => clearInterval(interval);
     }, [todaysPrayers, saveToStorage]);
-
-    // localStorage에 저장 (내부용, useCallback 외부)
-    const saveToStorageInternal = (prayers) => {
-        const data = {
-            prayers: prayers.map(p => ({
-                prayer: p.prayer,
-                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
-                currentIndex: p.currentIndex,
-                status: p.status
-            })),
-            date: new Date().toISOString(),
-        };
-
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        } catch (e) {
-            console.warn('localStorage save failed:', e);
-        }
-    };
 
     // localStorage + Supabase 백업에 저장
     const saveToStorage = useCallback((prayers) => {

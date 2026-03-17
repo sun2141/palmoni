@@ -562,7 +562,7 @@ export function Home() {
                         <span className="nav-text">로그아웃</span>
                     </button>
                     <button
-                        className="bottom-nav-btn share"
+                        className="bottom-nav-btn share icon-only"
                         onClick={async () => {
                             const shareData = {
                                 title: 'Palmoni - 기도 앱',
@@ -583,9 +583,9 @@ export function Home() {
                                 toast.success('링크가 복사되었습니다!');
                             }
                         }}
+                        title="앱 공유"
                     >
                         <span className="nav-icon">📤</span>
-                        <span className="nav-text">앱 공유</span>
                     </button>
                 </div>
             )}

@@ -603,6 +603,17 @@
   border-color: var(--color-primary, #6C47FF);
 }
 
+.bottom-nav-btn.icon-only {
+  padding: 0.75rem;
+  min-width: auto;
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.bottom-nav-btn.icon-only .nav-icon {
+  font-size: 1.1rem;
+}
+
 .nav-icon {
   font-size: 1rem;
 }
@@ -649,13 +660,16 @@
   }
 
   .bottom-nav {
-    flex-wrap: wrap;
     gap: 0.5rem;
   }
 
   .bottom-nav-btn {
     padding: 0.625rem 1rem;
     font-size: 0.8rem;
+  }
+
+  .bottom-nav-btn.icon-only {
+    padding: 0.625rem;
   }
 
   .nav-icon {

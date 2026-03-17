@@ -350,7 +350,7 @@ export function Home() {
                     <StreakDisplay profile={profile} variant="compact" />
                 ) : (
                     <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
-                        🌱 무료로 시작하기
+                        🌱 로그인하기
                     </button>
                 )}
             </div>
@@ -445,7 +445,7 @@ export function Home() {
             {!user && (
                 <div className="signup-prompt">
                     <p>
-                        <strong>무료 회원가입</strong>하시면 기도문이 저장되고, 하루 종일 기도를 대신해드립니다
+                        <strong>무료 회원가입</strong>하시면 기도문이 저장되고, 하루 동안 기도를 대신해드립니다
                     </p>
                     <div className="signup-benefits">
                         <span className="benefit-item">✓ 매일 3회 기도맡기기</span>

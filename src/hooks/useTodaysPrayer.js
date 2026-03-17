@@ -171,19 +171,27 @@ export function useTodaysPrayer() {
     }, [user]);
 
     // 각 기도의 시간 체크 (모든 진행 중인 기도를 독립적으로 관리)
+    // 현재 처리 중인 기도 인덱스를 추적하여 중복 트리거 방지
+    const processingPrayerRef = useRef(new Set());
+
     useEffect(() => {
         const prayingPrayers = todaysPrayers.filter(p => p.status === 'praying');
         if (prayingPrayers.length === 0) return;
 
         const checkPrayerTimes = () => {
             const now = new Date();
-            let updated = false;
 
-            const newPrayers = todaysPrayers.map((prayer, prayerIdx) => {
-                if (prayer.status !== 'praying') return prayer;
+            todaysPrayers.forEach((prayer, prayerIdx) => {
+                if (prayer.status !== 'praying') return;
+
+                // 이미 처리 중인 기도는 건너뜀
+                if (processingPrayerRef.current.has(prayerIdx)) return;
 
                 const nextPrayerTime = prayer.times[prayer.currentIndex];
                 if (nextPrayerTime && now >= nextPrayerTime) {
+                    // 처리 중 표시
+                    processingPrayerRef.current.add(prayerIdx);
+
                     // 기도 시간이 되면 애니메이션 표시
                     setShowPrayingAnimation(true);
                     setActivePrayerIndex(prayerIdx);
@@ -208,23 +216,19 @@ export function useTodaysPrayer() {
                             saveToStorage(updatedPrayers);
                             return updatedPrayers;
                         });
+
+                        // 처리 완료 표시
+                        processingPrayerRef.current.delete(prayerIdx);
                     }, 5000);
-
-                    updated = true;
                 }
-                return prayer;
             });
-
-            if (updated) {
-                // 즉시 상태는 업데이트하지 않음 (setTimeout에서 처리)
-            }
         };
 
         const interval = setInterval(checkPrayerTimes, 30000); // 30초마다 체크
         checkPrayerTimes(); // 즉시 한 번 체크
 
         return () => clearInterval(interval);
-    }, [todaysPrayers]);
+    }, [todaysPrayers, saveToStorage]);
 
     // localStorage에 저장 (내부용, useCallback 외부)
     const saveToStorageInternal = (prayers) => {
@@ -293,34 +297,9 @@ export function useTodaysPrayer() {
         };
 
         // 기존 기도 목록에 새 기도 추가
+        // 첫 번째 기도 시간 체크는 checkPrayerTimes useEffect에서 담당
         setTodaysPrayers(prev => {
             const newPrayers = [...prev, newPrayerEntry];
-            const prayerIdx = newPrayers.length - 1;
-
-            // 첫 번째 기도 즉시 시작 (애니메이션)
-            setShowPrayingAnimation(true);
-            setActivePrayerIndex(prayerIdx);
-
-            setTimeout(() => {
-                setShowPrayingAnimation(false);
-                setActivePrayerIndex(-1);
-
-                setTodaysPrayers(currentPrayers => {
-                    const updatedPrayers = [...currentPrayers];
-                    const currentPrayer = updatedPrayers[prayerIdx];
-                    if (!currentPrayer) return currentPrayers;
-
-                    if (times.length > 1) {
-                        currentPrayer.currentIndex = 1;
-                    } else {
-                        currentPrayer.status = 'completed';
-                        currentPrayer.currentIndex = 1;
-                    }
-                    saveToStorage(updatedPrayers);
-                    return updatedPrayers;
-                });
-            }, 5000);
-
             // 즉시 저장
             saveToStorage(newPrayers);
             return newPrayers;

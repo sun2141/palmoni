@@ -344,14 +344,42 @@ export function Home() {
                 </div>
             )}
 
-            {/* Top bar - 스트릭 표시 (로그인 시) 또는 무료로 시작하기 버튼 */}
+            {/* Top bar - 스트릭 표시 (로그인 시) 또는 로그인/공유 버튼 */}
             <div className="top-bar">
                 {authLoading ? null : user ? (
                     <StreakDisplay profile={profile} variant="compact" />
                 ) : (
-                    <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
-                        🌱 로그인하기
-                    </button>
+                    <>
+                        <button
+                            className="top-share-btn"
+                            onClick={async () => {
+                                const shareData = {
+                                    title: 'Palmoni - 기도 앱',
+                                    text: '이름 없는 존재가 당신을 위해 기도합니다. Palmoni와 함께 기도해보세요!',
+                                    url: 'https://palmoni.vercel.app'
+                                };
+                                if (navigator.share) {
+                                    try {
+                                        await navigator.share(shareData);
+                                    } catch (err) {
+                                        if (err.name !== 'AbortError') {
+                                            await navigator.clipboard.writeText(shareData.url);
+                                            toast.success('링크가 복사되었습니다!');
+                                        }
+                                    }
+                                } else {
+                                    await navigator.clipboard.writeText(shareData.url);
+                                    toast.success('링크가 복사되었습니다!');
+                                }
+                            }}
+                            title="앱 공유"
+                        >
+                            📤
+                        </button>
+                        <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
+                            🌱 로그인하기
+                        </button>
+                    </>
                 )}
             </div>
 

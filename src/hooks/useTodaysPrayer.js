@@ -30,17 +30,29 @@ export function useTodaysPrayer() {
     // localStorage 키
     const STORAGE_KEY = 'palmoni_todays_prayers'; // 복수형으로 변경
 
-    // 로그아웃 감지하여 상태 초기화
+    // 로그아웃/로그인 감지하여 상태 관리
     useEffect(() => {
+        const prevId = previousUserId.current;
+        const currId = user?.id;
+
         // 로그아웃 (user가 있었다가 없어진 경우)
-        if (previousUserId.current && !user) {
+        if (prevId && !currId) {
             setTodaysPrayers([]);
             setIsYesterdayCompleted(false);
             setShowPrayingAnimation(false);
             setActivePrayerIndex(-1);
             initialLoadDone.current = false;
+            // localStorage도 정리 (다른 계정 로그인 시 혼선 방지)
+            localStorage.removeItem(STORAGE_KEY);
         }
-        previousUserId.current = user?.id;
+
+        // 다른 계정으로 로그인 또는 재로그인 (user가 변경된 경우)
+        if (currId && prevId !== currId) {
+            setTodaysPrayers([]);
+            initialLoadDone.current = false;
+        }
+
+        previousUserId.current = currId;
     }, [user]);
 
     // 자정까지 남은 시간(분) 계산
@@ -66,7 +78,7 @@ export function useTodaysPrayer() {
         return times;
     };
 
-    // 저장된 오늘의 기도들 불러오기 (localStorage + Supabase 백업)
+    // 저장된 오늘의 기도들 불러오기 (로그인 사용자: Supabase 우선, 비로그인: localStorage)
     useEffect(() => {
         if (initialLoadDone.current) return;
 
@@ -74,50 +86,8 @@ export function useTodaysPrayer() {
             setIsLoading(true);
             let loaded = false;
 
-            // 1. 먼저 localStorage에서 로드 시도
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    const savedDate = new Date(data.date).toDateString();
-                    const today = new Date().toDateString();
-
-                    if (savedDate === today) {
-                        // 새 형식 (배열) 또는 기존 형식 (단일) 처리
-                        if (data.prayers && Array.isArray(data.prayers)) {
-                            // 새 형식: 여러 기도 배열
-                            const restoredPrayers = data.prayers.map(p => ({
-                                ...p,
-                                times: p.times.map(t => new Date(t))
-                            }));
-                            setTodaysPrayers(restoredPrayers);
-                        } else if (data.prayer) {
-                            // 기존 형식: 단일 기도 -> 배열로 변환
-                            const singlePrayer = {
-                                prayer: data.prayer,
-                                times: data.times.map(t => new Date(t)),
-                                currentIndex: data.currentIndex,
-                                status: data.status
-                            };
-                            setTodaysPrayers([singlePrayer]);
-                        }
-                        loaded = true;
-                    } else if (savedDate < today) {
-                        // 어제 데이터가 있으면
-                        const hadPrayers = data.prayers?.length > 0 || data.prayer;
-                        if (hadPrayers) {
-                            setIsYesterdayCompleted(true);
-                        }
-                        localStorage.removeItem(STORAGE_KEY);
-                        loaded = true;
-                    }
-                } catch (e) {
-                    console.error('Failed to parse saved prayer:', e);
-                }
-            }
-
-            // 2. 로그인 사용자: Supabase에서 복구 시도
-            if (!loaded && user) {
+            // 로그인 사용자: Supabase에서 먼저 로드 (신뢰할 수 있는 소스)
+            if (user) {
                 try {
                     const { data, isYesterday, error } = await getTodaysPrayerSession(user.id);
                     if (data && !error) {
@@ -141,13 +111,55 @@ export function useTodaysPrayer() {
                                 setTodaysPrayers([singlePrayer]);
                             }
 
-                            // localStorage에도 복원
+                            // localStorage에도 동기화
                             saveToStorageInternal(data.prayers || [data]);
                         }
                         loaded = true;
                     }
                 } catch (e) {
                     console.error('Failed to load from Supabase:', e);
+                }
+            }
+
+            // 비로그인 사용자 또는 Supabase에서 로드 실패: localStorage 시도
+            if (!loaded) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        const savedDate = new Date(data.date).toDateString();
+                        const today = new Date().toDateString();
+
+                        if (savedDate === today) {
+                            // 새 형식 (배열) 또는 기존 형식 (단일) 처리
+                            if (data.prayers && Array.isArray(data.prayers)) {
+                                const restoredPrayers = data.prayers.map(p => ({
+                                    ...p,
+                                    times: p.times.map(t => new Date(t))
+                                }));
+                                setTodaysPrayers(restoredPrayers);
+                            } else if (data.prayer) {
+                                const singlePrayer = {
+                                    prayer: data.prayer,
+                                    times: data.times.map(t => new Date(t)),
+                                    currentIndex: data.currentIndex,
+                                    status: data.status
+                                };
+                                setTodaysPrayers([singlePrayer]);
+                            }
+                            loaded = true;
+                        } else if (savedDate < today) {
+                            // 어제 데이터가 있으면
+                            const hadPrayers = data.prayers?.length > 0 || data.prayer;
+                            if (hadPrayers) {
+                                setIsYesterdayCompleted(true);
+                            }
+                            localStorage.removeItem(STORAGE_KEY);
+                            loaded = true;
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse saved prayer:', e);
+                    }
                 }
             }
 

@@ -561,6 +561,32 @@ export function Home() {
                         <span className="nav-icon">👋</span>
                         <span className="nav-text">로그아웃</span>
                     </button>
+                    <button
+                        className="bottom-nav-btn share"
+                        onClick={async () => {
+                            const shareData = {
+                                title: 'Palmoni - 기도 앱',
+                                text: '이름 없는 존재가 당신을 위해 기도합니다. Palmoni와 함께 기도해보세요!',
+                                url: 'https://palmoni.vercel.app'
+                            };
+                            if (navigator.share) {
+                                try {
+                                    await navigator.share(shareData);
+                                } catch (err) {
+                                    if (err.name !== 'AbortError') {
+                                        await navigator.clipboard.writeText(shareData.url);
+                                        toast.success('링크가 복사되었습니다!');
+                                    }
+                                }
+                            } else {
+                                await navigator.clipboard.writeText(shareData.url);
+                                toast.success('링크가 복사되었습니다!');
+                            }
+                        }}
+                    >
+                        <span className="nav-icon">📤</span>
+                        <span className="nav-text">앱 공유</span>
+                    </button>
                 </div>
             )}
 

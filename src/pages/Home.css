@@ -592,6 +592,17 @@
   color: #DC2626;
 }
 
+.bottom-nav-btn.share {
+  background: transparent;
+  border-color: rgba(108, 71, 255, 0.15);
+  color: var(--color-primary, #6C47FF);
+}
+
+.bottom-nav-btn.share:hover {
+  background: rgba(108, 71, 255, 0.1);
+  border-color: var(--color-primary, #6C47FF);
+}
+
 .nav-icon {
   font-size: 1rem;
 }
@@ -635,5 +646,23 @@
 
   .action-btn {
     padding: 0.5rem 0.625rem;
+  }
+
+  .bottom-nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .bottom-nav-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .nav-icon {
+    font-size: 0.9rem;
+  }
+
+  .nav-text {
+    font-size: 0.75rem;
   }
 }

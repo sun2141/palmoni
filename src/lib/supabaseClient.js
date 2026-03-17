@@ -477,16 +477,25 @@ export async function saveTodaysPrayerSession(userId, sessionData) {
     .eq('session_date', today)
     .single();
 
+  // 여러 기도 지원: prayers 배열이 있으면 JSON으로 저장
+  const prayers = sessionData.prayers || [];
+  const firstPrayer = prayers[0]?.prayer || sessionData.prayer || {};
+  const firstTimes = prayers[0]?.times || sessionData.times || [];
+  const firstIndex = prayers[0]?.currentIndex ?? sessionData.currentIndex ?? 0;
+  const firstStatus = prayers[0]?.status || sessionData.status || 'idle';
+
   const payload = {
     user_id: userId,
     session_date: today,
-    prayer_topic: sessionData.prayer?.topic || '',
-    prayer_title: sessionData.prayer?.title || '',
-    prayer_content: sessionData.prayer?.content || '',
-    prayer_emotion: sessionData.prayer?.emotion || 'peace',
-    prayer_times: sessionData.times || [],
-    current_index: sessionData.currentIndex || 0,
-    status: sessionData.status || 'idle',
+    prayer_topic: firstPrayer.topic || '',
+    prayer_title: firstPrayer.title || '',
+    prayer_content: firstPrayer.content || '',
+    prayer_emotion: firstPrayer.emotion || 'peace',
+    prayer_times: firstTimes,
+    current_index: firstIndex,
+    status: firstStatus,
+    // 여러 기도를 JSON으로 저장 (prayers_data 컬럼 사용)
+    prayers_data: prayers.length > 0 ? JSON.stringify(prayers) : null,
     updated_at: new Date().toISOString(),
   };
 
@@ -542,6 +551,29 @@ export async function getTodaysPrayerSession(userId) {
   }
 
   if (todaySession) {
+    // 여러 기도 데이터가 있으면 파싱
+    let prayers = null;
+    if (todaySession.prayers_data) {
+      try {
+        prayers = JSON.parse(todaySession.prayers_data);
+      } catch (e) {
+        console.error('Failed to parse prayers_data:', e);
+      }
+    }
+
+    // 여러 기도가 있으면 prayers 배열 반환
+    if (prayers && Array.isArray(prayers) && prayers.length > 0) {
+      return {
+        data: {
+          prayers: prayers,
+          date: todaySession.session_date,
+        },
+        isYesterday: false,
+        error: null,
+      };
+    }
+
+    // 기존 단일 기도 형식 (하위 호환)
     return {
       data: {
         prayer: {
@@ -573,6 +605,29 @@ export async function getTodaysPrayerSession(userId) {
   }
 
   if (yesterdaySession && yesterdaySession.status !== 'idle') {
+    // 여러 기도 데이터가 있으면 파싱
+    let prayers = null;
+    if (yesterdaySession.prayers_data) {
+      try {
+        prayers = JSON.parse(yesterdaySession.prayers_data);
+      } catch (e) {
+        console.error('Failed to parse prayers_data:', e);
+      }
+    }
+
+    // 여러 기도가 있으면 prayers 배열 반환
+    if (prayers && Array.isArray(prayers) && prayers.length > 0) {
+      return {
+        data: {
+          prayers: prayers.map(p => ({ ...p, status: 'completed' })),
+          date: yesterdaySession.session_date,
+        },
+        isYesterday: true,
+        error: null,
+      };
+    }
+
+    // 기존 단일 기도 형식
     return {
       data: {
         prayer: {

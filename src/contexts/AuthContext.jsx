@@ -82,9 +82,41 @@ export const AuthProvider = ({ children }) => {
       }
     );
 
+    // 앱이 백그라운드에서 돌아왔을 때 세션 확인
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && mounted) {
+        try {
+          const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+          // 세션이 만료되었거나 변경된 경우
+          if (!currentSession && user) {
+            // 로그아웃 상태로 변경
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+            setLoading(false);
+          } else if (currentSession?.user?.id !== user?.id) {
+            // 세션이 변경된 경우 (다른 탭에서 로그인/로그아웃)
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            if (currentSession?.user) {
+              await loadUserProfile(currentSession.user.id);
+            } else {
+              setProfile(null);
+            }
+          }
+        } catch (err) {
+          console.error('Visibility change session check error:', err);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

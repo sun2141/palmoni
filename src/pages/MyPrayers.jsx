@@ -83,8 +83,26 @@ export function MyPrayers() {
   useEffect(() => {
     if (user) {
       loadPrayers(true);
+    } else {
+      // user가 없으면 로딩 해제
+      setLoading(false);
     }
-  }, [user, emotionFilter]);
+  }, [user, emotionFilter, loadPrayers]);
+
+  // 앱이 백그라운드에서 돌아왔을 때 데이터 새로고침
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user && !loading) {
+        // 현재 데이터 유지하면서 조용히 새로고침 시도
+        loadPrayers(true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, loading, loadPrayers]);
 
   // Intersection observer for infinite scroll
   useEffect(() => {

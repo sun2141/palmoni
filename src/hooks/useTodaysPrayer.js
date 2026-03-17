@@ -27,6 +27,7 @@ export function useTodaysPrayer() {
     const previousUserId = useRef(user?.id);
     const lastSubmitTime = useRef(0); // 중복 submitPrayer 방지
     const processingPrayerRef = useRef(new Set());
+    const lastVisibilityTime = useRef(Date.now());
 
     // localStorage 키
     const STORAGE_KEY = 'palmoni_todays_prayers';
@@ -124,6 +125,28 @@ export function useTodaysPrayer() {
 
         previousUserId.current = currId;
     }, [user]);
+
+    // 앱이 백그라운드에서 돌아왔을 때 상태 새로고침
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                const now = Date.now();
+                const timeSinceLastVisible = now - lastVisibilityTime.current;
+
+                // 5분 이상 백그라운드에 있었으면 상태 새로고침
+                if (timeSinceLastVisible > 5 * 60 * 1000) {
+                    initialLoadDone.current = false;
+                    setIsLoading(true);
+                }
+                lastVisibilityTime.current = now;
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
 
     // 저장된 오늘의 기도들 불러오기 (로그인 사용자: Supabase 우선, 비로그인: localStorage)
     useEffect(() => {

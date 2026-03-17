@@ -26,9 +26,79 @@ export function useTodaysPrayer() {
     const initialLoadDone = useRef(false);
     const previousUserId = useRef(user?.id);
     const lastSubmitTime = useRef(0); // 중복 submitPrayer 방지
+    const processingPrayerRef = useRef(new Set());
 
     // localStorage 키
-    const STORAGE_KEY = 'palmoni_todays_prayers'; // 복수형으로 변경
+    const STORAGE_KEY = 'palmoni_todays_prayers';
+
+    // 자정까지 남은 시간(분) 계산
+    const getMinutesUntilMidnight = useCallback(() => {
+        const now = new Date();
+        const midnight = new Date();
+        midnight.setHours(24, 0, 0, 0);
+        return Math.floor((midnight - now) / (1000 * 60));
+    }, []);
+
+    // 기도 시간 계산 (현재 ~ 자정 사이에 균등 분배)
+    const calculatePrayerTimes = useCallback((startTime) => {
+        const minutesLeft = getMinutesUntilMidnight();
+        const times = [new Date(startTime)]; // 첫 번째 기도: 즉시
+
+        if (minutesLeft >= 180) { // 3시간 이상
+            // 남은 시간을 3등분하여 2번 더 기도
+            const interval = Math.floor(minutesLeft / 3);
+            times.push(new Date(startTime.getTime() + interval * 60 * 1000));
+            times.push(new Date(startTime.getTime() + interval * 2 * 60 * 1000));
+        }
+
+        return times;
+    }, [getMinutesUntilMidnight]);
+
+    // localStorage에만 저장 (내부용)
+    const saveToStorageInternal = useCallback((prayers) => {
+        const data = {
+            prayers: prayers.map(p => ({
+                prayer: p.prayer,
+                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
+                currentIndex: p.currentIndex,
+                status: p.status
+            })),
+            date: new Date().toISOString(),
+        };
+
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('localStorage save failed:', e);
+        }
+    }, []);
+
+    // localStorage + Supabase 백업에 저장 (useEffect보다 먼저 정의)
+    const saveToStorage = useCallback((prayers) => {
+        const data = {
+            prayers: prayers.map(p => ({
+                prayer: p.prayer,
+                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
+                currentIndex: p.currentIndex,
+                status: p.status
+            })),
+            date: new Date().toISOString(),
+        };
+
+        // localStorage에 저장
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('localStorage save failed:', e);
+        }
+
+        // 로그인 사용자: Supabase 백업
+        if (user) {
+            saveTodaysPrayerSession(user.id, data).catch(e => {
+                console.error('Supabase backup failed:', e);
+            });
+        }
+    }, [user]);
 
     // 로그아웃/로그인 감지하여 상태 관리
     useEffect(() => {
@@ -54,48 +124,6 @@ export function useTodaysPrayer() {
 
         previousUserId.current = currId;
     }, [user]);
-
-    // 자정까지 남은 시간(분) 계산
-    const getMinutesUntilMidnight = () => {
-        const now = new Date();
-        const midnight = new Date();
-        midnight.setHours(24, 0, 0, 0);
-        return Math.floor((midnight - now) / (1000 * 60));
-    };
-
-    // 기도 시간 계산 (현재 ~ 자정 사이에 균등 분배)
-    const calculatePrayerTimes = (startTime) => {
-        const minutesLeft = getMinutesUntilMidnight();
-        const times = [new Date(startTime)]; // 첫 번째 기도: 즉시
-
-        if (minutesLeft >= 180) { // 3시간 이상
-            // 남은 시간을 3등분하여 2번 더 기도
-            const interval = Math.floor(minutesLeft / 3);
-            times.push(new Date(startTime.getTime() + interval * 60 * 1000));
-            times.push(new Date(startTime.getTime() + interval * 2 * 60 * 1000));
-        }
-
-        return times;
-    };
-
-    // localStorage에 저장 (내부용 - useEffect보다 먼저 정의)
-    const saveToStorageInternal = useCallback((prayers) => {
-        const data = {
-            prayers: prayers.map(p => ({
-                prayer: p.prayer,
-                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
-                currentIndex: p.currentIndex,
-                status: p.status
-            })),
-            date: new Date().toISOString(),
-        };
-
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        } catch (e) {
-            console.warn('localStorage save failed:', e);
-        }
-    }, [STORAGE_KEY]);
 
     // 저장된 오늘의 기도들 불러오기 (로그인 사용자: Supabase 우선, 비로그인: localStorage)
     useEffect(() => {
@@ -193,9 +221,6 @@ export function useTodaysPrayer() {
     }, [user, saveToStorageInternal]);
 
     // 각 기도의 시간 체크 (모든 진행 중인 기도를 독립적으로 관리)
-    // 현재 처리 중인 기도 인덱스를 추적하여 중복 트리거 방지
-    const processingPrayerRef = useRef(new Set());
-
     useEffect(() => {
         const prayingPrayers = todaysPrayers.filter(p => p.status === 'praying');
         if (prayingPrayers.length === 0) return;
@@ -252,33 +277,6 @@ export function useTodaysPrayer() {
         return () => clearInterval(interval);
     }, [todaysPrayers, saveToStorage]);
 
-    // localStorage + Supabase 백업에 저장
-    const saveToStorage = useCallback((prayers) => {
-        const data = {
-            prayers: prayers.map(p => ({
-                prayer: p.prayer,
-                times: p.times.map(t => t instanceof Date ? t.toISOString() : t),
-                currentIndex: p.currentIndex,
-                status: p.status
-            })),
-            date: new Date().toISOString(),
-        };
-
-        // localStorage에 저장
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        } catch (e) {
-            console.warn('localStorage save failed:', e);
-        }
-
-        // 로그인 사용자: Supabase 백업
-        if (user) {
-            saveTodaysPrayerSession(user.id, data).catch(e => {
-                console.error('Supabase backup failed:', e);
-            });
-        }
-    }, [user]);
-
     // 새 기도 맡기기 (기존 기도에 추가)
     const submitPrayer = useCallback((prayer) => {
         const now = new Date();
@@ -313,7 +311,7 @@ export function useTodaysPrayer() {
             nextPrayerTime: times.length > 1 ? times[1] : null,
             minutesUntilMidnight: getMinutesUntilMidnight(),
         };
-    }, [saveToStorage]);
+    }, [saveToStorage, calculatePrayerTimes, getMinutesUntilMidnight]);
 
     // 어제 기도 완료 메시지 확인
     const dismissYesterdayMessage = useCallback(() => {

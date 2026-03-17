@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 /**
  * Custom hook for prayer generation with streaming support
@@ -10,8 +10,14 @@ export function usePrayerGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0); // 0-4 for the 4-step process
+  const isGeneratingRef = useRef(false); // 중복 호출 방지용 ref
 
   const generatePrayer = useCallback(async (topic) => {
+    // 이미 생성 중이면 무시
+    if (isGeneratingRef.current) {
+      return null;
+    }
+    isGeneratingRef.current = true;
     setIsGenerating(true);
     setTitle('');
     setContent('');
@@ -49,8 +55,10 @@ export function usePrayerGeneration() {
       console.error('Error generating prayer:', err);
       setError('기도문을 생성하는 중 오류가 발생했습니다.');
       setProgress(0);
+      return null;
     } finally {
       setIsGenerating(false);
+      isGeneratingRef.current = false;
     }
   }, []);
 
@@ -76,6 +84,7 @@ export function usePrayerGeneration() {
     setError(null);
     setProgress(0);
     setIsGenerating(false);
+    isGeneratingRef.current = false;
   }, []);
 
   // 외부에서 기도문 설정 (복원용)

@@ -205,6 +205,9 @@ export function Home() {
     const handleGenerate = async () => {
         if (!topic.trim()) return;
 
+        // 중복 호출 방지
+        if (isGenerating) return;
+
         const userId = user?.id || null;
         const anonymousId = !userId ? getAnonymousId() : null;
 

@@ -25,6 +25,7 @@ export function useTodaysPrayer() {
     // 초기 로드 완료 여부 (중복 로드 방지)
     const initialLoadDone = useRef(false);
     const previousUserId = useRef(user?.id);
+    const lastSubmitTime = useRef(0); // 중복 submitPrayer 방지
 
     // localStorage 키
     const STORAGE_KEY = 'palmoni_todays_prayers'; // 복수형으로 변경
@@ -262,6 +263,14 @@ export function useTodaysPrayer() {
     // 새 기도 맡기기 (기존 기도에 추가)
     const submitPrayer = useCallback((prayer) => {
         const now = new Date();
+
+        // 중복 호출 방지 (1초 이내 재호출 무시)
+        if (now.getTime() - lastSubmitTime.current < 1000) {
+            console.warn('Duplicate submitPrayer call ignored');
+            return { totalPrayers: 0, nextPrayerTime: null, minutesUntilMidnight: 0 };
+        }
+        lastSubmitTime.current = now.getTime();
+
         const times = calculatePrayerTimes(now);
 
         const newPrayerEntry = {

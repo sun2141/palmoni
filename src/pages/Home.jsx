@@ -445,8 +445,7 @@ export function Home() {
             {!user && (
                 <div className="signup-prompt">
                     <p>
-                        <strong>무료 회원가입</strong>하시면<br />
-                        기도문이 저장되고, 하루 종일 기도를 대신해드립니다
+                        <strong>무료 회원가입</strong>하시면 기도문이 저장되고, 하루 종일 기도를 대신해드립니다
                     </p>
                     <div className="signup-benefits">
                         <span className="benefit-item">✓ 매일 3회 기도맡기기</span>

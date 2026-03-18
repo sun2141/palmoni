@@ -606,6 +606,25 @@
     font-size: 0.75rem;
     color: #059669;
     font-weight: 500;
+    flex: 1;
+}
+
+.push-upgrade-btn {
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 1px solid #059669;
+    border-radius: var(--radius-pill, 50px);
+    color: #059669;
+    font-size: 0.65rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.push-upgrade-btn:hover {
+    background: #059669;
+    color: white;
 }
 
 /* === Prayer Schedule Preview === */

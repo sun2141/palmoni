@@ -1,6 +1,3 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-
 const firebaseConfig = {
     apiKey: "AIzaSyAzEYZYeKqF5l-ntO9l_RcQfc5nqjKC3iE",
     authDomain: "palmoni.firebaseapp.com",
@@ -13,18 +10,33 @@ const firebaseConfig = {
 
 const VAPID_KEY = 'BBUhUZGnGAa9n6szH5F9IgTD88ZXJvNDSwgN8SWyFhokjF3DifE_WcSm2qlDpT-rs_CA6DVBq-EVXEueZDh2XyI';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Cloud Messaging
 let messaging = null;
+let firebaseApp = null;
+let firebaseInitialized = false;
 
-// FCM은 브라우저에서만 작동
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+/**
+ * Firebase 초기화 (lazy loading)
+ */
+async function initFirebase() {
+    if (firebaseInitialized) return messaging;
+
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+        console.warn('FCM이 지원되지 않는 환경입니다');
+        return null;
+    }
+
     try {
-        messaging = getMessaging(app);
+        const { initializeApp } = await import('firebase/app');
+        const { getMessaging } = await import('firebase/messaging');
+
+        firebaseApp = initializeApp(firebaseConfig);
+        messaging = getMessaging(firebaseApp);
+        firebaseInitialized = true;
+
+        return messaging;
     } catch (error) {
-        console.warn('FCM 초기화 실패:', error);
+        console.warn('Firebase 초기화 실패:', error);
+        return null;
     }
 }
 
@@ -33,12 +45,15 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
  * 사용자가 알림을 허용하면 토큰을 발급받습니다.
  */
 export async function getFCMToken() {
-    if (!messaging) {
+    const msg = await initFirebase();
+    if (!msg) {
         console.warn('FCM이 지원되지 않는 환경입니다');
         return null;
     }
 
     try {
+        const { getToken } = await import('firebase/messaging');
+
         // 알림 권한 요청
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
@@ -54,7 +69,7 @@ export async function getFCMToken() {
         }
 
         // FCM 토큰 가져오기
-        const token = await getToken(messaging, {
+        const token = await getToken(msg, {
             vapidKey: VAPID_KEY,
             serviceWorkerRegistration: registration
         });
@@ -77,12 +92,28 @@ export async function getFCMToken() {
  * 앱이 열려있을 때 푸시 메시지 수신
  */
 export function onForegroundMessage(callback) {
-    if (!messaging) return () => {};
+    if (!firebaseInitialized || !messaging) {
+        // 초기화 후 리스너 등록
+        initFirebase().then(async (msg) => {
+            if (msg) {
+                const { onMessage } = await import('firebase/messaging');
+                onMessage(msg, (payload) => {
+                    console.log('포그라운드 메시지 수신:', payload);
+                    callback(payload);
+                });
+            }
+        });
+        return () => {};
+    }
 
-    return onMessage(messaging, (payload) => {
-        console.log('포그라운드 메시지 수신:', payload);
-        callback(payload);
+    import('firebase/messaging').then(({ onMessage }) => {
+        onMessage(messaging, (payload) => {
+            console.log('포그라운드 메시지 수신:', payload);
+            callback(payload);
+        });
     });
+
+    return () => {};
 }
 
 export { messaging };

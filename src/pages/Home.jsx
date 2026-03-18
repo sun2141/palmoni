@@ -57,19 +57,45 @@ export function Home() {
         isYesterdayCompleted,
     } = useTodaysPrayer();
 
-    const { sendPrayerNotification, canNotify } = useNotification();
+    const { sendPrayerNotification, canNotify, sendTestNotification } = useNotification();
 
     // 기도 애니메이션이 시작될 때 알림 보내기
     const prevAnimationRef = useRef(false);
+    const notificationSentRef = useRef(new Set()); // 이미 알림 보낸 기도 인덱스 추적
+
     useEffect(() => {
-        if (showPrayingAnimation && !prevAnimationRef.current && canNotify) {
+        // 기도 애니메이션이 새로 시작될 때
+        if (showPrayingAnimation && canNotify) {
             const activePrayer = todaysPrayers[activePrayerIndex];
-            if (activePrayer?.prayer?.topic) {
-                sendPrayerNotification(activePrayer.prayer.topic);
+            const notificationKey = `${activePrayerIndex}-${activePrayer?.prayer?.topic}`;
+
+            // 이 기도에 대해 아직 알림을 보내지 않았다면
+            if (activePrayer?.prayer?.topic && !notificationSentRef.current.has(notificationKey)) {
+                console.log('🔔 기도 시작 알림 전송 시도:', activePrayer.prayer.topic);
+                const result = sendPrayerNotification(activePrayer.prayer.topic, true); // force=true로 즉시 전송
+                if (result) {
+                    notificationSentRef.current.add(notificationKey);
+                    console.log('✅ 알림 전송 성공');
+                } else {
+                    console.log('⚠️ 알림 전송 실패 또는 차단됨');
+                }
             }
         }
+
+        // 애니메이션이 끝나면 (새 세션 시작을 위해) 알림 기록 초기화하지 않음
+        // 같은 기도에 대해 중복 알림 방지
         prevAnimationRef.current = showPrayingAnimation;
     }, [showPrayingAnimation, activePrayerIndex, todaysPrayers, canNotify, sendPrayerNotification]);
+
+    // 날짜가 바뀌면 알림 기록 초기화
+    useEffect(() => {
+        const today = new Date().toDateString();
+        const lastDate = sessionStorage.getItem('palmoni_notification_date');
+        if (lastDate !== today) {
+            notificationSentRef.current.clear();
+            sessionStorage.setItem('palmoni_notification_date', today);
+        }
+    }, []);
 
     useEffect(() => {
         if (!authLoading && isInitialized) {
@@ -307,11 +333,14 @@ export function Home() {
                 emotion,
             });
 
-            if (prayerInfo.totalPrayers === 1) {
-                setTimeout(() => {
-                    toast.info('자정까지 시간이 얼마 남지 않아 1번 기도합니다. 내일 일찍 기도를 맡겨주시면 하루 종일 기도해드릴게요!', { duration: 5000 });
-                }, 1000);
-            }
+            // 기도 횟수에 따른 안내 메시지
+            setTimeout(() => {
+                if (prayerInfo.totalPrayers === 1) {
+                    toast.info('자정까지 시간이 얼마 남지 않아 1번 기도합니다. 내일 일찍 기도를 맡겨주시면 하루 동안 기도해드릴게요!', { duration: 5000 });
+                } else {
+                    toast.info(`10분 후 첫 기도를 시작합니다. 오늘 ${prayerInfo.totalPrayers}번 기도해드릴게요!`, { duration: 4000 });
+                }
+            }, 1000);
         } else if (!userId && result && result.title && result.content) {
             // 비로그인 사용자: 미리보기만 (저장 안됨) + 임시 저장
             setCurrentPrayerId(null);

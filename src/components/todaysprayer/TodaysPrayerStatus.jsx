@@ -19,7 +19,19 @@ export function TodaysPrayerStatus({
     isYesterdayCompleted,
     dismissYesterdayMessage,
 }) {
-    const { isSupported, permission, requestPermission, canNotify } = useNotification();
+    const { isSupported, permission, requestPermission, canNotify, sendTestNotification } = useNotification();
+
+    // 알림 권한 요청 핸들러 - 권한 획득 시 테스트 알림 전송
+    const handleEnableNotifications = async () => {
+        const result = await requestPermission();
+        if (result === 'granted') {
+            // 권한 획득 시 즉시 테스트 알림 전송
+            setTimeout(() => {
+                sendTestNotification();
+            }, 500);
+        }
+    };
+
     // 어제 기도 완료 메시지
     if (isYesterdayCompleted) {
         return (
@@ -52,11 +64,6 @@ export function TodaysPrayerStatus({
             </div>
         );
     }
-
-    // 알림 권한 요청 핸들러
-    const handleEnableNotifications = async () => {
-        await requestPermission();
-    };
 
     // 여러 기도 표시
     return (

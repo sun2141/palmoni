@@ -40,17 +40,28 @@ export function useTodaysPrayer() {
         return Math.floor((midnight - now) / (1000 * 60));
     }, []);
 
-    // 기도 시간 계산 (현재 ~ 자정 사이에 균등 분배)
+    // 기도 시간 계산 (10분 후 첫 기도 시작, 이후 자정까지 균등 분배)
     const calculatePrayerTimes = useCallback((startTime) => {
         const minutesLeft = getMinutesUntilMidnight();
-        const times = [new Date(startTime)]; // 첫 번째 기도: 즉시
+        const FIRST_PRAYER_DELAY = 10; // 첫 기도까지 10분 대기
 
-        if (minutesLeft >= 180) { // 3시간 이상
-            // 남은 시간을 3등분하여 2번 더 기도
-            const interval = Math.floor(minutesLeft / 3);
-            times.push(new Date(startTime.getTime() + interval * 60 * 1000));
-            times.push(new Date(startTime.getTime() + interval * 2 * 60 * 1000));
+        // 첫 번째 기도: 10분 후
+        const firstPrayerTime = new Date(startTime.getTime() + FIRST_PRAYER_DELAY * 60 * 1000);
+        const times = [firstPrayerTime];
+
+        // 첫 기도 이후 남은 시간 계산
+        const minutesAfterFirst = minutesLeft - FIRST_PRAYER_DELAY;
+
+        if (minutesAfterFirst >= 120) { // 첫 기도 후 2시간 이상 남으면 3회 기도
+            // 남은 시간을 균등 분배하여 2번 더 기도
+            const interval = Math.floor(minutesAfterFirst / 3);
+            times.push(new Date(firstPrayerTime.getTime() + interval * 60 * 1000));
+            times.push(new Date(firstPrayerTime.getTime() + interval * 2 * 60 * 1000));
+        } else if (minutesAfterFirst >= 30) { // 30분 이상 남으면 2회 기도
+            const interval = Math.floor(minutesAfterFirst / 2);
+            times.push(new Date(firstPrayerTime.getTime() + interval * 60 * 1000));
         }
+        // 30분 미만이면 1회만 기도
 
         return times;
     }, [getMinutesUntilMidnight]);

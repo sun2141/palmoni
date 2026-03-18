@@ -7,7 +7,7 @@ import { PrayerProgress } from '../components/prayer/PrayerProgress';
 import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
-import { checkRateLimit, logUsage, savePrayer, deletePrayer } from '../lib/supabaseClient';
+import { checkRateLimit, logUsage, savePrayer, deletePrayer, getActiveUsersCount } from '../lib/supabaseClient';
 import { savePendingPrayer, getPendingPrayer, clearPendingPrayer, getOrCreateAnonymousId } from '../lib/localStorage';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
@@ -116,16 +116,43 @@ export function Home() {
         }
     }, [user, isInitialized, setPrayer]);
 
-    // 실시간 사용자 수 시뮬레이션
+    // 실시간 사용자 수 (200명 이상이면 실제 수, 미만이면 가상 숫자)
+    const [useRealCount, setUseRealCount] = useState(false);
+
     useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveUsers(prev => {
-                const change = Math.floor(Math.random() * 11) - 5;
-                return Math.max(80, Math.min(200, prev + change));
-            });
+        // 초기 로드: 실제 사용자 수 확인
+        const checkRealUsers = async () => {
+            const realCount = await getActiveUsersCount();
+            if (realCount !== null) {
+                setActiveUsers(realCount);
+                setUseRealCount(true);
+            }
+        };
+        checkRealUsers();
+
+        // 8초마다 업데이트
+        const interval = setInterval(async () => {
+            if (useRealCount) {
+                // 실제 사용자 수 모드: DB에서 가져오기
+                const realCount = await getActiveUsersCount();
+                if (realCount !== null) {
+                    setActiveUsers(realCount);
+                } else {
+                    // 200명 미만으로 떨어지면 가상 모드로 전환
+                    setUseRealCount(false);
+                    setActiveUsers(Math.floor(Math.random() * 50) + 100);
+                }
+            } else {
+                // 가상 사용자 수 모드: 80-200 범위에서 변동
+                setActiveUsers(prev => {
+                    const change = Math.floor(Math.random() * 11) - 5;
+                    return Math.max(80, Math.min(199, prev + change));
+                });
+            }
         }, 8000);
+
         return () => clearInterval(interval);
-    }, []);
+    }, [useRealCount]);
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -401,7 +428,7 @@ export function Home() {
 
             {/* Hero Section */}
             <div className="hero-section">
-                <span className="hero-icon">🍄</span>
+                <span className="hero-icon">🕊️</span>
                 <h1
                     className="hero-title clickable"
                     onClick={() => {

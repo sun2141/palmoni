@@ -648,3 +648,31 @@ export async function getTodaysPrayerSession(userId) {
 
   return { data: null, isYesterday: false, error: null };
 }
+
+/**
+ * 오늘 활성 사용자 수 가져오기
+ * - 오늘 기도 세션이 있는 사용자 수를 카운트
+ * - 200명 미만이면 null 반환 (가상 숫자 표시용)
+ */
+export async function getActiveUsersCount() {
+  const today = new Date().toISOString().split('T')[0];
+
+  try {
+    // 오늘 기도 세션이 있는 사용자 수
+    const { count, error } = await supabase
+      .from('todays_prayer_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('session_date', today);
+
+    if (error) {
+      console.error('Error fetching active users count:', error);
+      return null;
+    }
+
+    // 200명 이상이면 실제 수 반환, 미만이면 null
+    return count >= 200 ? count : null;
+  } catch (e) {
+    console.error('Failed to get active users count:', e);
+    return null;
+  }
+}

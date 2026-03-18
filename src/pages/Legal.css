@@ -1,0 +1,132 @@
+/* ========================================
+   Legal Pages (Privacy, Terms)
+   ======================================== */
+
+.legal-page {
+    min-height: 100vh;
+    padding: 1rem;
+    background: linear-gradient(180deg, #FAFAFF 0%, #F0F0FF 100%);
+}
+
+.legal-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    background: white;
+    border-radius: var(--radius-xl, 24px);
+    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+}
+
+.legal-back {
+    display: inline-block;
+    color: var(--color-primary, #6C47FF);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    transition: opacity 0.2s ease;
+}
+
+.legal-back:hover {
+    opacity: 0.7;
+}
+
+.legal-container h1 {
+    font-size: 1.75rem;
+    color: var(--text-primary, #1A1A2E);
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+}
+
+.legal-date {
+    font-size: 0.85rem;
+    color: var(--text-muted, #9CA3AF);
+    margin: 0 0 2rem;
+}
+
+.legal-container section {
+    margin-bottom: 2rem;
+}
+
+.legal-container h2 {
+    font-size: 1.1rem;
+    color: var(--text-primary, #1A1A2E);
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+}
+
+.legal-container p {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #4B5563);
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+}
+
+.legal-container ul {
+    margin: 0 0 0.75rem;
+    padding-left: 1.25rem;
+}
+
+.legal-container li {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #4B5563);
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+}
+
+.legal-container li strong {
+    color: var(--text-primary, #1A1A2E);
+}
+
+.legal-container a {
+    color: var(--color-primary, #6C47FF);
+    text-decoration: none;
+}
+
+.legal-container a:hover {
+    text-decoration: underline;
+}
+
+.legal-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(108, 71, 255, 0.1);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.legal-footer a {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #4B5563);
+}
+
+.legal-footer span {
+    color: var(--text-muted, #9CA3AF);
+}
+
+/* === 반응형 === */
+@media (max-width: 480px) {
+    .legal-page {
+        padding: 0.5rem;
+    }
+
+    .legal-container {
+        padding: 1.5rem 1rem;
+        border-radius: var(--radius-lg, 20px);
+    }
+
+    .legal-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .legal-container h2 {
+        font-size: 1rem;
+    }
+
+    .legal-container p,
+    .legal-container li {
+        font-size: 0.9rem;
+    }
+}

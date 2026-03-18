@@ -702,3 +702,41 @@
     font-size: 0.75rem;
   }
 }
+
+/* === Footer === */
+.home-footer {
+  margin-top: 2rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-top: 1px solid rgba(108, 71, 255, 0.08);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #4B5563);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--color-primary, #6C47FF);
+}
+
+.footer-divider {
+  color: var(--text-muted, #9CA3AF);
+  font-size: 0.75rem;
+}
+
+.footer-copyright {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9CA3AF);
+  margin: 0;
+}

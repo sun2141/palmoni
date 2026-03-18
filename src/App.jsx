@@ -5,6 +5,8 @@ import { Home } from './pages/Home';
 // Lazy load non-critical pages
 const MyPrayers = lazy(() => import('./pages/MyPrayers').then(m => ({ default: m.MyPrayers })));
 const Pricing = lazy(() => import('./pages/Pricing').then(m => ({ default: m.Pricing })));
+const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
+const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
 
 // Loading fallback component
 function PageLoader() {
@@ -23,6 +25,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/my-prayers" element={<MyPrayers />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
             </Routes>
         </Suspense>
     );

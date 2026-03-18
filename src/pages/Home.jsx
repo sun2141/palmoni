@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { usePrayerGeneration } from '../hooks/usePrayerGeneration';
 import { useTodaysPrayer } from '../hooks/useTodaysPrayer';
 import { useNotification } from '../hooks/useNotification';
@@ -12,6 +12,7 @@ import { savePendingPrayer, getPendingPrayer, clearPendingPrayer, getOrCreateAno
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { TodaysPrayerStatus } from '../components/todaysprayer/TodaysPrayerStatus';
+import { HomeBottomAd } from '../components/ads/AdBanner';
 import { useToast } from '../components/common/Toast';
 import './Home.css';
 
@@ -631,6 +632,21 @@ export function Home() {
                     </button>
                 </div>
             )}
+
+            {/* 광고 배너 (기도 결과 표시 후) */}
+            {content && !isGenerating && (
+                <HomeBottomAd />
+            )}
+
+            {/* 푸터 (법적 링크) */}
+            <footer className="home-footer">
+                <div className="footer-links">
+                    <Link to="/privacy">개인정보처리방침</Link>
+                    <span className="footer-divider">|</span>
+                    <Link to="/terms">이용약관</Link>
+                </div>
+                <p className="footer-copyright">© 2026 Palmoni. All rights reserved.</p>
+            </footer>
 
             {/* Login Modal */}
             <LoginModal

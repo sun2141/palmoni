@@ -107,6 +107,13 @@ export function TodaysPrayerStatus({
     );
 }
 
+// 기도 번호별 색상 (부드러운 파스텔 톤)
+const PRAYER_COLORS = [
+    { bg: 'rgba(108, 71, 255, 0.08)', border: 'rgba(108, 71, 255, 0.2)', accent: '#6C47FF' },  // 보라
+    { bg: 'rgba(0, 194, 203, 0.08)', border: 'rgba(0, 194, 203, 0.2)', accent: '#00C2CB' },    // 청록
+    { bg: 'rgba(255, 152, 0, 0.08)', border: 'rgba(255, 152, 0, 0.2)', accent: '#FF9800' },    // 주황
+];
+
 /**
  * 개별 기도 상태 표시
  */
@@ -115,6 +122,7 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
     const { status, currentIndex, times } = prayer;
     const totalPrayers = times.length;
     const completedPrayers = currentIndex;
+    const colorScheme = PRAYER_COLORS[index % PRAYER_COLORS.length];
 
     // 1분마다 다음 기도 정보 업데이트
     useEffect(() => {
@@ -129,19 +137,29 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
         return () => clearInterval(interval);
     }, [status, getNextPrayerInfo]);
 
+    // 인라인 스타일로 색상 적용
+    const cardStyle = {
+        background: `linear-gradient(135deg, ${colorScheme.bg} 0%, rgba(238, 238, 255, 0.6) 100%)`,
+        borderColor: colorScheme.border,
+    };
+
+    const numberStyle = {
+        background: colorScheme.accent,
+    };
+
     // 기도 중 애니메이션
     if (showAnimation) {
         return (
-            <div className="single-prayer-status praying-animation">
+            <div className="single-prayer-status praying-animation" style={cardStyle}>
                 <div className="praying-icon">🙏</div>
                 <div className="praying-text">
-                    <p className="praying-title">팔모니가 기도하고 있습니다</p>
+                    <p className="praying-title" style={{ color: colorScheme.accent }}>팔모니가 기도하고 있습니다</p>
                     <p className="praying-topic">"{prayer.prayer?.topic}"</p>
                 </div>
                 <div className="praying-waves">
-                    <span className="wave"></span>
-                    <span className="wave"></span>
-                    <span className="wave"></span>
+                    <span className="wave" style={{ background: colorScheme.accent }}></span>
+                    <span className="wave" style={{ background: colorScheme.accent }}></span>
+                    <span className="wave" style={{ background: colorScheme.accent }}></span>
                 </div>
             </div>
         );
@@ -150,8 +168,8 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
     // 기도 진행 중
     if (status === 'praying') {
         return (
-            <div className="single-prayer-status in-progress">
-                <div className="prayer-number">#{index + 1}</div>
+            <div className="single-prayer-status in-progress" style={cardStyle}>
+                <div className="prayer-number" style={numberStyle}>#{index + 1}</div>
                 <div className="prayer-content">
                     <p className="prayer-topic-display">
                         "{prayer.prayer?.topic}"
@@ -162,6 +180,7 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
                                 <div
                                     key={i}
                                     className={`progress-dot ${i < completedPrayers ? 'completed' : i === completedPrayers ? 'current' : ''}`}
+                                    style={i < completedPrayers ? { background: colorScheme.accent } : i === completedPrayers ? { background: colorScheme.accent } : {}}
                                 >
                                     {i < completedPrayers ? '✓' : i + 1}
                                 </div>
@@ -173,9 +192,9 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
                     </div>
 
                     {nextInfo && (
-                        <div className="next-prayer-info">
+                        <div className="next-prayer-info" style={{ background: colorScheme.bg }}>
                             <span className="next-label">다음 기도까지</span>
-                            <span className="next-time">{nextInfo.remaining}</span>
+                            <span className="next-time" style={{ color: colorScheme.accent }}>{nextInfo.remaining}</span>
                         </div>
                     )}
                 </div>
@@ -186,8 +205,8 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
     // 기도 완료
     if (status === 'completed') {
         return (
-            <div className="single-prayer-status completed">
-                <div className="prayer-number completed">#{index + 1}</div>
+            <div className="single-prayer-status completed" style={cardStyle}>
+                <div className="prayer-number completed" style={numberStyle}>#{index + 1}</div>
                 <div className="prayer-content">
                     <p className="prayer-topic-display">
                         "{prayer.prayer?.topic}"
@@ -254,20 +273,27 @@ function PrayerSchedulePreview({ todaysPrayers }) {
                 <span className="schedule-title">오늘의 기도 시간</span>
             </div>
             <div className="schedule-timeline">
-                {upcomingTimes.slice(0, 5).map((item) => (
-                    <div
-                        key={`${item.prayerIdx}-${item.timeIdx}`}
-                        className={`schedule-item ${item.isNext ? 'next' : ''}`}
-                    >
-                        <div className="schedule-time">{formatTime(item.time)}</div>
-                        <div className="schedule-dot"></div>
-                        <div className="schedule-topic">
-                            {item.topic.length > 15
-                                ? item.topic.substring(0, 15) + '...'
-                                : item.topic}
+                {upcomingTimes.slice(0, 5).map((item) => {
+                    const colorScheme = PRAYER_COLORS[item.prayerIdx % PRAYER_COLORS.length];
+                    return (
+                        <div
+                            key={`${item.prayerIdx}-${item.timeIdx}`}
+                            className={`schedule-item ${item.isNext ? 'next' : ''}`}
+                            style={{
+                                background: item.isNext ? colorScheme.bg : undefined,
+                                borderColor: item.isNext ? colorScheme.border : undefined,
+                            }}
+                        >
+                            <div className="schedule-time" style={{ color: colorScheme.accent }}>{formatTime(item.time)}</div>
+                            <div className="schedule-dot" style={{ background: colorScheme.accent }}></div>
+                            <div className="schedule-topic">
+                                {item.topic.length > 15
+                                    ? item.topic.substring(0, 15) + '...'
+                                    : item.topic}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

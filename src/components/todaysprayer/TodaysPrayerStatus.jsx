@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNotification } from '../../hooks/useNotification';
 import './TodaysPrayerStatus.css';
 
 /**
@@ -8,6 +9,7 @@ import './TodaysPrayerStatus.css';
  * - 총 기도 횟수와 완료된 횟수
  * - 다음 기도까지 남은 시간
  * - 기도 진행 애니메이션
+ * - 알림 권한 요청
  */
 export function TodaysPrayerStatus({
     todaysPrayers = [],
@@ -17,6 +19,7 @@ export function TodaysPrayerStatus({
     isYesterdayCompleted,
     dismissYesterdayMessage,
 }) {
+    const { isSupported, permission, requestPermission, canNotify } = useNotification();
     // 어제 기도 완료 메시지
     if (isYesterdayCompleted) {
         return (
@@ -50,6 +53,11 @@ export function TodaysPrayerStatus({
         );
     }
 
+    // 알림 권한 요청 핸들러
+    const handleEnableNotifications = async () => {
+        await requestPermission();
+    };
+
     // 여러 기도 표시
     return (
         <div className="todays-prayers-container">
@@ -57,6 +65,30 @@ export function TodaysPrayerStatus({
                 <span className="prayers-icon">📿</span>
                 <span className="prayers-title">오늘의 기도 ({todaysPrayers.length}개)</span>
             </div>
+
+            {/* 알림 권한 요청 배너 */}
+            {isSupported && permission === 'default' && todaysPrayers.length > 0 && (
+                <div className="notification-prompt">
+                    <div className="notification-prompt-content">
+                        <span className="notification-icon">🔔</span>
+                        <p className="notification-text">
+                            알림을 켜면 팔모니가 기도할 때 알려드려요
+                        </p>
+                    </div>
+                    <button className="notification-enable-btn" onClick={handleEnableNotifications}>
+                        알림 켜기
+                    </button>
+                </div>
+            )}
+
+            {/* 알림 활성화 상태 표시 */}
+            {canNotify && todaysPrayers.some(p => p.status === 'praying') && (
+                <div className="notification-active">
+                    <span className="notification-active-icon">🔔</span>
+                    <span className="notification-active-text">기도 시간에 알림을 보내드려요</span>
+                </div>
+            )}
+
             <div className="prayers-list">
                 {todaysPrayers.map((prayer, index) => (
                     <SinglePrayerStatus
@@ -68,6 +100,9 @@ export function TodaysPrayerStatus({
                     />
                 ))}
             </div>
+
+            {/* 다음 기도 시간표 */}
+            <PrayerSchedulePreview todaysPrayers={todaysPrayers} />
         </div>
     );
 }
@@ -167,4 +202,73 @@ function SinglePrayerStatus({ prayer, index, showAnimation, getNextPrayerInfo })
     }
 
     return null;
+}
+
+/**
+ * 기도 시간표 미리보기
+ * 오늘의 모든 기도 시간을 한눈에 볼 수 있게 표시
+ */
+function PrayerSchedulePreview({ todaysPrayers }) {
+    // 진행 중인 기도만 필터링
+    const prayingPrayers = todaysPrayers.filter(p => p.status === 'praying');
+
+    if (prayingPrayers.length === 0) return null;
+
+    // 모든 기도의 남은 시간들을 수집
+    const upcomingTimes = [];
+    const now = new Date();
+
+    prayingPrayers.forEach((prayer, prayerIdx) => {
+        prayer.times.forEach((time, timeIdx) => {
+            const prayerTime = new Date(time);
+            if (prayerTime > now && timeIdx >= prayer.currentIndex) {
+                upcomingTimes.push({
+                    time: prayerTime,
+                    topic: prayer.prayer?.topic || `기도 ${prayerIdx + 1}`,
+                    prayerIdx,
+                    timeIdx: timeIdx + 1,
+                    isNext: timeIdx === prayer.currentIndex,
+                });
+            }
+        });
+    });
+
+    // 시간순 정렬
+    upcomingTimes.sort((a, b) => a.time - b.time);
+
+    if (upcomingTimes.length === 0) return null;
+
+    // 시간 포맷팅
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
+    return (
+        <div className="prayer-schedule-preview">
+            <div className="schedule-header">
+                <span className="schedule-icon">⏰</span>
+                <span className="schedule-title">오늘의 기도 시간</span>
+            </div>
+            <div className="schedule-timeline">
+                {upcomingTimes.slice(0, 5).map((item) => (
+                    <div
+                        key={`${item.prayerIdx}-${item.timeIdx}`}
+                        className={`schedule-item ${item.isNext ? 'next' : ''}`}
+                    >
+                        <div className="schedule-time">{formatTime(item.time)}</div>
+                        <div className="schedule-dot"></div>
+                        <div className="schedule-topic">
+                            {item.topic.length > 15
+                                ? item.topic.substring(0, 15) + '...'
+                                : item.topic}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }

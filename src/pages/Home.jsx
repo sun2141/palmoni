@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePrayerGeneration } from '../hooks/usePrayerGeneration';
 import { useTodaysPrayer } from '../hooks/useTodaysPrayer';
+import { useNotification } from '../hooks/useNotification';
 import { PrayerProgress } from '../components/prayer/PrayerProgress';
 import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
 import { LoginModal } from '../components/auth/LoginModal';
@@ -54,6 +55,20 @@ export function Home() {
         hasTodaysPrayer,
         isYesterdayCompleted,
     } = useTodaysPrayer();
+
+    const { sendPrayerNotification, canNotify } = useNotification();
+
+    // 기도 애니메이션이 시작될 때 알림 보내기
+    const prevAnimationRef = useRef(false);
+    useEffect(() => {
+        if (showPrayingAnimation && !prevAnimationRef.current && canNotify) {
+            const activePrayer = todaysPrayers[activePrayerIndex];
+            if (activePrayer?.prayer?.topic) {
+                sendPrayerNotification(activePrayer.prayer.topic);
+            }
+        }
+        prevAnimationRef.current = showPrayingAnimation;
+    }, [showPrayingAnimation, activePrayerIndex, todaysPrayers, canNotify, sendPrayerNotification]);
 
     useEffect(() => {
         if (!authLoading && isInitialized) {

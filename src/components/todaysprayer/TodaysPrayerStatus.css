@@ -536,3 +536,173 @@
         font-size: 0.75rem;
     }
 }
+
+/* === Notification Prompt === */
+.notification-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.08) 100%);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--radius-lg, 20px);
+}
+
+.notification-prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.notification-icon {
+    font-size: 1.1rem;
+}
+
+.notification-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #4B5563);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.notification-enable-btn {
+    padding: 0.4rem 0.75rem;
+    background: var(--color-primary, #6C47FF);
+    border: none;
+    border-radius: var(--radius-pill, 50px);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.notification-enable-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 71, 255, 0.3);
+}
+
+/* === Notification Active Status === */
+.notification-active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(5, 150, 105, 0.08);
+    border-radius: var(--radius-lg, 20px);
+}
+
+.notification-active-icon {
+    font-size: 0.85rem;
+}
+
+.notification-active-text {
+    font-size: 0.75rem;
+    color: #059669;
+    font-weight: 500;
+}
+
+/* === Prayer Schedule Preview === */
+.prayer-schedule-preview {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(108, 71, 255, 0.1);
+}
+
+.schedule-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+}
+
+.schedule-icon {
+    font-size: 0.9rem;
+}
+
+.schedule-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary, #4B5563);
+}
+
+.schedule-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    background: rgba(238, 238, 255, 0.5);
+    border-radius: var(--radius-md, 16px);
+    transition: all 0.2s ease;
+}
+
+.schedule-item.next {
+    background: linear-gradient(135deg, rgba(108, 71, 255, 0.1) 0%, rgba(0, 194, 203, 0.08) 100%);
+    border: 1px solid rgba(108, 71, 255, 0.2);
+}
+
+.schedule-time {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-primary, #6C47FF);
+    min-width: 70px;
+}
+
+.schedule-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(108, 71, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.schedule-item.next .schedule-dot {
+    background: var(--color-primary, #6C47FF);
+    animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(108, 71, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(108, 71, 255, 0);
+    }
+}
+
+.schedule-topic {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #4B5563);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 360px) {
+    .notification-prompt {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .notification-prompt-content {
+        justify-content: center;
+    }
+
+    .schedule-time {
+        min-width: 60px;
+        font-size: 0.75rem;
+    }
+}

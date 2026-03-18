@@ -277,7 +277,7 @@ export function useTodaysPrayer() {
                     setShowPrayingAnimation(true);
                     setActivePrayerIndex(prayerIdx);
 
-                    // 5초 후 다음 기도로 넘어감
+                    // 20초 후 다음 기도로 넘어감 (기도문 읽을 시간 확보)
                     setTimeout(() => {
                         setShowPrayingAnimation(false);
                         setActivePrayerIndex(-1);
@@ -300,7 +300,7 @@ export function useTodaysPrayer() {
 
                         // 처리 완료 표시
                         processingPrayerRef.current.delete(prayerIdx);
-                    }, 5000);
+                    }, 20000); // 20초
                 }
             });
         };

@@ -593,19 +593,19 @@ export async function getTodaysPrayerSession(userId) {
 
   // 어제 또는 이전 세션 확인 (완료된 기도 표시용)
   // 오늘보다 이전의 가장 최근 세션을 가져옴
-  const { data: oldSession, error: oldError } = await supabase
+  const { data: oldSessions, error: oldError } = await supabase
     .from('todays_prayer_sessions')
     .select('*')
     .eq('user_id', userId)
     .lt('session_date', today)
     .order('session_date', { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
 
-  if (oldError && oldError.code !== 'PGRST116') {
+  if (oldError) {
     console.error('Error fetching old session:', oldError);
   }
 
+  const oldSession = oldSessions?.[0];
   if (oldSession && oldSession.status !== 'idle') {
     // 이전 세션이 있으면 삭제 (한 번 알림 후 정리)
     // 삭제는 비동기로 처리하고 데이터는 반환

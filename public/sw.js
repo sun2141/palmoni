@@ -1,130 +1,95 @@
-const CACHE_NAME = 'palmoni-v2';
+const CACHE_NAME = 'palmoni-v3';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.png',
-  '/favicon-32.png',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
   '/offline.html'
 ];
 
-// Supabase 및 외부 API 도메인
-const EXTERNAL_DOMAINS = [
+// 절대 캐시하지 않을 도메인/경로
+const NO_CACHE_PATTERNS = [
   'supabase.co',
   'supabase.io',
   'googleapis.com',
-  'stripe.com'
+  'gstatic.com',
+  'stripe.com',
+  'chrome-extension',
+  '/api/'
 ];
 
-// Install event - cache static assets
+// Install event - 최소한의 오프라인 페이지만 캐시
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
     })
   );
+  // 즉시 활성화
   self.skipWaiting();
 });
 
-// Activate event - clean old caches
+// Activate event - 이전 캐시 모두 삭제
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name.startsWith('palmoni-') && name !== CACHE_NAME)
+          .filter((name) => name !== CACHE_NAME)
           .map((name) => caches.delete(name))
       );
     })
   );
+  // 모든 클라이언트 즉시 제어
   self.clients.claim();
 });
 
-// Fetch event - smart caching strategy
+// Fetch event - Network First 전략 (캐시 최소화)
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
+  // GET 요청만 처리
   if (request.method !== 'GET') return;
 
-  // Skip API requests - always use network (never cache)
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(fetch(request));
+  // 캐시하지 않을 요청들
+  if (NO_CACHE_PATTERNS.some(pattern => request.url.includes(pattern))) {
     return;
   }
 
-  // Skip external API domains - always use network (auth, db)
-  if (EXTERNAL_DOMAINS.some(domain => url.hostname.includes(domain))) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  // For navigation requests (HTML pages), network first with cache fallback
+  // 네비게이션 요청 (HTML 페이지)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          // Cache the latest HTML
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Network failed, try cache, then offline page
-          return caches.match(request)
-            .then((cached) => cached || caches.match('/offline.html'));
-        })
+        .catch(() => caches.match('/offline.html'))
     );
     return;
   }
 
-  // For JS/CSS assets with hash in filename, cache first (immutable)
-  if (url.pathname.match(/\.[a-f0-9]{8,}\.(js|css)$/)) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        });
-      })
-    );
-    return;
-  }
-
-  // For other static assets (images, fonts), stale-while-revalidate
+  // 그 외 요청: Network First (실패 시에만 캐시)
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request).then((response) => {
-        if (response.ok) {
+    fetch(request)
+      .then((response) => {
+        // 성공적인 응답만 캐시 (선택적)
+        if (response.ok && url.pathname.match(/\.(png|jpg|jpeg|svg|ico|woff2?)$/)) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(request, responseClone);
           });
         }
         return response;
-      }).catch(() => cached); // Network failed, return cached if available
-
-      // Return cached immediately, update in background
-      return cached || fetchPromise;
-    })
+      })
+      .catch(() => {
+        // 네트워크 실패 시 캐시에서 찾기
+        return caches.match(request);
+      })
   );
 });
 
-// Handle messages from the app
+// 앱에서 캐시 초기화 메시지 수신
 self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
+  }
+  if (event.data === 'clearCache') {
+    caches.keys().then((names) => {
+      names.forEach((name) => caches.delete(name));
+    });
   }
 });

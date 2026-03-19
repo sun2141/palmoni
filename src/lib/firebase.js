@@ -19,6 +19,17 @@ let messaging = null;
 let firebaseApp = null;
 let initPromise = null;
 
+// 모듈 이름을 변수로 분리하여 Vite/Rollup 정적 분석 회피
+const FIREBASE_APP_MODULE = 'firebase' + '/app';
+const FIREBASE_MESSAGING_MODULE = 'firebase' + '/messaging';
+
+/**
+ * 동적 import wrapper (번들러 정적 분석 회피)
+ */
+async function dynamicImport(moduleName) {
+    return new Function('m', 'return import(m)')(moduleName);
+}
+
 /**
  * Firebase 초기화 (lazy loading with error handling)
  */
@@ -33,9 +44,8 @@ async function initFirebase() {
 
     initPromise = (async () => {
         try {
-            // Dynamic import로 firebase 로드
-            const firebaseApp_module = await import(/* @vite-ignore */ 'firebase/app');
-            const firebaseMessaging_module = await import(/* @vite-ignore */ 'firebase/messaging');
+            const firebaseApp_module = await dynamicImport(FIREBASE_APP_MODULE);
+            const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
 
             firebaseApp = firebaseApp_module.initializeApp(firebaseConfig);
             messaging = firebaseMessaging_module.getMessaging(firebaseApp);
@@ -43,7 +53,7 @@ async function initFirebase() {
             console.log('Firebase 초기화 성공');
             return { app: firebaseApp, messaging };
         } catch (error) {
-            console.warn('Firebase 로드 실패 (정상적인 상황일 수 있음):', error.message);
+            console.warn('Firebase 로드 실패:', error.message);
             return { app: null, messaging: null };
         }
     })();
@@ -62,7 +72,7 @@ export async function getFCMToken() {
             return null;
         }
 
-        const { getToken } = await import(/* @vite-ignore */ 'firebase/messaging');
+        const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
 
         // 알림 권한 요청
         const permission = await Notification.requestPermission();
@@ -79,7 +89,7 @@ export async function getFCMToken() {
         }
 
         // FCM 토큰 가져오기
-        const token = await getToken(msg, {
+        const token = await firebaseMessaging_module.getToken(msg, {
             vapidKey: VAPID_KEY,
             serviceWorkerRegistration: registration
         });
@@ -105,8 +115,8 @@ export function onForegroundMessage(callback) {
         if (!msg) return;
 
         try {
-            const { onMessage } = await import(/* @vite-ignore */ 'firebase/messaging');
-            onMessage(msg, (payload) => {
+            const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
+            firebaseMessaging_module.onMessage(msg, (payload) => {
                 console.log('포그라운드 메시지 수신:', payload);
                 callback(payload);
             });

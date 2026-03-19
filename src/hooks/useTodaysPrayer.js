@@ -166,12 +166,24 @@ export function useTodaysPrayer() {
             lastVisibilityTime.current = now;
         };
 
+        // iOS Safari bfcache 복원 시 상태 새로고침
+        const handlePageShow = (event) => {
+            if (event.persisted) {
+                // bfcache에서 복원됨 - 데이터 새로고침 필요
+                initialLoadDone.current = false;
+                setIsLoading(true);
+                lastVisibilityTime.current = Date.now();
+            }
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('online', handleOnline);
+        window.addEventListener('pageshow', handlePageShow);
 
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('online', handleOnline);
+            window.removeEventListener('pageshow', handlePageShow);
         };
     }, []);
 

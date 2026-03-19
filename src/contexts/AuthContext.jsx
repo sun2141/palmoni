@@ -148,6 +148,28 @@ export const AuthProvider = ({ children }) => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    // iOS Safari bfcache 복원 시 세션 확인
+    const handlePageShow = async (event) => {
+      if (event.persisted && mounted) {
+        // bfcache에서 복원됨 - 세션 확인 필요
+        try {
+          const { data: { session: currentSession } } = await supabase.auth.getSession();
+          if (currentSession) {
+            setSession(currentSession);
+            setUser(currentSession.user);
+          } else if (user) {
+            // 세션 만료됨
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+          }
+        } catch (err) {
+          console.warn('PageShow session check error:', err);
+        }
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+
     // 네트워크 재연결 시 세션 확인 (컴퓨터 절전 모드 복귀 등)
     const handleOnline = async () => {
       if (mounted && user) {
@@ -167,6 +189,7 @@ export const AuthProvider = ({ children }) => {
       mounted = false;
       subscription.unsubscribe();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pageshow', handlePageShow);
       window.removeEventListener('online', handleOnline);
     };
   }, []);

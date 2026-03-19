@@ -83,10 +83,39 @@ export const AuthProvider = ({ children }) => {
     );
 
     // 앱이 백그라운드에서 돌아왔을 때 세션 확인
+    let lastVisibilityCheck = Date.now();
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible' && mounted) {
+        const now = Date.now();
+        const timeSinceLastCheck = now - lastVisibilityCheck;
+        lastVisibilityCheck = now;
+
         try {
-          const { data: { session: currentSession } } = await supabase.auth.getSession();
+          const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+
+          // 세션 에러 발생 시 (토큰 만료 등)
+          if (error) {
+            console.warn('Session check error:', error.message);
+            // 세션 갱신 시도
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+              console.warn('Session refresh failed:', refreshError.message);
+              // 세션 갱신 실패 - 로그아웃 처리
+              if (user) {
+                setUser(null);
+                setProfile(null);
+                setSession(null);
+                setLoading(false);
+              }
+              return;
+            }
+            // 세션 갱신 성공
+            if (refreshData.session) {
+              setSession(refreshData.session);
+              setUser(refreshData.session.user);
+              return;
+            }
+          }
 
           // 세션이 만료되었거나 변경된 경우
           if (!currentSession && user) {
@@ -104,6 +133,12 @@ export const AuthProvider = ({ children }) => {
             } else {
               setProfile(null);
             }
+          } else if (currentSession && timeSinceLastCheck > 30 * 60 * 1000) {
+            // 30분 이상 백그라운드에 있었으면 세션 갱신
+            const { data: refreshData } = await supabase.auth.refreshSession();
+            if (refreshData?.session) {
+              setSession(refreshData.session);
+            }
           }
         } catch (err) {
           console.error('Visibility change session check error:', err);
@@ -113,10 +148,26 @@ export const AuthProvider = ({ children }) => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    // 네트워크 재연결 시 세션 확인 (컴퓨터 절전 모드 복귀 등)
+    const handleOnline = async () => {
+      if (mounted && user) {
+        try {
+          const { data: refreshData } = await supabase.auth.refreshSession();
+          if (refreshData?.session) {
+            setSession(refreshData.session);
+          }
+        } catch (err) {
+          console.warn('Online session refresh error:', err);
+        }
+      }
+    };
+    window.addEventListener('online', handleOnline);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('online', handleOnline);
     };
   }, []);
 

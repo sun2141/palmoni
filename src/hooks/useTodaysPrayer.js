@@ -153,9 +153,25 @@ export function useTodaysPrayer() {
             }
         };
 
+        // 네트워크 재연결 시 상태 새로고침 (컴퓨터 절전 모드 복귀 등)
+        const handleOnline = () => {
+            const now = Date.now();
+            const timeSinceLastVisible = now - lastVisibilityTime.current;
+
+            // 네트워크 재연결 시 데이터 동기화
+            if (timeSinceLastVisible > 60 * 1000) { // 1분 이상 오프라인이었으면
+                initialLoadDone.current = false;
+                setIsLoading(true);
+            }
+            lastVisibilityTime.current = now;
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('online', handleOnline);
+
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('online', handleOnline);
         };
     }, []);
 

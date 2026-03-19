@@ -1,4 +1,4 @@
-const CACHE_NAME = 'palmoni-v3';
+const CACHE_NAME = 'palmoni-v4';
 const STATIC_ASSETS = [
   '/offline.html'
 ];
@@ -88,6 +88,16 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
   if (event.data === 'clearCache') {
+    // 현재 캐시 버전만 유지하고 나머지 삭제
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        if (name !== CACHE_NAME) {
+          caches.delete(name);
+        }
+      });
+    });
+  }
+  if (event.data === 'clearAllCache') {
     caches.keys().then((names) => {
       names.forEach((name) => caches.delete(name));
     });

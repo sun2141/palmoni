@@ -536,7 +536,6 @@ export async function getTodaysPrayerSession(userId) {
   if (!userId) return { data: null, error: 'User not logged in' };
 
   const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
   // 오늘 세션 확인
   const { data: todaySession, error: todayError } = await supabase
@@ -592,24 +591,40 @@ export async function getTodaysPrayerSession(userId) {
     };
   }
 
-  // 어제 세션 확인 (완료된 기도 표시용)
-  const { data: yesterdaySession, error: yesterdayError } = await supabase
+  // 어제 또는 이전 세션 확인 (완료된 기도 표시용)
+  // 오늘보다 이전의 가장 최근 세션을 가져옴
+  const { data: oldSession, error: oldError } = await supabase
     .from('todays_prayer_sessions')
     .select('*')
     .eq('user_id', userId)
-    .eq('session_date', yesterday)
+    .lt('session_date', today)
+    .order('session_date', { ascending: false })
+    .limit(1)
     .single();
 
-  if (yesterdayError && yesterdayError.code !== 'PGRST116') {
-    console.error('Error fetching yesterday session:', yesterdayError);
+  if (oldError && oldError.code !== 'PGRST116') {
+    console.error('Error fetching old session:', oldError);
   }
 
-  if (yesterdaySession && yesterdaySession.status !== 'idle') {
+  if (oldSession && oldSession.status !== 'idle') {
+    // 이전 세션이 있으면 삭제 (한 번 알림 후 정리)
+    // 삭제는 비동기로 처리하고 데이터는 반환
+    supabase
+      .from('todays_prayer_sessions')
+      .delete()
+      .eq('id', oldSession.id)
+      .then(() => {
+        console.log('Old prayer session cleaned up');
+      })
+      .catch((e) => {
+        console.warn('Failed to delete old session:', e);
+      });
+
     // 여러 기도 데이터가 있으면 파싱
     let prayers = null;
-    if (yesterdaySession.prayers_data) {
+    if (oldSession.prayers_data) {
       try {
-        prayers = JSON.parse(yesterdaySession.prayers_data);
+        prayers = JSON.parse(oldSession.prayers_data);
       } catch (e) {
         console.error('Failed to parse prayers_data:', e);
       }
@@ -620,7 +635,7 @@ export async function getTodaysPrayerSession(userId) {
       return {
         data: {
           prayers: prayers.map(p => ({ ...p, status: 'completed' })),
-          date: yesterdaySession.session_date,
+          date: oldSession.session_date,
         },
         isYesterday: true,
         error: null,
@@ -631,15 +646,15 @@ export async function getTodaysPrayerSession(userId) {
     return {
       data: {
         prayer: {
-          topic: yesterdaySession.prayer_topic,
-          title: yesterdaySession.prayer_title,
-          content: yesterdaySession.prayer_content,
-          emotion: yesterdaySession.prayer_emotion,
+          topic: oldSession.prayer_topic,
+          title: oldSession.prayer_title,
+          content: oldSession.prayer_content,
+          emotion: oldSession.prayer_emotion,
         },
-        times: yesterdaySession.prayer_times,
-        currentIndex: yesterdaySession.current_index,
+        times: oldSession.prayer_times,
+        currentIndex: oldSession.current_index,
         status: 'yesterday_completed',
-        date: yesterdaySession.session_date,
+        date: oldSession.session_date,
       },
       isYesterday: true,
       error: null,

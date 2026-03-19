@@ -201,9 +201,13 @@ export function useTodaysPrayer() {
                     const { data, isYesterday, error } = await getTodaysPrayerSession(user.id);
                     if (data && !error) {
                         if (isYesterday) {
+                            // 어제 데이터 - 완료 메시지만 표시하고 데이터는 로드하지 않음
                             setIsYesterdayCompleted(true);
+                            setTodaysPrayers([]); // 오늘 기도는 비어있음
+                            // localStorage도 정리
+                            localStorage.removeItem(STORAGE_KEY);
                         } else {
-                            // 새 형식 또는 기존 형식 처리
+                            // 오늘 데이터 - 새 형식 또는 기존 형식 처리
                             if (data.prayers && Array.isArray(data.prayers)) {
                                 const restoredPrayers = data.prayers.map(p => ({
                                     ...p,

@@ -1,6 +1,6 @@
 /**
  * Firebase FCM 관련 함수들
- * Firebase SDK를 동적으로 로드하여 빌드 시 의존성 문제를 회피
+ * Firebase SDK를 CDN에서 동적으로 로드
  */
 
 const firebaseConfig = {
@@ -19,19 +19,27 @@ let messaging = null;
 let firebaseApp = null;
 let initPromise = null;
 
-// 모듈 이름을 변수로 분리하여 Vite/Rollup 정적 분석 회피
-const FIREBASE_APP_MODULE = 'firebase' + '/app';
-const FIREBASE_MESSAGING_MODULE = 'firebase' + '/messaging';
-
 /**
- * 동적 import wrapper (번들러 정적 분석 회피)
+ * CDN에서 스크립트 로드
  */
-async function dynamicImport(moduleName) {
-    return new Function('m', 'return import(m)')(moduleName);
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        // 이미 로드된 경우
+        if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
 }
 
 /**
- * Firebase 초기화 (lazy loading with error handling)
+ * Firebase 초기화 (CDN에서 로드)
  */
 async function initFirebase() {
     if (firebaseApp) return { app: firebaseApp, messaging };
@@ -44,11 +52,18 @@ async function initFirebase() {
 
     initPromise = (async () => {
         try {
-            const firebaseApp_module = await dynamicImport(FIREBASE_APP_MODULE);
-            const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
+            // Firebase SDK를 CDN에서 로드
+            await loadScript('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+            await loadScript('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
 
-            firebaseApp = firebaseApp_module.initializeApp(firebaseConfig);
-            messaging = firebaseMessaging_module.getMessaging(firebaseApp);
+            // 전역 firebase 객체 사용
+            if (!window.firebase) {
+                console.warn('Firebase SDK 로드 실패');
+                return { app: null, messaging: null };
+            }
+
+            firebaseApp = window.firebase.initializeApp(firebaseConfig);
+            messaging = window.firebase.messaging();
 
             console.log('Firebase 초기화 성공');
             return { app: firebaseApp, messaging };
@@ -72,8 +87,6 @@ export async function getFCMToken() {
             return null;
         }
 
-        const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
-
         // 알림 권한 요청
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
@@ -81,21 +94,33 @@ export async function getFCMToken() {
             return null;
         }
 
-        // Service Worker 등록 확인
-        const registration = await navigator.serviceWorker.getRegistration();
+        // Service Worker 등록 확인 - firebase-messaging-sw.js 사용
+        let registration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+        if (!registration) {
+            // firebase-messaging-sw.js 등록
+            try {
+                registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('Firebase Service Worker 등록 성공');
+            } catch (swError) {
+                console.warn('Firebase Service Worker 등록 실패:', swError);
+                // 기존 sw.js 사용 시도
+                registration = await navigator.serviceWorker.getRegistration();
+            }
+        }
+
         if (!registration) {
             console.warn('Service Worker가 등록되지 않았습니다');
             return null;
         }
 
         // FCM 토큰 가져오기
-        const token = await firebaseMessaging_module.getToken(msg, {
+        const token = await msg.getToken({
             vapidKey: VAPID_KEY,
             serviceWorkerRegistration: registration
         });
 
         if (token) {
-            console.log('FCM 토큰 발급 성공');
+            console.log('FCM 토큰 발급 성공:', token.substring(0, 20) + '...');
             return token;
         } else {
             console.warn('FCM 토큰을 가져올 수 없습니다');
@@ -111,12 +136,11 @@ export async function getFCMToken() {
  * 포그라운드 메시지 리스너 설정
  */
 export function onForegroundMessage(callback) {
-    initFirebase().then(async ({ messaging: msg }) => {
+    initFirebase().then(({ messaging: msg }) => {
         if (!msg) return;
 
         try {
-            const firebaseMessaging_module = await dynamicImport(FIREBASE_MESSAGING_MODULE);
-            firebaseMessaging_module.onMessage(msg, (payload) => {
+            msg.onMessage((payload) => {
                 console.log('포그라운드 메시지 수신:', payload);
                 callback(payload);
             });

@@ -627,6 +627,29 @@
     color: white;
 }
 
+/* === Safari/iOS Warning === */
+.safari-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: var(--radius-lg, 16px);
+}
+
+.safari-warning-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.safari-warning-text {
+    font-size: 0.75rem;
+    color: #92400e;
+    line-height: 1.4;
+}
+
 /* === Prayer Schedule Preview === */
 .prayer-schedule-preview {
     margin-top: 1rem;

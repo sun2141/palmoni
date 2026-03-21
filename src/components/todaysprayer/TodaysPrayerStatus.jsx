@@ -1,8 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNotification } from '../../hooks/useNotification';
 import { usePushSubscription } from '../../hooks/usePushSubscription';
 import { useAuth } from '../../contexts/AuthContext';
 import './TodaysPrayerStatus.css';
+
+// Safari/iOS 감지
+function detectBrowser() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isChrome = /Chrome/.test(ua) && !/Edg/.test(ua);
+    const isEdge = /Edg/.test(ua);
+
+    return { isIOS, isSafari, isChrome, isEdge };
+}
 
 /**
  * 오늘의 기도 상태 표시 컴포넌트 (여러 기도 지원)
@@ -23,7 +34,11 @@ export function TodaysPrayerStatus({
 }) {
     const { user } = useAuth();
     const { isSupported, permission, requestPermission, canNotify, sendTestNotification } = useNotification();
-    const { isSubscribed, isLoading: pushLoading, subscribe: subscribePush } = usePushSubscription();
+    const { isSubscribed, isLoading: pushLoading, subscribe: subscribePush, canSubscribe } = usePushSubscription();
+
+    // 브라우저 감지
+    const browser = useMemo(() => detectBrowser(), []);
+    const showSafariWarning = browser.isIOS || browser.isSafari;
 
     // 알림 권한 요청 핸들러 - 권한 획득 시 FCM 구독도 함께 진행
     const handleEnableNotifications = async () => {
@@ -104,11 +119,23 @@ export function TodaysPrayerStatus({
                     <span className="notification-active-text">
                         {isSubscribed ? '앱이 꺼져있어도 알림을 보내드려요' : '기도 시간에 알림을 보내드려요'}
                     </span>
-                    {user && !isSubscribed && !pushLoading && (
+                    {user && !isSubscribed && !pushLoading && canSubscribe && !showSafariWarning && (
                         <button className="push-upgrade-btn" onClick={subscribePush}>
                             백그라운드 알림 켜기
                         </button>
                     )}
+                </div>
+            )}
+
+            {/* Safari/iOS 사용자 안내 */}
+            {showSafariWarning && todaysPrayers.some(p => p.status === 'praying') && (
+                <div className="safari-warning">
+                    <span className="safari-warning-icon">ℹ️</span>
+                    <span className="safari-warning-text">
+                        {browser.isIOS
+                            ? '아이폰에서는 앱을 열어둔 상태에서만 알림을 받을 수 있어요'
+                            : 'Safari에서는 백그라운드 알림이 지원되지 않아요. Chrome을 사용해보세요'}
+                    </span>
                 </div>
             )}
 

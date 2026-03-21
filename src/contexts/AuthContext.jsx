@@ -24,8 +24,18 @@ export const AuthProvider = ({ children }) => {
   // 세션 초기화 및 복원
   useEffect(() => {
     let mounted = true;
+    let initTimeout = null;
 
     const initializeAuth = async () => {
+      // 타임아웃 설정 (5초 후에도 완료되지 않으면 강제 초기화)
+      initTimeout = setTimeout(() => {
+        if (mounted && !isInitialized) {
+          console.warn('Auth initialization timeout - forcing completion');
+          setLoading(false);
+          setIsInitialized(true);
+        }
+      }, 5000);
+
       try {
         // 저장된 세션 복원 시도
         const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
@@ -38,17 +48,25 @@ export const AuthProvider = ({ children }) => {
           if (restoredSession?.user) {
             setSession(restoredSession);
             setUser(restoredSession.user);
-            await loadUserProfile(restoredSession.user.id);
+            // 프로필 로드 실패해도 앱은 계속 진행
+            try {
+              await loadUserProfile(restoredSession.user.id);
+            } catch (profileErr) {
+              console.warn('Profile load failed:', profileErr);
+              setLoading(false);
+            }
           } else {
             setLoading(false);
           }
           setIsInitialized(true);
+          if (initTimeout) clearTimeout(initTimeout);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
         if (mounted) {
           setLoading(false);
           setIsInitialized(true);
+          if (initTimeout) clearTimeout(initTimeout);
         }
       }
     };
@@ -187,6 +205,7 @@ export const AuthProvider = ({ children }) => {
 
     return () => {
       mounted = false;
+      if (initTimeout) clearTimeout(initTimeout);
       subscription.unsubscribe();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pageshow', handlePageShow);

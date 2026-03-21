@@ -8,14 +8,28 @@ import './index.css'
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('SW registration failed:', error);
-      });
+  window.addEventListener('load', async () => {
+    try {
+      // 앱 시작 시 오래된 캐시 정리
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames
+            .filter(name => name !== 'palmoni-v5')
+            .map(name => caches.delete(name))
+        );
+      }
+
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('SW registered:', registration.scope);
+
+      // 새 서비스 워커가 대기 중이면 즉시 활성화
+      if (registration.waiting) {
+        registration.waiting.postMessage('skipWaiting');
+      }
+    } catch (error) {
+      console.log('SW registration failed:', error);
+    }
   });
 }
 

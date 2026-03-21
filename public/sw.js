@@ -1,4 +1,4 @@
-const CACHE_NAME = 'palmoni-v4';
+const CACHE_NAME = 'palmoni-v5';
 const STATIC_ASSETS = [
   '/offline.html'
 ];
@@ -11,7 +11,16 @@ const NO_CACHE_PATTERNS = [
   'gstatic.com',
   'stripe.com',
   'chrome-extension',
-  '/api/'
+  '/api/',
+  'firebase'
+];
+
+// 캐시하지 않을 파일 확장자 (동적 콘텐츠)
+const NO_CACHE_EXTENSIONS = [
+  '.html',
+  '.js',
+  '.css',
+  '.json'
 ];
 
 // Install event - 최소한의 오프라인 페이지만 캐시
@@ -62,12 +71,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 그 외 요청: Network First (실패 시에만 캐시)
+  // JS/CSS/HTML 등 동적 콘텐츠는 캐시하지 않음 (항상 네트워크에서)
+  if (NO_CACHE_EXTENSIONS.some(ext => url.pathname.endsWith(ext))) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // 이미지/폰트만 캐시: Network First
   event.respondWith(
     fetch(request)
       .then((response) => {
-        // 성공적인 응답만 캐시 (선택적)
-        if (response.ok && url.pathname.match(/\.(png|jpg|jpeg|svg|ico|woff2?)$/)) {
+        // 이미지/폰트만 캐시
+        if (response.ok && url.pathname.match(/\.(png|jpg|jpeg|svg|ico|woff2?|webp)$/)) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(request, responseClone);

@@ -293,6 +293,7 @@ export function useTodaysPrayer() {
 
         const checkPrayerTimes = () => {
             const now = new Date();
+            const nowTime = now.getTime();
 
             todaysPrayers.forEach((prayer, prayerIdx) => {
                 if (prayer.status !== 'praying') return;
@@ -301,7 +302,34 @@ export function useTodaysPrayer() {
                 if (processingPrayerRef.current.has(prayerIdx)) return;
 
                 const nextPrayerTime = prayer.times[prayer.currentIndex];
-                if (nextPrayerTime && now >= nextPrayerTime) {
+                if (!nextPrayerTime) return;
+
+                const prayerTime = nextPrayerTime.getTime();
+                const timeDiff = nowTime - prayerTime;
+
+                // 기도 시간이 5분 이상 지났으면 (이미 놓친 기도) 건너뛰기
+                if (timeDiff > 5 * 60 * 1000) {
+                    console.log('기도 시간이 지남, 건너뜀:', prayer.currentIndex);
+                    setTodaysPrayers(prev => {
+                        const updatedPrayers = [...prev];
+                        const currentPrayer = updatedPrayers[prayerIdx];
+                        if (!currentPrayer) return prev;
+
+                        const nextIndex = currentPrayer.currentIndex + 1;
+                        if (nextIndex >= currentPrayer.times.length) {
+                            currentPrayer.status = 'completed';
+                            currentPrayer.currentIndex = nextIndex;
+                        } else {
+                            currentPrayer.currentIndex = nextIndex;
+                        }
+                        saveToStorage(updatedPrayers);
+                        return updatedPrayers;
+                    });
+                    return;
+                }
+
+                // 기도 시간이 됐거나 5분 이내로 지났으면 애니메이션 표시
+                if (timeDiff >= 0 && timeDiff <= 5 * 60 * 1000) {
                     // 처리 중 표시
                     processingPrayerRef.current.add(prayerIdx);
 

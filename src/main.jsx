@@ -15,7 +15,7 @@ if ('serviceWorker' in navigator) {
         const cacheNames = await caches.keys();
         await Promise.all(
           cacheNames
-            .filter(name => name !== 'palmoni-v5')
+            .filter(name => name !== 'palmoni-v6')
             .map(name => caches.delete(name))
         );
       }

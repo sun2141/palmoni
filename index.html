@@ -51,6 +51,33 @@
     <!-- Google AdSense (실제 발급 후 ca-pub-XXXXXXXX 부분 교체 필요) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
+
+    <!-- 앱 시작 시 캐시 강제 정리 (안드로이드 호환성) -->
+    <script>
+      (function() {
+        // 서비스 워커 및 캐시 정리
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            registrations.forEach(function(registration) {
+              // 새 버전 대기 중이면 활성화
+              if (registration.waiting) {
+                registration.waiting.postMessage('skipWaiting');
+              }
+            });
+          });
+        }
+        // 캐시 정리
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) {
+              if (name !== 'palmoni-v6') {
+                caches.delete(name);
+              }
+            });
+          });
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

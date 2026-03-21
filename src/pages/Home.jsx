@@ -277,6 +277,12 @@ export function Home() {
         // 중복 호출 방지
         if (isGenerating) return;
 
+        // 앱 초기화 대기
+        if (!isInitialized) {
+            toast.warning('앱이 초기화 중입니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
         const userId = user?.id || null;
         const anonymousId = !userId ? getAnonymousId() : null;
 
@@ -379,6 +385,10 @@ export function Home() {
     };
 
     const handleLogout = async () => {
+        if (!isInitialized) {
+            toast.warning('앱이 초기화 중입니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
         await signOut();
         setRateLimitInfo(null);
         handleReset();

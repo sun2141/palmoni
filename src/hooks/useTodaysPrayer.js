@@ -287,8 +287,13 @@ export function useTodaysPrayer() {
     }, [user, saveToStorageInternal]);
 
     // 앱 로드 시 지난 기도 시간들을 모두 건너뛰기 (애니메이션 없이)
+    // 최초 로드 시 한 번만 실행
+    const skipPastPrayersRef = useRef(false);
     useEffect(() => {
         if (isLoading || todaysPrayers.length === 0) return;
+        // 이미 처리했으면 스킵
+        if (skipPastPrayersRef.current) return;
+        skipPastPrayersRef.current = true;
 
         const now = new Date();
         const nowTime = now.getTime();
@@ -327,19 +332,26 @@ export function useTodaysPrayer() {
             setTodaysPrayers(updatedPrayers);
             saveToStorage(updatedPrayers);
         }
-    }, [isLoading, todaysPrayers.length]); // todaysPrayers 전체가 아닌 length만 의존
+    }, [isLoading, todaysPrayers.length, saveToStorage]); // 의존성 추가
 
     // 각 기도의 시간 체크 (모든 진행 중인 기도를 독립적으로 관리)
+    // todaysPrayers를 ref로 관리하여 effect 재실행 최소화
+    const todaysPrayersRef = useRef(todaysPrayers);
+    useEffect(() => {
+        todaysPrayersRef.current = todaysPrayers;
+    }, [todaysPrayers]);
+
     useEffect(() => {
         const prayingPrayers = todaysPrayers.filter(p => p.status === 'praying');
         if (prayingPrayers.length === 0) return;
 
         const checkPrayerTimes = () => {
+            const prayers = todaysPrayersRef.current;
             const now = new Date();
             const nowTime = now.getTime();
             const fiveMinutes = 5 * 60 * 1000;
 
-            todaysPrayers.forEach((prayer, prayerIdx) => {
+            prayers.forEach((prayer, prayerIdx) => {
                 if (prayer.status !== 'praying') return;
 
                 // 이미 처리 중인 기도는 건너뜀
@@ -411,10 +423,17 @@ export function useTodaysPrayer() {
         };
 
         const interval = setInterval(checkPrayerTimes, 30000); // 30초마다 체크
-        checkPrayerTimes(); // 즉시 한 번 체크
 
-        return () => clearInterval(interval);
-    }, [todaysPrayers, saveToStorage]);
+        // 앱 시작 시 즉시 체크하지 않고 1초 후에 체크 (다른 effect들이 완료되도록)
+        const initialCheck = setTimeout(checkPrayerTimes, 1000);
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(initialCheck);
+        };
+    // prayingCount만 의존하여 새 기도 추가 시에만 재실행
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [todaysPrayers.length, saveToStorage]);
 
     // 새 기도 맡기기 (기존 기도에 추가)
     const submitPrayer = useCallback((prayer) => {

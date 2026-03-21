@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getFCMToken, onForegroundMessage } from '../lib/firebase';
+import { getFCMToken, onForegroundMessage, isFCMSupported } from '../lib/firebase';
 import { supabase } from '../lib/supabaseClient';
 
 /**
@@ -12,6 +12,10 @@ export function usePushSubscription() {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // 중복 호출 방지
+    const subscribingRef = useRef(false);
+    const foregroundListenerSetRef = useRef(false);
 
     // 구독 상태 확인
     useEffect(() => {
@@ -27,9 +31,9 @@ export function usePushSubscription() {
                     .select('id')
                     .eq('user_id', user.id)
                     .eq('is_active', true)
-                    .single();
+                    .limit(1);
 
-                setIsSubscribed(!!data);
+                setIsSubscribed(data && data.length > 0);
             } catch (e) {
                 // 구독 없음
                 setIsSubscribed(false);
@@ -41,20 +45,35 @@ export function usePushSubscription() {
 
     // 포그라운드 메시지 리스너 설정
     useEffect(() => {
-        const unsubscribe = onForegroundMessage((payload) => {
-            // 앱이 열려있을 때는 토스트로 알림 표시
-            if (payload.notification) {
-                // 브라우저 알림 표시 (앱이 포커스 상태가 아닐 때)
-                if (document.visibilityState !== 'visible') {
-                    new Notification(payload.notification.title, {
-                        body: payload.notification.body,
-                        icon: '/apple-touch-icon.png'
-                    });
+        // 이미 설정되어 있으면 스킵
+        if (foregroundListenerSetRef.current) return;
+        foregroundListenerSetRef.current = true;
+
+        let unsubscribe = null;
+
+        const setupListener = async () => {
+            unsubscribe = await onForegroundMessage((payload) => {
+                // 앱이 열려있을 때는 토스트로 알림 표시
+                if (payload.notification) {
+                    // 브라우저 알림 표시 (앱이 포커스 상태가 아닐 때)
+                    if (document.visibilityState !== 'visible') {
+                        try {
+                            new Notification(payload.notification.title, {
+                                body: payload.notification.body,
+                                icon: '/apple-touch-icon.png'
+                            });
+                        } catch (e) {
+                            console.warn('알림 표시 실패:', e);
+                        }
+                    }
                 }
-            }
-        });
+            });
+        };
+
+        setupListener();
 
         return () => {
+            foregroundListenerSetRef.current = false;
             if (typeof unsubscribe === 'function') {
                 unsubscribe();
             }
@@ -68,6 +87,13 @@ export function usePushSubscription() {
             return false;
         }
 
+        // 이미 구독 중이면 중복 호출 방지
+        if (subscribingRef.current) {
+            console.log('이미 구독 진행 중');
+            return false;
+        }
+
+        subscribingRef.current = true;
         setIsLoading(true);
         setError(null);
 
@@ -77,6 +103,7 @@ export function usePushSubscription() {
             if (!token) {
                 setError('알림 권한을 허용해주세요');
                 setIsLoading(false);
+                subscribingRef.current = false;
                 return false;
             }
 
@@ -88,14 +115,22 @@ export function usePushSubscription() {
                 subscribedAt: new Date().toISOString()
             };
 
-            // Supabase에 토큰 저장
+            // 기존 토큰 비활성화 (같은 유저의 다른 디바이스 토큰)
+            await supabase
+                .from('push_subscriptions')
+                .update({ is_active: false })
+                .eq('user_id', user.id)
+                .neq('fcm_token', token);
+
+            // Supabase에 토큰 저장 (upsert)
             const { error: dbError } = await supabase
                 .from('push_subscriptions')
                 .upsert({
                     user_id: user.id,
                     fcm_token: token,
                     device_info: deviceInfo,
-                    is_active: true
+                    is_active: true,
+                    updated_at: new Date().toISOString()
                 }, {
                     onConflict: 'user_id,fcm_token'
                 });
@@ -104,16 +139,20 @@ export function usePushSubscription() {
                 console.error('푸시 구독 저장 실패:', dbError);
                 setError('구독 저장에 실패했습니다');
                 setIsLoading(false);
+                subscribingRef.current = false;
                 return false;
             }
 
+            console.log('푸시 구독 성공');
             setIsSubscribed(true);
             setIsLoading(false);
+            subscribingRef.current = false;
             return true;
         } catch (e) {
             console.error('푸시 구독 실패:', e);
             setError('구독에 실패했습니다');
             setIsLoading(false);
+            subscribingRef.current = false;
             return false;
         }
     }, [user]);
@@ -153,6 +192,6 @@ export function usePushSubscription() {
         error,
         subscribe,
         unsubscribe,
-        canSubscribe: 'Notification' in window && 'serviceWorker' in navigator
+        canSubscribe: isFCMSupported()
     };
 }

@@ -18,6 +18,7 @@ const VAPID_KEY = 'BBUhUZGnGAa9n6szH5F9IgTD88ZXJvNDSwgN8SWyFhokjF3DifE_WcSm2qlDp
 let messaging = null;
 let firebaseApp = null;
 let initPromise = null;
+let messageUnsubscribe = null;
 
 /**
  * CDN에서 스크립트 로드
@@ -42,8 +43,15 @@ function loadScript(src) {
  * Firebase 초기화 (CDN에서 로드)
  */
 async function initFirebase() {
-    if (firebaseApp) return { app: firebaseApp, messaging };
-    if (initPromise) return initPromise;
+    // 이미 초기화 완료된 경우
+    if (firebaseApp && messaging) {
+        return { app: firebaseApp, messaging };
+    }
+
+    // 초기화 진행 중인 경우 - 완료될 때까지 대기
+    if (initPromise) {
+        return initPromise;
+    }
 
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
         console.warn('FCM이 지원되지 않는 환경입니다');
@@ -59,21 +67,60 @@ async function initFirebase() {
             // 전역 firebase 객체 사용
             if (!window.firebase) {
                 console.warn('Firebase SDK 로드 실패');
+                initPromise = null; // 재시도 가능하도록
                 return { app: null, messaging: null };
             }
 
-            firebaseApp = window.firebase.initializeApp(firebaseConfig);
+            // 이미 초기화되어 있는지 확인
+            try {
+                firebaseApp = window.firebase.app();
+            } catch {
+                firebaseApp = window.firebase.initializeApp(firebaseConfig);
+            }
+
             messaging = window.firebase.messaging();
 
             console.log('Firebase 초기화 성공');
             return { app: firebaseApp, messaging };
         } catch (error) {
             console.warn('Firebase 로드 실패:', error.message);
+            initPromise = null; // 재시도 가능하도록
             return { app: null, messaging: null };
         }
     })();
 
     return initPromise;
+}
+
+/**
+ * Firebase Service Worker 등록
+ */
+async function registerFirebaseServiceWorker() {
+    try {
+        // 먼저 firebase-messaging-sw.js가 등록되어 있는지 확인
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        let firebaseSW = registrations.find(reg =>
+            reg.active?.scriptURL?.includes('firebase-messaging-sw.js')
+        );
+
+        if (firebaseSW) {
+            console.log('Firebase Service Worker 이미 등록됨');
+            return firebaseSW;
+        }
+
+        // 새로 등록
+        firebaseSW = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+            scope: '/firebase-cloud-messaging-push-scope'
+        });
+
+        // 활성화 대기
+        await navigator.serviceWorker.ready;
+        console.log('Firebase Service Worker 등록 성공');
+        return firebaseSW;
+    } catch (error) {
+        console.error('Firebase Service Worker 등록 실패:', error);
+        return null;
+    }
 }
 
 /**
@@ -94,22 +141,10 @@ export async function getFCMToken() {
             return null;
         }
 
-        // Service Worker 등록 확인 - firebase-messaging-sw.js 사용
-        let registration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+        // Firebase Service Worker 등록
+        const registration = await registerFirebaseServiceWorker();
         if (!registration) {
-            // firebase-messaging-sw.js 등록
-            try {
-                registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                console.log('Firebase Service Worker 등록 성공');
-            } catch (swError) {
-                console.warn('Firebase Service Worker 등록 실패:', swError);
-                // 기존 sw.js 사용 시도
-                registration = await navigator.serviceWorker.getRegistration();
-            }
-        }
-
-        if (!registration) {
-            console.warn('Service Worker가 등록되지 않았습니다');
+            console.warn('Firebase Service Worker를 등록할 수 없습니다');
             return null;
         }
 
@@ -135,21 +170,48 @@ export async function getFCMToken() {
 /**
  * 포그라운드 메시지 리스너 설정
  */
-export function onForegroundMessage(callback) {
-    initFirebase().then(({ messaging: msg }) => {
-        if (!msg) return;
-
-        try {
-            msg.onMessage((payload) => {
-                console.log('포그라운드 메시지 수신:', payload);
-                callback(payload);
-            });
-        } catch (error) {
-            console.warn('포그라운드 메시지 리스너 설정 실패:', error);
+export async function onForegroundMessage(callback) {
+    try {
+        const { messaging: msg } = await initFirebase();
+        if (!msg) {
+            console.log('FCM 사용 불가 - 포그라운드 리스너 미설정');
+            return () => {};
         }
-    });
 
-    return () => {};
+        // 기존 리스너가 있으면 정리 (중복 방지)
+        if (messageUnsubscribe) {
+            console.log('기존 포그라운드 리스너 정리');
+        }
+
+        // 새 리스너 설정
+        messageUnsubscribe = msg.onMessage((payload) => {
+            console.log('포그라운드 메시지 수신:', payload);
+            callback(payload);
+        });
+
+        console.log('포그라운드 메시지 리스너 설정 완료');
+
+        return () => {
+            if (messageUnsubscribe) {
+                // Firebase compat SDK는 unsubscribe 함수를 반환하지 않으므로
+                // 단순히 참조 정리
+                messageUnsubscribe = null;
+            }
+        };
+    } catch (error) {
+        console.warn('포그라운드 메시지 리스너 설정 실패:', error);
+        return () => {};
+    }
+}
+
+/**
+ * FCM 지원 여부 확인
+ */
+export function isFCMSupported() {
+    return typeof window !== 'undefined'
+        && 'serviceWorker' in navigator
+        && 'PushManager' in window
+        && 'Notification' in window;
 }
 
 export { messaging };

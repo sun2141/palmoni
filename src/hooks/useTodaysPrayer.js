@@ -286,6 +286,49 @@ export function useTodaysPrayer() {
         loadPrayerSession();
     }, [user, saveToStorageInternal]);
 
+    // 앱 로드 시 지난 기도 시간들을 모두 건너뛰기 (애니메이션 없이)
+    useEffect(() => {
+        if (isLoading || todaysPrayers.length === 0) return;
+
+        const now = new Date();
+        const nowTime = now.getTime();
+        const fiveMinutes = 5 * 60 * 1000;
+        let needsUpdate = false;
+
+        const updatedPrayers = todaysPrayers.map(prayer => {
+            if (prayer.status !== 'praying') return prayer;
+
+            // 지난 기도 시간들을 모두 건너뛰기
+            let newIndex = prayer.currentIndex;
+            while (newIndex < prayer.times.length) {
+                const prayerTime = prayer.times[newIndex].getTime();
+                const timeDiff = nowTime - prayerTime;
+
+                // 5분 이상 지난 기도는 건너뜀
+                if (timeDiff > fiveMinutes) {
+                    console.log('지난 기도 건너뜀:', newIndex, '시간차:', Math.floor(timeDiff / 60000), '분');
+                    newIndex++;
+                } else {
+                    break;
+                }
+            }
+
+            if (newIndex !== prayer.currentIndex) {
+                needsUpdate = true;
+                if (newIndex >= prayer.times.length) {
+                    return { ...prayer, currentIndex: newIndex, status: 'completed' };
+                }
+                return { ...prayer, currentIndex: newIndex };
+            }
+            return prayer;
+        });
+
+        if (needsUpdate) {
+            setTodaysPrayers(updatedPrayers);
+            saveToStorage(updatedPrayers);
+        }
+    }, [isLoading, todaysPrayers.length]); // todaysPrayers 전체가 아닌 length만 의존
+
     // 각 기도의 시간 체크 (모든 진행 중인 기도를 독립적으로 관리)
     useEffect(() => {
         const prayingPrayers = todaysPrayers.filter(p => p.status === 'praying');
@@ -294,6 +337,7 @@ export function useTodaysPrayer() {
         const checkPrayerTimes = () => {
             const now = new Date();
             const nowTime = now.getTime();
+            const fiveMinutes = 5 * 60 * 1000;
 
             todaysPrayers.forEach((prayer, prayerIdx) => {
                 if (prayer.status !== 'praying') return;
@@ -307,8 +351,11 @@ export function useTodaysPrayer() {
                 const prayerTime = nextPrayerTime.getTime();
                 const timeDiff = nowTime - prayerTime;
 
-                // 기도 시간이 5분 이상 지났으면 (이미 놓친 기도) 건너뛰기
-                if (timeDiff > 5 * 60 * 1000) {
+                // 기도 시간이 아직 안 됐으면 (미래 시간) 건너뜀
+                if (timeDiff < 0) return;
+
+                // 기도 시간이 5분 이상 지났으면 (이미 놓친 기도) 조용히 건너뛰기
+                if (timeDiff > fiveMinutes) {
                     console.log('기도 시간이 지남, 건너뜀:', prayer.currentIndex);
                     setTodaysPrayers(prev => {
                         const updatedPrayers = [...prev];
@@ -328,40 +375,38 @@ export function useTodaysPrayer() {
                     return;
                 }
 
-                // 기도 시간이 됐거나 5분 이내로 지났으면 애니메이션 표시
-                if (timeDiff >= 0 && timeDiff <= 5 * 60 * 1000) {
-                    // 처리 중 표시
-                    processingPrayerRef.current.add(prayerIdx);
+                // 기도 시간이 됐고 5분 이내면 애니메이션 표시
+                // 처리 중 표시
+                processingPrayerRef.current.add(prayerIdx);
 
-                    // 기도 시간이 되면 애니메이션 표시
-                    setShowPrayingAnimation(true);
-                    setActivePrayerIndex(prayerIdx);
+                // 기도 시간이 되면 애니메이션 표시
+                setShowPrayingAnimation(true);
+                setActivePrayerIndex(prayerIdx);
 
-                    // 20초 후 다음 기도로 넘어감 (기도문 읽을 시간 확보)
-                    setTimeout(() => {
-                        setShowPrayingAnimation(false);
-                        setActivePrayerIndex(-1);
+                // 20초 후 다음 기도로 넘어감 (기도문 읽을 시간 확보)
+                setTimeout(() => {
+                    setShowPrayingAnimation(false);
+                    setActivePrayerIndex(-1);
 
-                        setTodaysPrayers(prev => {
-                            const updatedPrayers = [...prev];
-                            const currentPrayer = updatedPrayers[prayerIdx];
-                            if (!currentPrayer) return prev;
+                    setTodaysPrayers(prev => {
+                        const updatedPrayers = [...prev];
+                        const currentPrayer = updatedPrayers[prayerIdx];
+                        if (!currentPrayer) return prev;
 
-                            const nextIndex = currentPrayer.currentIndex + 1;
-                            if (nextIndex >= currentPrayer.times.length) {
-                                currentPrayer.status = 'completed';
-                                currentPrayer.currentIndex = nextIndex;
-                            } else {
-                                currentPrayer.currentIndex = nextIndex;
-                            }
-                            saveToStorage(updatedPrayers);
-                            return updatedPrayers;
-                        });
+                        const nextIndex = currentPrayer.currentIndex + 1;
+                        if (nextIndex >= currentPrayer.times.length) {
+                            currentPrayer.status = 'completed';
+                            currentPrayer.currentIndex = nextIndex;
+                        } else {
+                            currentPrayer.currentIndex = nextIndex;
+                        }
+                        saveToStorage(updatedPrayers);
+                        return updatedPrayers;
+                    });
 
-                        // 처리 완료 표시
-                        processingPrayerRef.current.delete(prayerIdx);
-                    }, 20000); // 20초
-                }
+                    // 처리 완료 표시
+                    processingPrayerRef.current.delete(prayerIdx);
+                }, 20000); // 20초
             });
         };
 

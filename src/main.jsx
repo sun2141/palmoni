@@ -4,7 +4,17 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './components/common/Toast'
+import ErrorBoundary from './components/ErrorBoundary'
 import './index.css'
+
+// 전역 에러 핸들러 (디버그용)
+window.onerror = function(message, source, lineno, colno, error) {
+    console.error('Global error:', message, source, lineno, colno, error);
+    return false;
+};
+window.onunhandledrejection = function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+};
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
@@ -35,12 +45,14 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <BrowserRouter>
-            <AuthProvider>
-                <ToastProvider>
-                    <App />
-                </ToastProvider>
-            </AuthProvider>
-        </BrowserRouter>
+        <ErrorBoundary>
+            <BrowserRouter>
+                <AuthProvider>
+                    <ToastProvider>
+                        <App />
+                    </ToastProvider>
+                </AuthProvider>
+            </BrowserRouter>
+        </ErrorBoundary>
     </React.StrictMode>,
 )

@@ -80,7 +80,23 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- React 로드 전 표시 -->
+      <div id="app-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+        <div style="font-size:48px;margin-bottom:20px;">🕊️</div>
+        <div style="color:#6C47FF;font-size:24px;font-weight:bold;">PALMONI</div>
+        <div style="color:#999;margin-top:10px;">로딩 중...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // 10초 후에도 로딩이 안 끝나면 에러 표시
+      setTimeout(function() {
+        var loading = document.getElementById('app-loading');
+        if (loading) {
+          loading.innerHTML = '<div style="text-align:center;padding:20px;"><h2 style="color:#e74c3c;">앱 로드 실패</h2><p>네트워크 연결을 확인하고 새로고침해주세요.</p><button onclick="location.reload()" style="padding:12px 24px;background:#6C47FF;color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">새로고침</button></div>';
+        }
+      }, 10000);
+    </script>
   </body>
 </html>

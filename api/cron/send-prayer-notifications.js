@@ -72,6 +72,12 @@ async function getAccessToken() {
     return data.access_token;
 }
 
+// Base64 URL 인코딩 (패딩 제거 및 URL-safe 문자 변환)
+function base64UrlEncode(str) {
+    const base64 = Buffer.from(str).toString('base64');
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
 // JWT 생성 (Firebase 인증용)
 async function createJWT(serviceAccount) {
     const header = { alg: 'RS256', typ: 'JWT' };
@@ -85,16 +91,18 @@ async function createJWT(serviceAccount) {
         scope: 'https://www.googleapis.com/auth/firebase.messaging'
     };
 
-    const encoder = new TextEncoder();
-    const headerB64 = btoa(JSON.stringify(header)).replace(/=/g, '');
-    const payloadB64 = btoa(JSON.stringify(payload)).replace(/=/g, '');
+    const headerB64 = base64UrlEncode(JSON.stringify(header));
+    const payloadB64 = base64UrlEncode(JSON.stringify(payload));
     const signInput = `${headerB64}.${payloadB64}`;
 
     // Node.js crypto로 서명
     const crypto = await import('crypto');
     const sign = crypto.createSign('RSA-SHA256');
     sign.update(signInput);
-    const signature = sign.sign(serviceAccount.private_key, 'base64url');
+    const signature = sign.sign(serviceAccount.private_key, 'base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
 
     return `${signInput}.${signature}`;
 }
@@ -114,8 +122,9 @@ export default async function handler(req, res) {
         // todays_prayer_sessions에서 현재 시간에 기도해야 하는 세션 찾기
         const { data: sessions, error: sessionsError } = await supabaseAdmin
             .from('todays_prayer_sessions')
-            .select('user_id, session_data')
-            .eq('session_date', today);
+            .select('user_id, prayers_data, prayer_times, current_index, status, prayer_topic')
+            .eq('session_date', today)
+            .neq('status', 'completed');
 
         if (sessionsError) {
             console.error('세션 조회 실패:', sessionsError);
@@ -128,24 +137,46 @@ export default async function handler(req, res) {
         const fiveMinutes = 5 * 60 * 1000;
 
         for (const session of sessions || []) {
-            const sessionData = session.session_data;
-            if (!sessionData?.prayers) continue;
+            // prayers_data가 있으면 여러 기도 형식
+            if (session.prayers_data) {
+                let prayers;
+                try {
+                    prayers = JSON.parse(session.prayers_data);
+                } catch (e) {
+                    console.warn('prayers_data 파싱 실패:', e);
+                    continue;
+                }
 
-            for (const prayer of sessionData.prayers) {
-                if (prayer.status !== 'praying') continue;
+                for (const prayer of prayers) {
+                    if (prayer.status !== 'praying') continue;
 
-                const currentIndex = prayer.currentIndex || 0;
-                const times = prayer.times || [];
+                    const currentIndex = prayer.currentIndex || 0;
+                    const times = prayer.times || [];
+
+                    if (currentIndex < times.length) {
+                        const prayerTime = new Date(times[currentIndex]).getTime();
+                        // 기도 시간 5분 이내면 알림 대상
+                        if (Math.abs(nowTime - prayerTime) < fiveMinutes) {
+                            usersToNotify.push({
+                                userId: session.user_id,
+                                topic: prayer.prayer?.topic || '기도'
+                            });
+                            break; // 사용자당 하나만
+                        }
+                    }
+                }
+            } else if (session.prayer_times && session.status === 'praying') {
+                // 기존 단일 기도 형식
+                const currentIndex = session.current_index || 0;
+                const times = session.prayer_times || [];
 
                 if (currentIndex < times.length) {
                     const prayerTime = new Date(times[currentIndex]).getTime();
-                    // 기도 시간 5분 이내면 알림 대상
                     if (Math.abs(nowTime - prayerTime) < fiveMinutes) {
                         usersToNotify.push({
                             userId: session.user_id,
-                            topic: prayer.prayer?.topic || '기도'
+                            topic: session.prayer_topic || '기도'
                         });
-                        break; // 사용자당 하나만
                     }
                 }
             }

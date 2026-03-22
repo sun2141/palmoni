@@ -1,0 +1,182 @@
+.pray-together-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pray-together-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pray-together-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.pray-together-header .pray-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.pray-together-header .pray-icon.animated {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.pray-together-header h2 {
+    font-size: 20px;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.pray-together-header p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.pray-together-header.praying h2 {
+    color: #6C47FF;
+}
+
+.pray-together-preview {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.pray-together-preview h3 {
+    font-size: 16px;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.pray-together-preview .preview-content {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.pray-together-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pray-btn {
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.pray-btn.primary {
+    background: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%);
+    color: white;
+}
+
+.pray-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 71, 255, 0.3);
+}
+
+.pray-btn.secondary {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.pray-btn.secondary:hover {
+    background: #e0e0e0;
+}
+
+.pray-btn.skip {
+    background: transparent;
+    color: #6C47FF;
+    margin-top: 16px;
+}
+
+.pray-together-content {
+    margin-bottom: 24px;
+}
+
+.pray-together-content h3 {
+    font-size: 18px;
+    color: #6C47FF;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+
+.prayer-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pray-progress {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.pray-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6C47FF 0%, #8B6FFF 100%);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+.pray-hint {
+    text-align: center;
+    font-size: 13px;
+    color: #999;
+    margin: 0;
+}

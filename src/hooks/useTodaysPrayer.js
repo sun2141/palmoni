@@ -89,10 +89,21 @@ export function useTodaysPrayer() {
                             setIsYesterdayCompleted(true);
                             setTodaysPrayers([]);
                             localStorage.removeItem(STORAGE_KEY);
+                            loaded = true;
                         } else if (data.prayers && Array.isArray(data.prayers)) {
-                            setTodaysPrayers(data.prayers);
+                            // 이전 형식 데이터 감지
+                            const isOldFormat = data.prayers.some(p => p.times || p.status || p.currentIndex !== undefined);
+                            if (isOldFormat) {
+                                // 이전 형식은 무시하고 새로 시작
+                                console.log('Supabase 이전 형식 데이터 감지, 초기화합니다.');
+                                setTodaysPrayers([]);
+                            } else {
+                                // 새 형식: prayedAt이 있는 것만 사용
+                                const validPrayers = data.prayers.filter(p => p.prayedAt);
+                                setTodaysPrayers(validPrayers);
+                            }
+                            loaded = true;
                         }
-                        loaded = true;
                     }
                 } catch (e) {
                     console.error('Failed to load from Supabase:', e);
@@ -108,9 +119,18 @@ export function useTodaysPrayer() {
                         const savedDate = new Date(data.date).toDateString();
                         const today = new Date().toDateString();
 
-                        if (savedDate === today) {
+                        // 이전 형식 데이터 감지 (times, status 등이 있으면 이전 형식)
+                        const isOldFormat = data.prayers?.some(p => p.times || p.status || p.currentIndex !== undefined);
+
+                        if (isOldFormat) {
+                            // 이전 형식 데이터는 삭제하고 새로 시작
+                            console.log('이전 형식 데이터 감지, 초기화합니다.');
+                            localStorage.removeItem(STORAGE_KEY);
+                        } else if (savedDate === today) {
                             if (data.prayers && Array.isArray(data.prayers)) {
-                                setTodaysPrayers(data.prayers);
+                                // 새 형식: prayedAt이 있는 것만 사용
+                                const validPrayers = data.prayers.filter(p => p.prayedAt);
+                                setTodaysPrayers(validPrayers);
                             }
                         } else if (savedDate < today) {
                             const hadPrayers = data.prayers?.length > 0;
@@ -121,6 +141,7 @@ export function useTodaysPrayer() {
                         }
                     } catch (e) {
                         console.error('Failed to parse saved prayer:', e);
+                        localStorage.removeItem(STORAGE_KEY);
                     }
                 }
             }

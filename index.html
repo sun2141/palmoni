@@ -52,7 +52,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
 
-    <!-- 앱 시작 시 캐시 강제 정리 (안드로이드 호환성) -->
+    <!-- 앱 시작 시 캐시 강제 정리 및 bfcache 복구 처리 -->
     <script>
       (function() {
         // 서비스 워커 및 캐시 정리
@@ -76,6 +76,44 @@
             });
           });
         }
+
+        // bfcache 복원 시 자동 새로고침 (iOS Safari 대응)
+        var lastActiveTime = Date.now();
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'visible') {
+            var now = Date.now();
+            // 5분 이상 백그라운드에 있었으면 앱 상태 확인
+            if (now - lastActiveTime > 5 * 60 * 1000) {
+              // React 앱이 로드되지 않은 상태면 새로고침
+              var root = document.getElementById('root');
+              var appLoading = document.getElementById('app-loading');
+              if (appLoading && root && root.children.length <= 1) {
+                console.log('App not loaded properly after long background - reloading');
+                window.location.reload();
+              }
+            }
+            lastActiveTime = now;
+          } else {
+            lastActiveTime = Date.now();
+          }
+        });
+
+        // pageshow 이벤트로 bfcache 복원 감지
+        window.addEventListener('pageshow', function(event) {
+          if (event.persisted) {
+            console.log('Page restored from bfcache');
+            // 로딩 화면이 여전히 보이면 새로고침
+            var appLoading = document.getElementById('app-loading');
+            if (appLoading && appLoading.style.display !== 'none') {
+              setTimeout(function() {
+                if (appLoading && appLoading.style.display !== 'none') {
+                  console.log('App stuck in loading after bfcache restore - reloading');
+                  window.location.reload();
+                }
+              }, 2000);
+            }
+          }
+        });
       })();
     </script>
   </head>

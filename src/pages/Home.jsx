@@ -31,7 +31,7 @@ export function Home() {
     const touchStartY = useRef(0);
     const isPulling = useRef(false);
 
-    const { user, profile, loading: authLoading, signOut, refreshProfile, isInitialized } = useAuth();
+    const { user, profile, loading: authLoading, signOut, refreshProfile, isInitialized, stateVersion } = useAuth();
     const toast = useToast();
     const pendingPrayerProcessed = useRef(false);
 
@@ -69,7 +69,7 @@ export function Home() {
         if (!authLoading && isInitialized) {
             checkUserRateLimit();
         }
-    }, [user, authLoading, isInitialized]);
+    }, [user, authLoading, isInitialized, stateVersion]);
 
     // 로그인 후 미리보기 기도문 복원 및 저장
     useEffect(() => {

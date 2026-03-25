@@ -43,7 +43,17 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// 로딩 화면 숨기기
+const hideAppLoading = () => {
+  const appLoading = document.getElementById('app-loading');
+  if (appLoading) {
+    appLoading.style.display = 'none';
+  }
+};
+
+// 앱 로드 완료 후 로딩 화면 제거
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
     <React.StrictMode>
         <ErrorBoundary>
             <BrowserRouter>
@@ -55,4 +65,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </BrowserRouter>
         </ErrorBoundary>
     </React.StrictMode>,
-)
+);
+
+// React 앱이 마운트되면 로딩 화면 숨김
+hideAppLoading();

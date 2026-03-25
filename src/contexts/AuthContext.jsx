@@ -17,9 +17,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  // 앱 상태 새로고침 트리거
+  const [stateVersion, setStateVersion] = useState(0);
 
   // 로그인 성공 시 호출할 콜백 저장
   const onLoginSuccessRef = useRef(null);
+  const lastActiveTime = useRef(Date.now());
+  const isCheckingSession = useRef(false);
 
   // 세션 초기화 및 복원
   useEffect(() => {
@@ -101,14 +105,20 @@ export const AuthProvider = ({ children }) => {
     );
 
     // 앱이 백그라운드에서 돌아왔을 때 세션 확인
-    let lastVisibilityCheck = Date.now();
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible' && mounted) {
+        // 중복 체크 방지
+        if (isCheckingSession.current) return;
+        isCheckingSession.current = true;
+
         const now = Date.now();
-        const timeSinceLastCheck = now - lastVisibilityCheck;
-        lastVisibilityCheck = now;
+        const timeSinceLastActive = now - lastActiveTime.current;
+        lastActiveTime.current = now;
 
         try {
+          // 1분 이상 백그라운드에 있었으면 세션 및 상태 새로고침
+          const needsRefresh = timeSinceLastActive > 60 * 1000;
+
           const { data: { session: currentSession }, error } = await supabase.auth.getSession();
 
           // 세션 에러 발생 시 (토큰 만료 등)
@@ -119,18 +129,23 @@ export const AuthProvider = ({ children }) => {
             if (refreshError) {
               console.warn('Session refresh failed:', refreshError.message);
               // 세션 갱신 실패 - 로그아웃 처리
-              if (user) {
-                setUser(null);
-                setProfile(null);
-                setSession(null);
-                setLoading(false);
-              }
+              setUser(null);
+              setProfile(null);
+              setSession(null);
+              setLoading(false);
+              setStateVersion(v => v + 1);
+              isCheckingSession.current = false;
               return;
             }
             // 세션 갱신 성공
             if (refreshData.session) {
               setSession(refreshData.session);
               setUser(refreshData.session.user);
+              if (needsRefresh) {
+                await loadUserProfile(refreshData.session.user.id);
+                setStateVersion(v => v + 1);
+              }
+              isCheckingSession.current = false;
               return;
             }
           }
@@ -142,6 +157,7 @@ export const AuthProvider = ({ children }) => {
             setProfile(null);
             setSession(null);
             setLoading(false);
+            setStateVersion(v => v + 1);
           } else if (currentSession?.user?.id !== user?.id) {
             // 세션이 변경된 경우 (다른 탭에서 로그인/로그아웃)
             setSession(currentSession);
@@ -151,38 +167,57 @@ export const AuthProvider = ({ children }) => {
             } else {
               setProfile(null);
             }
-          } else if (currentSession && timeSinceLastCheck > 30 * 60 * 1000) {
-            // 30분 이상 백그라운드에 있었으면 세션 갱신
-            const { data: refreshData } = await supabase.auth.refreshSession();
-            if (refreshData?.session) {
-              setSession(refreshData.session);
+            setStateVersion(v => v + 1);
+          } else if (currentSession && needsRefresh) {
+            // 오래 백그라운드에 있었으면 프로필 새로고침 및 상태 업데이트
+            await loadUserProfile(currentSession.user.id);
+            // 5분 이상이면 세션도 갱신
+            if (timeSinceLastActive > 5 * 60 * 1000) {
+              const { data: refreshData } = await supabase.auth.refreshSession();
+              if (refreshData?.session) {
+                setSession(refreshData.session);
+              }
             }
+            setStateVersion(v => v + 1);
           }
         } catch (err) {
           console.error('Visibility change session check error:', err);
+          // 에러 발생 시에도 상태 새로고침 트리거
+          setStateVersion(v => v + 1);
+        } finally {
+          isCheckingSession.current = false;
         }
+      } else if (document.visibilityState === 'hidden') {
+        // 백그라운드로 전환 시 시간 기록
+        lastActiveTime.current = Date.now();
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // iOS Safari bfcache 복원 시 세션 확인
+    // iOS Safari bfcache 복원 시 세션 확인 및 앱 상태 새로고침
     const handlePageShow = async (event) => {
       if (event.persisted && mounted) {
-        // bfcache에서 복원됨 - 세션 확인 필요
+        // bfcache에서 복원됨 - 세션 확인 및 상태 새로고침 필요
+        console.log('App restored from bfcache - refreshing state');
         try {
           const { data: { session: currentSession } } = await supabase.auth.getSession();
           if (currentSession) {
             setSession(currentSession);
             setUser(currentSession.user);
+            await loadUserProfile(currentSession.user.id);
           } else if (user) {
             // 세션 만료됨
             setUser(null);
             setProfile(null);
             setSession(null);
           }
+          // 항상 상태 새로고침 트리거 (bfcache 복원 시)
+          setStateVersion(v => v + 1);
         } catch (err) {
           console.warn('PageShow session check error:', err);
+          // 에러 발생해도 상태 새로고침 트리거
+          setStateVersion(v => v + 1);
         }
       }
     };
@@ -382,13 +417,29 @@ export const AuthProvider = ({ children }) => {
     onLoginSuccessRef.current = callback;
   }, []);
 
+  // 강제 새로고침 함수
+  const forceRefresh = useCallback(async () => {
+    if (session?.user) {
+      try {
+        await loadUserProfile(session.user.id);
+        setStateVersion(v => v + 1);
+      } catch (err) {
+        console.error('Force refresh error:', err);
+      }
+    } else {
+      setStateVersion(v => v + 1);
+    }
+  }, [session]);
+
   const value = {
     user,
     profile,
     session,
     loading,
     isInitialized,
+    stateVersion, // 컴포넌트가 이 값을 의존성으로 사용하면 상태 변경 시 리렌더링됨
     refreshProfile,
+    forceRefresh,
     signInWithGoogle,
     signInWithKakao,
     signInWithApple,

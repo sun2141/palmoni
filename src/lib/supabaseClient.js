@@ -691,3 +691,339 @@ export async function getActiveUsersCount() {
     return null;
   }
 }
+
+// =============================================
+// 기도 여정 시스템 (Prayer Loop System)
+// =============================================
+
+/**
+ * 기도 여정 생성
+ */
+export async function createLoop(userId, { title, topic, emotion, continuePrayer = true }) {
+  if (!userId) return { data: null, error: 'User not logged in' };
+
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .insert({
+      user_id: userId,
+      title,
+      topic,
+      initial_emotion: emotion,
+      current_emotion: emotion,
+      continue_prayer: continuePrayer,
+      status: 'active',
+      started_at: new Date().toISOString(),
+      total_days: 1,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating loop:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 활성 기도 여정 가져오기
+ */
+export async function getActiveLoop(userId) {
+  if (!userId) return { data: null, error: 'User not logged in' };
+
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .select('*')
+    .eq('user_id', userId)
+    .in('status', ['active', 'checkin_due', 'continued'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    console.error('Error fetching active loop:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data: data || null, error: null };
+}
+
+/**
+ * 기도 여정 상세 가져오기
+ */
+export async function getLoopById(loopId) {
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .select('*')
+    .eq('id', loopId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching loop:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 기도 여정 상태 업데이트
+ */
+export async function updateLoopStatus(loopId, status, additionalData = {}) {
+  const updateData = {
+    status,
+    updated_at: new Date().toISOString(),
+    ...additionalData,
+  };
+
+  if (status === 'completed') {
+    updateData.completed_at = new Date().toISOString();
+  }
+
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .update(updateData)
+    .eq('id', loopId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating loop status:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 기도 여정 감정 업데이트
+ */
+export async function updateLoopEmotion(loopId, emotion) {
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .update({
+      current_emotion: emotion,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', loopId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating loop emotion:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 기도 여정 히스토리 가져오기
+ */
+export async function getLoopHistory(userId, { limit = 20, offset = 0, status = null } = {}) {
+  if (!userId) return { data: [], error: 'User not logged in', count: 0 };
+
+  let query = supabase
+    .from('prayer_loops')
+    .select('*', { count: 'exact' })
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (status) {
+    if (Array.isArray(status)) {
+      query = query.in('status', status);
+    } else {
+      query = query.eq('status', status);
+    }
+  }
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('Error fetching loop history:', error);
+    return { data: [], error: error.message, count: 0 };
+  }
+
+  return { data: data || [], error: null, count };
+}
+
+/**
+ * 일별 세션 생성
+ */
+export async function createSession(loopId, userId, { dayNumber, emotion }) {
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('prayer_sessions')
+    .insert({
+      loop_id: loopId,
+      user_id: userId,
+      session_date: today,
+      day_number: dayNumber,
+      emotion,
+      status: 'pending',
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating session:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 오늘의 세션 가져오기
+ */
+export async function getTodaysLoopSession(loopId) {
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('prayer_sessions')
+    .select('*')
+    .eq('loop_id', loopId)
+    .eq('session_date', today)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    console.error('Error fetching today session:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data: data || null, error: null };
+}
+
+/**
+ * 세션 업데이트 (기도 완료 등)
+ */
+export async function updateSession(sessionId, updateData) {
+  const { data, error } = await supabase
+    .from('prayer_sessions')
+    .update({
+      ...updateData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', sessionId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating session:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 세션에 기도문 저장
+ */
+export async function saveSessionPrayer(sessionId, { title, content }) {
+  const { data, error } = await supabase
+    .from('prayer_sessions')
+    .update({
+      prayer_title: title,
+      prayer_content: content,
+      prayer_generated_at: new Date().toISOString(),
+      status: 'prayed',
+      prayed_at: new Date().toISOString(),
+      prayer_count: 1,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', sessionId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error saving session prayer:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 세션 히스토리 가져오기
+ */
+export async function getSessionHistory(loopId, { limit = 30 } = {}) {
+  const { data, error } = await supabase
+    .from('prayer_sessions')
+    .select('*')
+    .eq('loop_id', loopId)
+    .order('session_date', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching session history:', error);
+    return { data: [], error: error.message };
+  }
+
+  return { data: data || [], error: null };
+}
+
+/**
+ * 체크인 생성
+ */
+export async function createCheckin(loopId, sessionId, userId, { responseType, nextEmotion = null, note = null }) {
+  const { data, error } = await supabase
+    .from('prayer_checkins')
+    .insert({
+      loop_id: loopId,
+      session_id: sessionId,
+      user_id: userId,
+      response_type: responseType,
+      next_emotion: nextEmotion,
+      note,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating checkin:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
+ * 마지막 체크인 가져오기
+ */
+export async function getLastCheckin(loopId) {
+  const { data, error } = await supabase
+    .from('prayer_checkins')
+    .select('*')
+    .eq('loop_id', loopId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    console.error('Error fetching last checkin:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data: data || null, error: null };
+}
+
+/**
+ * 체크인 히스토리 가져오기
+ */
+export async function getCheckinHistory(loopId) {
+  const { data, error } = await supabase
+    .from('prayer_checkins')
+    .select('*')
+    .eq('loop_id', loopId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching checkin history:', error);
+    return { data: [], error: error.message };
+  }
+
+  return { data: data || [], error: null };
+}

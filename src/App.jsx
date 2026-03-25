@@ -8,6 +8,11 @@ const Pricing = lazy(() => import('./pages/Pricing').then(m => ({ default: m.Pri
 const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
 const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
 
+// Loop pages
+const LoopCreate = lazy(() => import('./pages/loop/LoopCreate'));
+const LoopDetail = lazy(() => import('./pages/loop/LoopDetail'));
+const LoopHistory = lazy(() => import('./pages/loop/LoopHistory'));
+
 // Loading fallback component
 function PageLoader() {
     return (
@@ -95,6 +100,10 @@ function App() {
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                {/* Loop routes */}
+                <Route path="/loop/new" element={<LoopCreate />} />
+                <Route path="/loop/history" element={<LoopHistory />} />
+                <Route path="/loop/:loopId" element={<LoopDetail />} />
             </Routes>
         </Suspense>
     );

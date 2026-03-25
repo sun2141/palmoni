@@ -612,6 +612,13 @@ export function Home() {
                         <span className="nav-icon">📖</span>
                         <span className="nav-text">내 기도문</span>
                     </button>
+                    <button
+                        className="bottom-nav-btn loop-journey"
+                        onClick={() => navigate('/loop/new')}
+                    >
+                        <span className="nav-icon">🌱</span>
+                        <span className="nav-text">기도 여정</span>
+                    </button>
                     <button className="bottom-nav-btn logout" onClick={handleLogout}>
                         <span className="nav-icon">👋</span>
                         <span className="nav-text">로그아웃</span>

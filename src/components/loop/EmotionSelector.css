@@ -1,0 +1,112 @@
+.emotion-selector {
+    display: flex;
+    gap: 8px;
+}
+
+.emotion-selector.horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.emotion-selector.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.emotion-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.emotion-selector.medium .emotion-btn {
+    padding: 12px 16px;
+}
+
+.emotion-selector.small .emotion-btn {
+    padding: 8px 12px;
+    min-width: 50px;
+}
+
+.emotion-selector.large .emotion-btn {
+    padding: 16px 20px;
+    min-width: 80px;
+}
+
+.emotion-btn:hover:not(:disabled) {
+    border-color: var(--emotion-color);
+    background: color-mix(in srgb, var(--emotion-color) 10%, white);
+}
+
+.emotion-btn.selected {
+    border-color: var(--emotion-color);
+    background: color-mix(in srgb, var(--emotion-color) 20%, white);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--emotion-color) 30%, transparent);
+}
+
+.emotion-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.emotion-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.emotion-selector.small .emotion-icon {
+    font-size: 20px;
+}
+
+.emotion-selector.large .emotion-icon {
+    font-size: 32px;
+}
+
+.emotion-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.emotion-selector.small .emotion-label {
+    font-size: 11px;
+}
+
+.emotion-selector.large .emotion-label {
+    font-size: 14px;
+}
+
+.emotion-btn.selected .emotion-label {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+/* Emotion Badge */
+.emotion-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--emotion-color) 20%, white);
+    font-size: 13px;
+}
+
+.badge-icon {
+    font-size: 14px;
+}
+
+.badge-label {
+    font-weight: 500;
+    color: #374151;
+}

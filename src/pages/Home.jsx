@@ -491,6 +491,7 @@ export function Home() {
                         <span className="yesterday-icon">✨</span>
                         <span className="yesterday-text">
                             <strong>어제도 함께 기도했어요</strong>
+                            <br />
                             오늘도 기도해볼까요?
                         </span>
                     </div>
@@ -620,7 +621,7 @@ export function Home() {
                         <span className="nav-text">기도 여정</span>
                     </button>
                     <button className="bottom-nav-btn logout" onClick={handleLogout}>
-                        <span className="nav-icon">👋</span>
+                        <span className="nav-icon">🚪</span>
                         <span className="nav-text">로그아웃</span>
                     </button>
                     <button

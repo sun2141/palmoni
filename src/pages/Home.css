@@ -573,9 +573,10 @@
 .bottom-nav {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
+  align-items: stretch;
+  gap: 8px;
   margin-top: 2rem;
-  padding: 1rem;
+  padding: 12px;
   background: white;
   border: 1px solid rgba(108, 71, 255, 0.08);
   border-radius: var(--radius-xl, 24px);
@@ -584,12 +585,17 @@
 
 .bottom-nav-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 72px;
+  max-width: 80px;
+  padding: 12px 8px;
   background: rgba(108, 71, 255, 0.06);
   border: 1px solid rgba(108, 71, 255, 0.1);
-  border-radius: var(--radius-pill, 50px);
+  border-radius: 16px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-primary, #6C47FF);
@@ -626,10 +632,11 @@
 }
 
 .bottom-nav-btn.icon-only {
-  padding: 0.75rem;
-  min-width: auto;
-  border-radius: 50%;
-  aspect-ratio: 1;
+  flex: 0 0 auto;
+  min-width: 48px;
+  max-width: 48px;
+  padding: 12px;
+  border-radius: 16px;
 }
 
 .bottom-nav-btn.icon-only .nav-icon {
@@ -637,11 +644,14 @@
 }
 
 .nav-icon {
-  font-size: 1rem;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .nav-text {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* === Mobile Responsive === */
@@ -682,24 +692,30 @@
   }
 
   .bottom-nav {
-    gap: 0.5rem;
+    gap: 6px;
+    padding: 10px;
   }
 
   .bottom-nav-btn {
-    padding: 0.625rem 1rem;
-    font-size: 0.8rem;
+    min-width: 64px;
+    max-width: 72px;
+    padding: 10px 6px;
+    border-radius: 14px;
   }
 
   .bottom-nav-btn.icon-only {
-    padding: 0.625rem;
+    min-width: 44px;
+    max-width: 44px;
+    padding: 10px;
+    border-radius: 14px;
   }
 
   .nav-icon {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
 
   .nav-text {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -787,4 +803,62 @@
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-pill, 50px);
   margin-left: auto;
+}
+
+/* === Yesterday Banner === */
+.yesterday-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.08) 0%, rgba(139, 111, 255, 0.04) 100%);
+  border: 1px solid rgba(108, 71, 255, 0.12);
+  border-radius: var(--radius-xl, 24px);
+  margin-bottom: 1rem;
+}
+
+.yesterday-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.yesterday-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.yesterday-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #4B5563);
+  line-height: 1.4;
+}
+
+.yesterday-text strong {
+  color: var(--text-primary, #1A1A2E);
+  font-weight: 600;
+}
+
+.yesterday-dismiss {
+  padding: 10px 24px;
+  background: var(--color-primary, #6C47FF);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.yesterday-dismiss:hover {
+  background: #5a3de8;
+  transform: translateY(-1px);
+}
+
+.yesterday-dismiss:active {
+  transform: translateY(0);
 }

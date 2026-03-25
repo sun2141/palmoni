@@ -862,3 +862,67 @@
 .yesterday-dismiss:active {
   transform: translateY(0);
 }
+
+/* === Journey Prompt Banner === */
+.journey-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.04) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: 16px;
+}
+
+.journey-prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.journey-prompt-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.journey-prompt-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.journey-prompt-text strong {
+  font-size: 0.9rem;
+  color: var(--text-primary, #1A1A2E);
+  font-weight: 600;
+}
+
+.journey-prompt-text span {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6B7280);
+}
+
+.journey-prompt-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.journey-prompt-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.journey-prompt-btn:active {
+  transform: translateY(0);
+}

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLoop } from '../../hooks/useLoop';
 import { EmotionSelector } from '../../components/loop/EmotionSelector';
@@ -10,11 +10,16 @@ import './LoopCreate.css';
  */
 export default function LoopCreate() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuth();
     const { createLoop, loading, hasActiveLoop, activeLoop } = useLoop();
 
+    // 홈에서 전달받은 topic이 있으면 사용
+    const passedTopic = location.state?.topic || '';
+
     const [title, setTitle] = useState('');
-    const [topic, setTopic] = useState('');
+    const [topic, setTopic] = useState(passedTopic);
+    const [showOnboarding, setShowOnboarding] = useState(true);
     const [emotion, setEmotion] = useState('peace');
     const [continuePrayer, setContinuePrayer] = useState(true);
     const [error, setError] = useState(null);
@@ -98,6 +103,37 @@ export default function LoopCreate() {
                 <h1>새 기도 여정</h1>
             </header>
 
+            {/* 온보딩 카드 */}
+            {showOnboarding && (
+                <div className="onboarding-card">
+                    <button
+                        className="onboarding-close"
+                        onClick={() => setShowOnboarding(false)}
+                    >
+                        ×
+                    </button>
+                    <span className="onboarding-icon">🌱</span>
+                    <h2 className="onboarding-title">기도 여정이란?</h2>
+                    <p className="onboarding-desc">
+                        하나의 기도 제목으로 매일 함께 기도해요
+                    </p>
+                    <ul className="onboarding-features">
+                        <li>
+                            <span className="feature-icon">📅</span>
+                            <span>Day 1, 2, 3... 이어가는 기도</span>
+                        </li>
+                        <li>
+                            <span className="feature-icon">💬</span>
+                            <span>저녁에 마음 체크인</span>
+                        </li>
+                        <li>
+                            <span className="feature-icon">✨</span>
+                            <span>감정에 맞는 기도문 생성</span>
+                        </li>
+                    </ul>
+                </div>
+            )}
+
             <form className="loop-create-form" onSubmit={handleSubmit}>
                 <div className="form-section">
                     <label className="form-label">
@@ -170,14 +206,6 @@ export default function LoopCreate() {
                 </button>
             </form>
 
-            <div className="loop-info-box">
-                <h3>기도 여정이란?</h3>
-                <ul>
-                    <li>🙏 매일 이어지는 기도를 경험해요</li>
-                    <li>💬 저녁에 체크인으로 다음 기도를 조정해요</li>
-                    <li>📊 기도 여정의 기록이 남아요</li>
-                </ul>
-            </div>
         </div>
     );
 }

@@ -590,6 +590,25 @@ export function Home() {
                             <span className="action-text">새 기도</span>
                         </button>
                     </div>
+
+                    {/* 기도 여정 유도 배너 */}
+                    {user && (
+                        <div className="journey-prompt">
+                            <div className="journey-prompt-content">
+                                <span className="journey-prompt-icon">🌱</span>
+                                <div className="journey-prompt-text">
+                                    <strong>이 기도를 매일 이어가볼까요?</strong>
+                                    <span>7일간 함께 기도하며 깊어지는 여정</span>
+                                </div>
+                            </div>
+                            <button
+                                className="journey-prompt-btn"
+                                onClick={() => navigate('/loop/new', { state: { topic } })}
+                            >
+                                시작하기
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -618,7 +637,7 @@ export function Home() {
                         onClick={() => navigate('/loop/new')}
                     >
                         <span className="nav-icon">🌱</span>
-                        <span className="nav-text">기도 여정</span>
+                        <span className="nav-text">매일 기도</span>
                     </button>
                     <button className="bottom-nav-btn logout" onClick={handleLogout}>
                         <span className="nav-icon">🚪</span>

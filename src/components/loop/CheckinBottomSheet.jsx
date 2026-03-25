@@ -18,7 +18,7 @@ const RESPONSE_OPTIONS = [
     {
         type: 'complete',
         label: '기도 마무리',
-        description: '이 기도 여정을 마칠게요',
+        description: '이 매일 기도를 마칠게요',
         icon: '✅',
     },
     {

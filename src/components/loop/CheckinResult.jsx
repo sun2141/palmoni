@@ -13,8 +13,8 @@ const RESULT_MESSAGES = {
         icon: '🔄',
     },
     complete: {
-        title: '기도 여정 완료',
-        message: '이 기도 여정을 마무리했어요. 기록으로 남겨둘게요.',
+        title: '매일 기도 완료',
+        message: '이 매일 기도를 마무리했어요. 기록으로 남겨둘게요.',
         icon: '✅',
     },
     snooze: {

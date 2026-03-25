@@ -184,7 +184,7 @@ export default function LoopDetail() {
             <div className="loop-detail-page">
                 <div className="loading-state">
                     <span className="loading-icon">🙏</span>
-                    <p>기도 여정을 불러오는 중...</p>
+                    <p>매일 기도를 불러오는 중...</p>
                 </div>
             </div>
         );
@@ -195,7 +195,7 @@ export default function LoopDetail() {
             <div className="loop-detail-page">
                 <div className="error-state">
                     <span className="error-icon">😢</span>
-                    <p>{error || '기도 여정을 찾을 수 없습니다.'}</p>
+                    <p>{error || '매일 기도를 찾을 수 없습니다.'}</p>
                     <button onClick={() => navigate('/')}>홈으로</button>
                 </div>
             </div>
@@ -290,7 +290,7 @@ export default function LoopDetail() {
                     className="history-link"
                     onClick={() => navigate('/loop/history')}
                 >
-                    📚 기도 여정 기록 보기
+                    📚 매일 기도 기록 보기
                 </button>
             </div>
 

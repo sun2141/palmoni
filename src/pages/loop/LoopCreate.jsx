@@ -31,7 +31,7 @@ export default function LoopCreate() {
                 <div className="login-required">
                     <span className="login-icon">🔐</span>
                     <h2>로그인이 필요해요</h2>
-                    <p>기도 여정을 시작하려면 로그인해주세요.</p>
+                    <p>매일 기도를 시작하려면 로그인해주세요.</p>
                     <button onClick={() => navigate('/')}>홈으로 가기</button>
                 </div>
             </div>
@@ -44,7 +44,7 @@ export default function LoopCreate() {
             <div className="loop-create-page">
                 <div className="active-loop-notice">
                     <span className="notice-icon">🙏</span>
-                    <h2>진행 중인 기도 여정이 있어요</h2>
+                    <h2>진행 중인 매일 기도가 있어요</h2>
                     <p>"{activeLoop.title}" 기도를 이어가시겠어요?</p>
                     <button
                         className="continue-btn"
@@ -68,7 +68,7 @@ export default function LoopCreate() {
         setError(null);
 
         if (!title.trim()) {
-            setError('기도 여정 이름을 입력해주세요.');
+            setError('매일 기도 이름을 입력해주세요.');
             return;
         }
 
@@ -100,7 +100,7 @@ export default function LoopCreate() {
                 <button className="back-button" onClick={() => navigate(-1)}>
                     ← 뒤로
                 </button>
-                <h1>새 기도 여정</h1>
+                <h1>새 매일 기도</h1>
             </header>
 
             {/* 온보딩 카드 */}
@@ -113,7 +113,7 @@ export default function LoopCreate() {
                         ×
                     </button>
                     <span className="onboarding-icon">🌱</span>
-                    <h2 className="onboarding-title">기도 여정이란?</h2>
+                    <h2 className="onboarding-title">매일 기도란?</h2>
                     <p className="onboarding-desc">
                         하나의 기도 제목으로 매일 함께 기도해요
                     </p>
@@ -138,7 +138,7 @@ export default function LoopCreate() {
                 <div className="form-section">
                     <label className="form-label">
                         <span className="label-icon">🏷️</span>
-                        이 기도 여정의 이름은?
+                        이 매일 기도의 이름은?
                     </label>
                     <input
                         type="text"
@@ -202,7 +202,7 @@ export default function LoopCreate() {
                     className="submit-btn"
                     disabled={loading || !title.trim() || !topic.trim()}
                 >
-                    {loading ? '시작하는 중...' : '기도 여정 시작하기'}
+                    {loading ? '시작하는 중...' : '매일 기도 시작하기'}
                 </button>
             </form>
 

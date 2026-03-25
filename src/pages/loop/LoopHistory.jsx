@@ -98,7 +98,7 @@ export default function LoopHistory() {
                 <button className="back-button" onClick={() => navigate(-1)}>
                     ← 뒤로
                 </button>
-                <h1>기도 여정 기록</h1>
+                <h1>매일 기도 기록</h1>
             </header>
 
             <div className="filter-tabs">
@@ -117,10 +117,10 @@ export default function LoopHistory() {
                 {loops.length === 0 && !loading ? (
                     <div className="empty-state">
                         <span className="empty-icon">📚</span>
-                        <h3>아직 기도 여정이 없어요</h3>
-                        <p>새로운 기도 여정을 시작해보세요!</p>
+                        <h3>아직 매일 기도가 없어요</h3>
+                        <p>새로운 매일 기도를 시작해보세요!</p>
                         <button onClick={() => navigate('/loop/new')}>
-                            기도 여정 시작하기
+                            매일 기도 시작하기
                         </button>
                     </div>
                 ) : (

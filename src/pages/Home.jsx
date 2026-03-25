@@ -240,16 +240,22 @@ export function Home() {
         // 중복 호출 방지
         if (isGenerating) return;
 
-        // 앱 초기화 대기
+        // 앱 초기화 대기 - 토스트 없이 조용히 진행
         if (!isInitialized) {
-            toast.warning('앱이 초기화 중입니다. 잠시 후 다시 시도해주세요.');
-            return;
+            console.warn('App not initialized yet, proceeding anyway...');
         }
 
         const userId = user?.id || null;
         const anonymousId = !userId ? getAnonymousId() : null;
 
-        const limitCheck = await checkRateLimit(userId, anonymousId);
+        let limitCheck;
+        try {
+            limitCheck = await checkRateLimit(userId, anonymousId);
+        } catch (err) {
+            console.error('Rate limit check failed:', err);
+            // 에러 시에도 진행 허용 (서버에서 다시 체크함)
+            limitCheck = { allowed: true };
+        }
 
         if (!limitCheck.allowed) {
             toast.warning(limitCheck.message);

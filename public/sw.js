@@ -1,4 +1,4 @@
-const CACHE_NAME = 'palmoni-v6';
+const CACHE_NAME = 'palmoni-v7';
 const STATIC_ASSETS = [
   '/offline.html'
 ];
@@ -52,12 +52,19 @@ self.addEventListener('activate', (event) => {
 // Fetch event - Network First 전략 (캐시 최소화)
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // GET 요청만 처리
+  // GET 요청만 처리, 나머지는 브라우저 기본 동작
   if (request.method !== 'GET') return;
 
-  // 캐시하지 않을 요청들
+  // URL 파싱 에러 방지
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch {
+    return;
+  }
+
+  // 캐시하지 않을 요청들은 브라우저 기본 동작으로
   if (NO_CACHE_PATTERNS.some(pattern => request.url.includes(pattern))) {
     return;
   }
@@ -65,36 +72,41 @@ self.addEventListener('fetch', (event) => {
   // 네비게이션 요청 (HTML 페이지)
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .catch(() => caches.match('/offline.html'))
+      fetch(request).catch(() => {
+        return caches.match('/offline.html').then(response => {
+          return response || new Response('Offline', { status: 503 });
+        });
+      })
     );
     return;
   }
 
-  // JS/CSS/HTML 등 동적 콘텐츠는 캐시하지 않음 (항상 네트워크에서)
+  // JS/CSS/HTML 등 동적 콘텐츠는 브라우저 기본 동작으로 (캐시 안함)
   if (NO_CACHE_EXTENSIONS.some(ext => url.pathname.endsWith(ext))) {
-    event.respondWith(fetch(request));
     return;
   }
 
   // 이미지/폰트만 캐시: Network First
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        // 이미지/폰트만 캐시
-        if (response.ok && url.pathname.match(/\.(png|jpg|jpeg|svg|ico|woff2?|webp)$/)) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
+  if (url.pathname.match(/\.(png|jpg|jpeg|svg|ico|woff2?|webp)$/)) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request).then(response => {
+            return response || new Response('', { status: 404 });
           });
-        }
-        return response;
-      })
-      .catch(() => {
-        // 네트워크 실패 시 캐시에서 찾기
-        return caches.match(request);
-      })
-  );
+        })
+    );
+  }
+  // 그 외 요청은 브라우저 기본 동작
 });
 
 // 앱에서 캐시 초기화 메시지 수신

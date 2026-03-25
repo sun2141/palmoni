@@ -56,7 +56,14 @@ export function useLoop() {
 
     // 활성 루프 로드
     useEffect(() => {
-        if (!user?.id || initialLoadDone.current) return;
+        // user가 없으면 loading을 false로 설정하고 종료
+        if (!user?.id) {
+            setLoading(false);
+            return;
+        }
+
+        // 이미 로드했으면 스킵
+        if (initialLoadDone.current) return;
 
         const loadActiveLoop = async () => {
             setLoading(true);

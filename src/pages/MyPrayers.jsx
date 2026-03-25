@@ -10,7 +10,10 @@ export function MyPrayers() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
-  const { hasActiveLoop, createLoopFromPrayer, loading: loopLoading } = useLoop();
+  const { hasActiveLoop, createLoopFromPrayer, loading: loopLoading, activeLoop } = useLoop();
+
+  // Debug: 활성 루프 상태 확인
+  console.log('[MyPrayers] Loop state:', { hasActiveLoop, loopLoading, activeLoop });
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [convertingPrayerId, setConvertingPrayerId] = useState(null);
@@ -371,11 +374,11 @@ export function MyPrayers() {
                 )}
 
                 {/* Daily Prayer Conversion Button - only for today's prayers */}
-                {isCreatedToday(prayer.created_at) && !hasActiveLoop && (
+                {isCreatedToday(prayer.created_at) && !hasActiveLoop && !loopLoading && (
                   <button
                     className="convert-to-loop-btn"
                     onClick={() => handleConvertToLoop(prayer)}
-                    disabled={convertingPrayerId === prayer.id || loopLoading}
+                    disabled={convertingPrayerId === prayer.id}
                   >
                     {convertingPrayerId === prayer.id ? (
                       <>⏳ 전환 중...</>
@@ -458,11 +461,11 @@ export function MyPrayers() {
             </div>
 
             {/* Daily Prayer Conversion Button - only for today's prayers */}
-            {isCreatedToday(selectedPrayer.created_at) && !hasActiveLoop && (
+            {isCreatedToday(selectedPrayer.created_at) && !hasActiveLoop && !loopLoading && (
               <button
                 className="convert-to-loop-btn modal"
                 onClick={() => handleConvertToLoop(selectedPrayer)}
-                disabled={convertingPrayerId === selectedPrayer.id || loopLoading}
+                disabled={convertingPrayerId === selectedPrayer.id}
               >
                 {convertingPrayerId === selectedPrayer.id ? (
                   <>⏳ 전환 중...</>

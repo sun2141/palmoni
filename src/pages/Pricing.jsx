@@ -5,7 +5,7 @@ export function Pricing() {
   const navigate = useNavigate();
 
   const features = [
-    { icon: '🙏', text: '매일 팔모니가 당신을 위해 3번 기도합니다' },
+    { icon: '🙏', text: '매일 누군가 당신을 위해 기도합니다' },
     { icon: '📖', text: '기도문 무제한 생성 및 저장' },
     { icon: '📄', text: 'PDF 다운로드' },
     { icon: '🆘', text: '긴급 기도 (즉시 위로)' },
@@ -70,8 +70,8 @@ export function Pricing() {
           <div className="explanation-step">
             <span className="step-number">2</span>
             <div className="step-text">
-              <strong>팔모니가 하루 종일 기도합니다</strong>
-              <p>자정까지 3번에 걸쳐 당신을 위해 기도합니다</p>
+              <strong>이름 없는 누군가 기도합니다</strong>
+              <p>자정까지 당신을 위해 기도합니다</p>
             </div>
           </div>
           <div className="explanation-step">

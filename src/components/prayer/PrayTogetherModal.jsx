@@ -61,7 +61,7 @@ export function PrayTogetherModal({ isOpen, onClose, title, content, onComplete 
                     <>
                         <div className="pray-together-header">
                             <span className="pray-icon">🕊️</span>
-                            <h2>팔모니가 기도했어요</h2>
+                            <h2>누군가 당신을 위해 기도했어요</h2>
                             <p>함께 기도하시겠어요?</p>
                         </div>
 

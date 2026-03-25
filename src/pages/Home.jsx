@@ -447,7 +447,7 @@ export function Home() {
                 <div className="praying-indicator">
                     <div className="praying-animation">
                         <span className="praying-hands">🙏</span>
-                        <span className="praying-text">팔모니가 기도하고 있어요...</span>
+                        <span className="praying-text">누군가 당신을 위해 기도하고 있어요...</span>
                     </div>
                     {progress > 0 && <PrayerProgress currentStep={progress} />}
                 </div>

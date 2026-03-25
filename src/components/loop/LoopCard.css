@@ -83,3 +83,31 @@
     transform: scale(1.02);
     box-shadow: 0 2px 8px rgba(108, 71, 255, 0.3);
 }
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .loop-card {
+        padding: 14px;
+    }
+
+    .loop-title {
+        font-size: 15px;
+    }
+
+    .loop-topic {
+        font-size: 13px;
+    }
+
+    .loop-duration {
+        font-size: 12px;
+    }
+
+    .loop-date {
+        font-size: 11px;
+    }
+
+    .loop-continue-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}

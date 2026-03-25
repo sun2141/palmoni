@@ -2,6 +2,9 @@
     min-height: 100vh;
     background: #f9fafb;
     padding-bottom: 40px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .loop-create-header {
@@ -338,4 +341,62 @@
 .onboarding-features .feature-icon {
     font-size: 20px;
     flex-shrink: 0;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .loop-create-header {
+        padding: 12px 16px;
+    }
+
+    .loop-create-form {
+        padding: 20px 16px;
+    }
+
+    .form-input,
+    .form-textarea {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .form-label {
+        font-size: 14px;
+    }
+
+    .submit-btn {
+        padding: 14px;
+        font-size: 15px;
+    }
+
+    .onboarding-card {
+        margin: 16px;
+        padding: 20px;
+    }
+
+    .onboarding-title {
+        font-size: 18px;
+    }
+
+    .onboarding-features li {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .toggle-section {
+        padding: 14px;
+    }
+
+    .toggle-btn {
+        width: 48px;
+        height: 26px;
+    }
+
+    .toggle-thumb {
+        width: 22px;
+        height: 22px;
+    }
+
+    .toggle-btn.on .toggle-thumb {
+        transform: translateX(22px);
+    }
 }

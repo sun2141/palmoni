@@ -1,6 +1,9 @@
 .loop-detail-page {
     min-height: 100vh;
     background: linear-gradient(180deg, #f8f7ff 0%, #ffffff 100%);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .loop-detail-header {
@@ -262,4 +265,81 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .loop-detail-header {
+        padding: 12px 16px;
+    }
+
+    .loop-content {
+        padding: 20px 16px;
+        gap: 16px;
+    }
+
+    .loop-title-section h1 {
+        font-size: 20px;
+    }
+
+    .loop-topic {
+        padding: 14px;
+    }
+
+    .loop-topic p {
+        font-size: 14px;
+    }
+
+    .loop-stats {
+        gap: 12px;
+    }
+
+    .stat {
+        padding: 10px 16px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+    }
+
+    .prayer-card {
+        padding: 16px;
+    }
+
+    .prayer-card h3 {
+        font-size: 16px;
+    }
+
+    .prayer-content {
+        font-size: 14px;
+        max-height: 250px;
+    }
+
+    .pray-again-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .generate-btn {
+        padding: 18px;
+        font-size: 16px;
+    }
+
+    .pray-icon,
+    .generating-icon {
+        font-size: 22px;
+    }
+
+    .checkin-trigger-btn {
+        padding: 14px;
+        font-size: 14px;
+    }
+
+    .history-link {
+        font-size: 13px;
+    }
 }

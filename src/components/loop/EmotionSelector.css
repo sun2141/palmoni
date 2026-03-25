@@ -110,3 +110,53 @@
     font-weight: 500;
     color: #374151;
 }
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .emotion-selector {
+        gap: 6px;
+    }
+
+    .emotion-selector.grid {
+        gap: 8px;
+    }
+
+    .emotion-btn {
+        padding: 10px 12px;
+        min-width: 54px;
+    }
+
+    .emotion-selector.medium .emotion-btn {
+        padding: 10px 12px;
+    }
+
+    .emotion-selector.small .emotion-btn {
+        padding: 6px 10px;
+        min-width: 46px;
+    }
+
+    .emotion-icon {
+        font-size: 22px;
+    }
+
+    .emotion-selector.small .emotion-icon {
+        font-size: 18px;
+    }
+
+    .emotion-label {
+        font-size: 11px;
+    }
+
+    .emotion-selector.small .emotion-label {
+        font-size: 10px;
+    }
+
+    .emotion-badge {
+        padding: 3px 8px;
+        font-size: 12px;
+    }
+
+    .badge-icon {
+        font-size: 13px;
+    }
+}

@@ -136,6 +136,10 @@ body {
   padding: 1.5rem 1rem;
   padding-top: max(1.5rem, env(safe-area-inset-top));
   padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ===== Animations ===== */
@@ -236,12 +240,13 @@ body {
 /* ===== Main Container ===== */
 .container {
   width: 100%;
-  max-width: 430px;
+  max-width: min(430px, 100%);
   background: transparent;
   padding: 2rem 1.5rem;
   position: relative;
   animation: fadeUp 0.6s var(--ease-out);
   overflow: visible;
+  box-sizing: border-box;
 }
 
 /* ===== Typography ===== */

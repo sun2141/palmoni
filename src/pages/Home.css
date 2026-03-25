@@ -6,10 +6,12 @@
   min-height: 100vh;
   padding: 1rem;
   padding-bottom: 6rem;
-  max-width: 430px;
+  width: 100%;
+  max-width: min(430px, 100%);
   margin: 0 auto;
   position: relative;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* === Pull-to-Refresh === */

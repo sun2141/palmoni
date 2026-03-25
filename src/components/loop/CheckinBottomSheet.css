@@ -231,3 +231,77 @@
 .checkin-cancel:hover {
     background: #f3f4f6;
 }
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .checkin-sheet {
+        padding: 10px 16px 28px;
+        max-height: 85vh;
+    }
+
+    .checkin-icon {
+        font-size: 36px;
+    }
+
+    .checkin-header h2 {
+        font-size: 18px;
+    }
+
+    .checkin-header p {
+        font-size: 13px;
+    }
+
+    .checkin-current {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .current-label,
+    .current-day {
+        font-size: 12px;
+    }
+
+    .current-emotion {
+        font-size: 13px;
+    }
+
+    .checkin-option {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .option-icon {
+        font-size: 22px;
+    }
+
+    .option-label {
+        font-size: 14px;
+    }
+
+    .option-desc {
+        font-size: 12px;
+    }
+
+    .checkin-emotion-select {
+        padding: 14px;
+    }
+
+    .emotion-prompt {
+        font-size: 13px;
+    }
+
+    .checkin-note textarea {
+        min-height: 70px;
+        font-size: 13px;
+    }
+
+    .checkin-submit {
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .checkin-cancel {
+        padding: 10px;
+        font-size: 13px;
+    }
+}

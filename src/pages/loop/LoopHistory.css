@@ -2,6 +2,9 @@
     min-height: 100vh;
     background: #f9fafb;
     padding-bottom: 80px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .history-header {
@@ -199,4 +202,68 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .history-header {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .history-header h1 {
+        font-size: 16px;
+    }
+
+    .filter-tabs {
+        padding: 12px 16px;
+        gap: 6px;
+    }
+
+    .filter-tab {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+
+    .history-content {
+        padding: 12px 16px;
+    }
+
+    .loop-list {
+        gap: 10px;
+    }
+
+    .empty-state {
+        padding: 50px 16px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+    }
+
+    .empty-state h3 {
+        font-size: 16px;
+    }
+
+    .empty-state p {
+        font-size: 13px;
+    }
+
+    .empty-state button {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+
+    .fab-new-loop {
+        bottom: 20px;
+        right: 20px;
+        width: 52px;
+        height: 52px;
+        font-size: 26px;
+    }
+
+    .load-more-btn {
+        padding: 12px;
+        font-size: 13px;
+    }
 }

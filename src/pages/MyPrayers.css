@@ -377,6 +377,39 @@
   transform: none;
 }
 
+/* Convert to Loop Button */
+.convert-to-loop-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #6C47FF 0%, #00C2CB 100%);
+  border: none;
+  border-radius: var(--radius-md, 16px);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 12px rgba(108, 71, 255, 0.25);
+}
+
+.convert-to-loop-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(108, 71, 255, 0.35);
+}
+
+.convert-to-loop-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.convert-to-loop-btn.modal {
+  margin-bottom: 1rem;
+}
+
 /* Prayer Modal */
 .prayer-modal-overlay {
   position: fixed;

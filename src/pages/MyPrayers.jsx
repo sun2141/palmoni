@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
 import { useToast } from '../components/common/Toast';
+import { useLoop } from '../hooks/useLoop';
 import './MyPrayers.css';
 
 export function MyPrayers() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
+  const { hasActiveLoop, createLoopFromPrayer, loading: loopLoading } = useLoop();
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [convertingPrayerId, setConvertingPrayerId] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -202,6 +205,46 @@ export function MyPrayers() {
     return emotions.find(e => e.value === emotion) || emotions[0];
   };
 
+  // Check if prayer was created today
+  const isCreatedToday = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    return date.toDateString() === now.toDateString();
+  };
+
+  // Handle convert to daily prayer (Loop)
+  const handleConvertToLoop = async (prayer) => {
+    if (hasActiveLoop) {
+      toast.error('이미 진행 중인 매일 기도가 있습니다.');
+      return;
+    }
+
+    setConvertingPrayerId(prayer.id);
+
+    try {
+      const { data, error } = await createLoopFromPrayer({
+        title: prayer.title,
+        topic: prayer.topic,
+        content: prayer.content,
+        emotion: prayer.emotion
+      });
+
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success('매일 기도가 시작되었습니다!');
+      // Navigate to loop detail page
+      navigate(`/loop/${data.loop.id}`);
+    } catch (err) {
+      console.error('Failed to convert to loop:', err);
+      toast.error('매일 기도 전환 중 오류가 발생했습니다.');
+    } finally {
+      setConvertingPrayerId(null);
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -327,6 +370,21 @@ export function MyPrayers() {
                   </button>
                 )}
 
+                {/* Daily Prayer Conversion Button - only for today's prayers */}
+                {isCreatedToday(prayer.created_at) && !hasActiveLoop && (
+                  <button
+                    className="convert-to-loop-btn"
+                    onClick={() => handleConvertToLoop(prayer)}
+                    disabled={convertingPrayerId === prayer.id || loopLoading}
+                  >
+                    {convertingPrayerId === prayer.id ? (
+                      <>⏳ 전환 중...</>
+                    ) : (
+                      <>🔄 매일 기도로 전환</>
+                    )}
+                  </button>
+                )}
+
                 <div className="prayer-actions">
                   <button
                     className="action-button"
@@ -398,6 +456,21 @@ export function MyPrayers() {
             <div className="prayer-modal-content">
               {selectedPrayer.content}
             </div>
+
+            {/* Daily Prayer Conversion Button - only for today's prayers */}
+            {isCreatedToday(selectedPrayer.created_at) && !hasActiveLoop && (
+              <button
+                className="convert-to-loop-btn modal"
+                onClick={() => handleConvertToLoop(selectedPrayer)}
+                disabled={convertingPrayerId === selectedPrayer.id || loopLoading}
+              >
+                {convertingPrayerId === selectedPrayer.id ? (
+                  <>⏳ 전환 중...</>
+                ) : (
+                  <>🔄 매일 기도로 전환</>
+                )}
+              </button>
+            )}
 
             <div className="prayer-modal-actions">
               <button

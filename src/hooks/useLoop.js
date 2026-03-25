@@ -275,12 +275,71 @@ export function useLoop() {
         }
     }, [user?.id]);
 
+    /**
+     * 기존 기도문으로 매일 기도 시작
+     * @param {Object} prayer - 기도문 객체 { title, topic, content, emotion }
+     */
+    const createLoopFromPrayer = useCallback(async (prayer) => {
+        if (!user?.id) {
+            return { data: null, error: 'User not logged in' };
+        }
+
+        // 이미 활성 루프가 있으면 에러
+        if (activeLoop) {
+            return { data: null, error: '이미 진행 중인 매일 기도가 있습니다.' };
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            // 1. 루프 생성
+            const { data: loop, error: loopError } = await createLoopApi(user.id, {
+                title: prayer.title || '매일 기도',
+                topic: prayer.topic,
+                emotion: prayer.emotion || 'peace',
+                continuePrayer: true,
+            });
+
+            if (loopError) {
+                setError(loopError);
+                return { data: null, error: loopError };
+            }
+
+            // 2. 첫 번째 세션 생성 (기존 기도문 내용 포함)
+            const { data: session, error: sessionError } = await createSession(
+                loop.id,
+                user.id,
+                {
+                    dayNumber: 1,
+                    emotion: prayer.emotion || 'peace',
+                    prayerTitle: prayer.title,
+                    prayerContent: prayer.content,
+                }
+            );
+
+            if (sessionError) {
+                console.error('Failed to create first session:', sessionError);
+            }
+
+            setActiveLoop(loop);
+            return { data: { loop, session }, error: null };
+        } catch (e) {
+            console.error('Failed to create loop from prayer:', e);
+            setError(e.message);
+            return { data: null, error: e.message };
+        } finally {
+            setLoading(false);
+        }
+    }, [user?.id, activeLoop]);
+
     return {
         activeLoop,
         hasActiveLoop: !!activeLoop,
         loading,
         error,
         createLoop,
+        createLoopFromPrayer,
         getLoop,
         transitionTo,
         handleCheckinComplete,

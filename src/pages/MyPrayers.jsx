@@ -13,7 +13,7 @@ export function MyPrayers() {
   const { hasActiveLoop, createLoopFromPrayer, loading: loopLoading, activeLoop } = useLoop();
 
   // Debug: 활성 루프 상태 확인
-  console.log('[MyPrayers] Loop state:', { hasActiveLoop, loopLoading, activeLoop });
+  console.log('[MyPrayers] hasActiveLoop:', hasActiveLoop, 'loopLoading:', loopLoading, 'activeLoop:', activeLoop);
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [convertingPrayerId, setConvertingPrayerId] = useState(null);
@@ -212,7 +212,9 @@ export function MyPrayers() {
   const isCreatedToday = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    return date.toDateString() === now.toDateString();
+    const result = date.toDateString() === now.toDateString();
+    console.log('[MyPrayers] isCreatedToday:', dateString, '→', date.toDateString(), 'vs', now.toDateString(), '=', result);
+    return result;
   };
 
   // Handle convert to daily prayer (Loop)

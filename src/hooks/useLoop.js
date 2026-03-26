@@ -75,8 +75,17 @@ export function useLoop() {
         const loadActiveLoop = async () => {
             console.log('[useLoop] Starting to load active loop for user:', user.id);
             setLoading(true);
+
+            // 타임아웃 설정 (5초 후 강제 완료)
+            const timeout = setTimeout(() => {
+                console.warn('[useLoop] API call timeout, forcing completion');
+                setLoading(false);
+                initialLoadDone.current = true;
+            }, 5000);
+
             try {
                 const { data, error: fetchError } = await getActiveLoop(user.id);
+                clearTimeout(timeout);
                 console.log('[useLoop] getActiveLoop result:', { data, error: fetchError });
                 if (fetchError) {
                     setError(fetchError);
@@ -84,6 +93,7 @@ export function useLoop() {
                     setActiveLoop(data);
                 }
             } catch (e) {
+                clearTimeout(timeout);
                 console.error('[useLoop] Failed to load active loop:', e);
                 setError(e.message);
             } finally {

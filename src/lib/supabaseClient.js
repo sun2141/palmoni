@@ -739,7 +739,7 @@ export async function getActiveLoop(userId) {
     .in('status', ['active', 'checkin_due', 'continued'])
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error && error.code !== 'PGRST116') {
     console.error('Error fetching active loop:', error);

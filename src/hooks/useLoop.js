@@ -62,8 +62,11 @@ export function useLoop() {
             return;
         }
 
-        // 이미 로드했으면 스킵
-        if (initialLoadDone.current) return;
+        // 이미 로드했으면 loading만 false로 설정하고 스킵
+        if (initialLoadDone.current) {
+            setLoading(false);
+            return;
+        }
 
         const loadActiveLoop = async () => {
             setLoading(true);

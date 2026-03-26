@@ -56,31 +56,38 @@ export function useLoop() {
 
     // 활성 루프 로드
     useEffect(() => {
+        console.log('[useLoop] effect triggered, user?.id:', user?.id, 'initialLoadDone:', initialLoadDone.current);
+
         // user가 없으면 loading을 false로 설정하고 종료
         if (!user?.id) {
+            console.log('[useLoop] No user, setting loading to false');
             setLoading(false);
             return;
         }
 
         // 이미 로드했으면 loading만 false로 설정하고 스킵
         if (initialLoadDone.current) {
+            console.log('[useLoop] Already loaded, setting loading to false');
             setLoading(false);
             return;
         }
 
         const loadActiveLoop = async () => {
+            console.log('[useLoop] Starting to load active loop for user:', user.id);
             setLoading(true);
             try {
                 const { data, error: fetchError } = await getActiveLoop(user.id);
+                console.log('[useLoop] getActiveLoop result:', { data, error: fetchError });
                 if (fetchError) {
                     setError(fetchError);
                 } else {
                     setActiveLoop(data);
                 }
             } catch (e) {
-                console.error('Failed to load active loop:', e);
+                console.error('[useLoop] Failed to load active loop:', e);
                 setError(e.message);
             } finally {
+                console.log('[useLoop] Load complete, setting loading to false');
                 setLoading(false);
                 initialLoadDone.current = true;
             }

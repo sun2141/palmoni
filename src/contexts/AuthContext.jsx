@@ -51,13 +51,17 @@ export const AuthProvider = ({ children }) => {
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // 세션이 있으면 프로필 로드
-          try {
-            await loadUserProfile(newSession.user.id);
-          } catch (err) {
+          // 세션이 있는 이벤트로 먼저 초기화 완료 (프로필 로드 기다리지 않음)
+          // INITIAL_SESSION, TOKEN_REFRESHED, SIGNED_IN 모두 처리
+          if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+            completeInitialization(`onAuthStateChange(${event})`);
+          }
+
+          // 프로필 로드는 비동기로 진행 (초기화 블로킹 안 함)
+          loadUserProfile(newSession.user.id).catch(err => {
             console.warn('[Auth] Profile load failed in event handler:', err);
             setLoading(false);
-          }
+          });
 
           // 로그인 성공 콜백 실행
           if (event === 'SIGNED_IN' && onLoginSuccessRef.current) {
@@ -65,12 +69,6 @@ export const AuthProvider = ({ children }) => {
               onLoginSuccessRef.current?.(newSession.user);
               onLoginSuccessRef.current = null;
             }, 100);
-          }
-
-          // 세션이 있는 이벤트로 초기화 완료
-          // INITIAL_SESSION, TOKEN_REFRESHED, SIGNED_IN 모두 처리
-          if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-            completeInitialization(`onAuthStateChange(${event})`);
           }
         } else {
           setProfile(null);

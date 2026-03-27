@@ -755,20 +755,44 @@ export async function getActiveLoop(userId) {
 export async function getActiveLoops(userId) {
   if (!userId) return { data: [], error: 'User not logged in' };
 
-  const { data, error } = await supabase
-    .from('prayer_loops')
-    .select('*')
-    .eq('user_id', userId)
-    .in('status', ['active', 'checkin_due', 'continued'])
-    .order('created_at', { ascending: false })
-    .limit(3);
+  console.log('[getActiveLoops] Starting query for user:', userId);
+  const startTime = Date.now();
 
-  if (error) {
-    console.error('Error fetching active loops:', error);
-    return { data: [], error: error.message };
+  // AbortController로 타임아웃 구현
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    console.warn('[getActiveLoops] Aborting after 4s timeout');
+    controller.abort();
+  }, 4000);
+
+  try {
+    const { data, error } = await supabase
+      .from('prayer_loops')
+      .select('*')
+      .eq('user_id', userId)
+      .in('status', ['active', 'checkin_due', 'continued'])
+      .order('created_at', { ascending: false })
+      .limit(3)
+      .abortSignal(controller.signal);
+
+    clearTimeout(timeoutId);
+    console.log('[getActiveLoops] Query completed in', Date.now() - startTime, 'ms, results:', data?.length || 0);
+
+    if (error) {
+      console.error('[getActiveLoops] Error:', error);
+      return { data: [], error: error.message };
+    }
+
+    return { data: data || [], error: null };
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      console.warn('[getActiveLoops] Request aborted due to timeout');
+      return { data: [], error: null }; // 타임아웃 시 빈 배열 반환 (에러 아님)
+    }
+    console.error('[getActiveLoops] Exception:', err);
+    return { data: [], error: err.message };
   }
-
-  return { data: data || [], error: null };
 }
 
 /**

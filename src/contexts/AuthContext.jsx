@@ -31,21 +31,26 @@ export const AuthProvider = ({ children }) => {
     let initTimeout = null;
 
     const initializeAuth = async () => {
-      // 타임아웃 설정 (5초 후에도 완료되지 않으면 강제 초기화)
+      console.log('[Auth] Starting initialization...');
+      const startTime = Date.now();
+
+      // 타임아웃 설정 (10초 후에도 완료되지 않으면 강제 초기화)
       initTimeout = setTimeout(() => {
         if (mounted && !isInitialized) {
-          console.warn('Auth initialization timeout - forcing completion');
+          console.warn('[Auth] Initialization timeout after 10s - forcing completion');
           setLoading(false);
           setIsInitialized(true);
         }
-      }, 5000);
+      }, 10000);
 
       try {
         // 저장된 세션 복원 시도
+        console.log('[Auth] Calling getSession...');
         const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
+        console.log('[Auth] getSession completed in', Date.now() - startTime, 'ms');
 
         if (error) {
-          console.error('Session restore error:', error);
+          console.error('[Auth] Session restore error:', error);
         }
 
         if (mounted) {
@@ -54,19 +59,23 @@ export const AuthProvider = ({ children }) => {
             setUser(restoredSession.user);
             // 프로필 로드 실패해도 앱은 계속 진행
             try {
+              console.log('[Auth] Loading profile...');
               await loadUserProfile(restoredSession.user.id);
+              console.log('[Auth] Profile loaded in', Date.now() - startTime, 'ms total');
             } catch (profileErr) {
-              console.warn('Profile load failed:', profileErr);
+              console.warn('[Auth] Profile load failed:', profileErr);
               setLoading(false);
             }
           } else {
+            console.log('[Auth] No session found');
             setLoading(false);
           }
           setIsInitialized(true);
+          console.log('[Auth] Initialization complete in', Date.now() - startTime, 'ms');
           if (initTimeout) clearTimeout(initTimeout);
         }
       } catch (err) {
-        console.error('Auth initialization error:', err);
+        console.error('[Auth] Initialization error:', err);
         if (mounted) {
           setLoading(false);
           setIsInitialized(true);

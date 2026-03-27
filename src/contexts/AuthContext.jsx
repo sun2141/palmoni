@@ -29,22 +29,75 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
     let initTimeout = null;
+    let initializedViaEvent = false;
+
+    const completeInitialization = (source) => {
+      if (mounted && !isInitialized && !initializedViaEvent) {
+        initializedViaEvent = true;
+        setIsInitialized(true);
+        if (initTimeout) clearTimeout(initTimeout);
+        console.log(`[Auth] Initialization completed via ${source}`);
+      }
+    };
+
+    // Listen for auth changes FIRST - this often fires before getSession returns
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        if (!mounted) return;
+
+        console.log('[Auth] Auth state changed:', event, newSession ? 'with session' : 'no session');
+
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+
+        if (newSession?.user) {
+          // 세션이 있으면 프로필 로드
+          try {
+            await loadUserProfile(newSession.user.id);
+          } catch (err) {
+            console.warn('[Auth] Profile load failed in event handler:', err);
+            setLoading(false);
+          }
+
+          // 로그인 성공 콜백 실행
+          if (event === 'SIGNED_IN' && onLoginSuccessRef.current) {
+            setTimeout(() => {
+              onLoginSuccessRef.current?.(newSession.user);
+              onLoginSuccessRef.current = null;
+            }, 100);
+          }
+
+          // INITIAL_SESSION 또는 TOKEN_REFRESHED 이벤트로 초기화 완료
+          if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+            completeInitialization(`onAuthStateChange(${event})`);
+          }
+        } else {
+          setProfile(null);
+          setLoading(false);
+
+          // 세션 없는 INITIAL_SESSION도 초기화 완료로 처리
+          if (event === 'INITIAL_SESSION') {
+            completeInitialization('onAuthStateChange(INITIAL_SESSION - no session)');
+          }
+        }
+      }
+    );
 
     const initializeAuth = async () => {
       console.log('[Auth] Starting initialization...');
       const startTime = Date.now();
 
-      // 타임아웃 설정 (10초 후에도 완료되지 않으면 강제 초기화)
+      // 타임아웃 설정 (5초 - onAuthStateChange가 보통 더 빨리 응답함)
       initTimeout = setTimeout(() => {
-        if (mounted && !isInitialized) {
-          console.warn('[Auth] Initialization timeout after 10s - forcing completion');
+        if (mounted && !isInitialized && !initializedViaEvent) {
+          console.warn('[Auth] Initialization timeout after 5s - forcing completion');
           setLoading(false);
-          setIsInitialized(true);
+          completeInitialization('timeout');
         }
-      }, 10000);
+      }, 5000);
 
       try {
-        // 저장된 세션 복원 시도
+        // 저장된 세션 복원 시도 (onAuthStateChange와 병렬로 진행)
         console.log('[Auth] Calling getSession...');
         const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
         console.log('[Auth] getSession completed in', Date.now() - startTime, 'ms');
@@ -53,11 +106,16 @@ export const AuthProvider = ({ children }) => {
           console.error('[Auth] Session restore error:', error);
         }
 
+        // onAuthStateChange가 이미 처리했으면 스킵
+        if (initializedViaEvent) {
+          console.log('[Auth] Already initialized via event, skipping getSession result');
+          return;
+        }
+
         if (mounted) {
           if (restoredSession?.user) {
             setSession(restoredSession);
             setUser(restoredSession.user);
-            // 프로필 로드 실패해도 앱은 계속 진행
             try {
               console.log('[Auth] Loading profile...');
               await loadUserProfile(restoredSession.user.id);
@@ -70,48 +128,18 @@ export const AuthProvider = ({ children }) => {
             console.log('[Auth] No session found');
             setLoading(false);
           }
-          setIsInitialized(true);
-          console.log('[Auth] Initialization complete in', Date.now() - startTime, 'ms');
-          if (initTimeout) clearTimeout(initTimeout);
+          completeInitialization('getSession');
         }
       } catch (err) {
         console.error('[Auth] Initialization error:', err);
-        if (mounted) {
+        if (mounted && !initializedViaEvent) {
           setLoading(false);
-          setIsInitialized(true);
-          if (initTimeout) clearTimeout(initTimeout);
+          completeInitialization('error');
         }
       }
     };
 
     initializeAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        if (!mounted) return;
-
-        console.log('Auth state changed:', event);
-
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-
-        if (newSession?.user) {
-          await loadUserProfile(newSession.user.id);
-
-          // 로그인 성공 콜백 실행
-          if (event === 'SIGNED_IN' && onLoginSuccessRef.current) {
-            setTimeout(() => {
-              onLoginSuccessRef.current?.(newSession.user);
-              onLoginSuccessRef.current = null;
-            }, 100);
-          }
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
-      }
-    );
 
     // 앱이 백그라운드에서 돌아왔을 때 세션 확인
     const handleVisibilityChange = async () => {

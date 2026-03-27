@@ -727,7 +727,7 @@ export async function createLoop(userId, { title, topic, emotion, continuePrayer
 }
 
 /**
- * 활성 기도 여정 가져오기
+ * 활성 기도 여정 가져오기 (단일 - 하위 호환성)
  */
 export async function getActiveLoop(userId) {
   if (!userId) return { data: null, error: 'User not logged in' };
@@ -747,6 +747,28 @@ export async function getActiveLoop(userId) {
   }
 
   return { data: data || null, error: null };
+}
+
+/**
+ * 활성 기도 여정 목록 가져오기 (최대 3개)
+ */
+export async function getActiveLoops(userId) {
+  if (!userId) return { data: [], error: 'User not logged in' };
+
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .select('*')
+    .eq('user_id', userId)
+    .in('status', ['active', 'checkin_due', 'continued'])
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  if (error) {
+    console.error('Error fetching active loops:', error);
+    return { data: [], error: error.message };
+  }
+
+  return { data: data || [], error: null };
 }
 
 /**

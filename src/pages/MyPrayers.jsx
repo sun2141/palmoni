@@ -10,10 +10,10 @@ export function MyPrayers() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
-  const { hasActiveLoop, createLoopFromPrayer, loading: loopLoading, activeLoop } = useLoop();
+  const { canCreateLoop, createLoopFromPrayer, loading: loopLoading, activeLoopCount, maxLoops } = useLoop();
 
   // Debug: 활성 루프 상태 확인
-  console.log('[MyPrayers] hasActiveLoop:', hasActiveLoop, 'loopLoading:', loopLoading, 'activeLoop:', activeLoop);
+  console.log('[MyPrayers] canCreateLoop:', canCreateLoop, 'loopLoading:', loopLoading, 'activeLoopCount:', activeLoopCount);
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [convertingPrayerId, setConvertingPrayerId] = useState(null);
@@ -219,8 +219,8 @@ export function MyPrayers() {
 
   // Handle convert to daily prayer (Loop)
   const handleConvertToLoop = async (prayer) => {
-    if (hasActiveLoop) {
-      toast.error('이미 진행 중인 매일 기도가 있습니다.');
+    if (!canCreateLoop) {
+      toast.error(`최대 ${maxLoops}개의 매일 기도만 진행할 수 있습니다.`);
       return;
     }
 
@@ -376,7 +376,7 @@ export function MyPrayers() {
                 )}
 
                 {/* Daily Prayer Conversion Button - only for today's prayers */}
-                {isCreatedToday(prayer.created_at) && !hasActiveLoop && !loopLoading && (
+                {isCreatedToday(prayer.created_at) && canCreateLoop && !loopLoading && (
                   <button
                     className="convert-to-loop-btn"
                     onClick={() => handleConvertToLoop(prayer)}
@@ -463,7 +463,7 @@ export function MyPrayers() {
             </div>
 
             {/* Daily Prayer Conversion Button - only for today's prayers */}
-            {isCreatedToday(selectedPrayer.created_at) && !hasActiveLoop && !loopLoading && (
+            {isCreatedToday(selectedPrayer.created_at) && canCreateLoop && !loopLoading && (
               <button
                 className="convert-to-loop-btn modal"
                 onClick={() => handleConvertToLoop(selectedPrayer)}

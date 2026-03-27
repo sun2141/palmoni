@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {
     createLoop as createLoopApi,
-    getActiveLoop,
+    getActiveLoops,
     getLoopById,
     updateLoopStatus,
     updateLoopEmotion,
@@ -10,6 +10,11 @@ import {
     createSession,
     getTodaysLoopSession,
 } from '../lib/supabaseClient';
+
+/**
+ * 최대 활성 루프 개수
+ */
+const MAX_ACTIVE_LOOPS = 3;
 
 /**
  * 상태 전이 규칙
@@ -27,7 +32,7 @@ const STATE_TRANSITIONS = {
  */
 export function useLoop() {
     const { user } = useAuth();
-    const [activeLoop, setActiveLoop] = useState(null);
+    const [activeLoops, setActiveLoops] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -41,13 +46,13 @@ export function useLoop() {
 
         if (prevId && !currId) {
             // 로그아웃
-            setActiveLoop(null);
+            setActiveLoops([]);
             initialLoadDone.current = false;
         }
 
         if (currId && prevId !== currId) {
             // 다른 계정 로그인
-            setActiveLoop(null);
+            setActiveLoops([]);
             initialLoadDone.current = false;
         }
 
@@ -72,8 +77,8 @@ export function useLoop() {
             return;
         }
 
-        const loadActiveLoop = async () => {
-            console.log('[useLoop] Starting to load active loop for user:', user.id);
+        const loadActiveLoops = async () => {
+            console.log('[useLoop] Starting to load active loops for user:', user.id);
             setLoading(true);
 
             // 타임아웃 설정 (5초 후 강제 완료)
@@ -84,17 +89,17 @@ export function useLoop() {
             }, 5000);
 
             try {
-                const { data, error: fetchError } = await getActiveLoop(user.id);
+                const { data, error: fetchError } = await getActiveLoops(user.id);
                 clearTimeout(timeout);
-                console.log('[useLoop] getActiveLoop result:', { data, error: fetchError });
+                console.log('[useLoop] getActiveLoops result:', { data, error: fetchError });
                 if (fetchError) {
                     setError(fetchError);
                 } else {
-                    setActiveLoop(data);
+                    setActiveLoops(data || []);
                 }
             } catch (e) {
                 clearTimeout(timeout);
-                console.error('[useLoop] Failed to load active loop:', e);
+                console.error('[useLoop] Failed to load active loops:', e);
                 setError(e.message);
             } finally {
                 console.log('[useLoop] Load complete, setting loading to false');
@@ -103,7 +108,7 @@ export function useLoop() {
             }
         };
 
-        loadActiveLoop();
+        loadActiveLoops();
     }, [user?.id]);
 
     /**
@@ -112,6 +117,11 @@ export function useLoop() {
     const createLoop = useCallback(async ({ title, topic, emotion, continuePrayer = true }) => {
         if (!user?.id) {
             return { data: null, error: 'User not logged in' };
+        }
+
+        // 최대 개수 체크
+        if (activeLoops.length >= MAX_ACTIVE_LOOPS) {
+            return { data: null, error: `최대 ${MAX_ACTIVE_LOOPS}개의 매일 기도만 진행할 수 있습니다.` };
         }
 
         setLoading(true);
@@ -142,7 +152,7 @@ export function useLoop() {
                 console.error('Failed to create first session:', sessionError);
             }
 
-            setActiveLoop(loop);
+            setActiveLoops(prev => [loop, ...prev]);
             return { data: { loop, session }, error: null };
         } catch (e) {
             console.error('Failed to create loop:', e);
@@ -151,7 +161,7 @@ export function useLoop() {
         } finally {
             setLoading(false);
         }
-    }, [user?.id]);
+    }, [user?.id, activeLoops.length]);
 
     /**
      * 루프 상세 가져오기
@@ -192,13 +202,18 @@ export function useLoop() {
             return { data: null, error: updateError };
         }
 
-        // 활성 루프 업데이트
-        if (activeLoop?.id === loopId) {
-            setActiveLoop(data);
-        }
+        // 활성 루프 목록 업데이트
+        setActiveLoops(prev => {
+            // completed나 snoozed면 목록에서 제거
+            if (newStatus === 'completed' || newStatus === 'snoozed') {
+                return prev.filter(loop => loop.id !== loopId);
+            }
+            // 그 외에는 업데이트
+            return prev.map(loop => loop.id === loopId ? data : loop);
+        });
 
         return { data, error: null };
-    }, [activeLoop?.id]);
+    }, []);
 
     /**
      * 체크인 완료 후 상태 처리
@@ -237,12 +252,10 @@ export function useLoop() {
             return { data: null, error: updateError };
         }
 
-        if (activeLoop?.id === loopId) {
-            setActiveLoop(data);
-        }
+        setActiveLoops(prev => prev.map(loop => loop.id === loopId ? data : loop));
 
         return { data, error: null };
-    }, [activeLoop?.id]);
+    }, []);
 
     /**
      * 히스토리 가져오기
@@ -259,6 +272,11 @@ export function useLoop() {
      * 루프 다시 시작 (snoozed -> active)
      */
     const resumeLoop = useCallback(async (loopId) => {
+        // 최대 개수 체크
+        if (activeLoops.length >= MAX_ACTIVE_LOOPS) {
+            return { data: null, error: `최대 ${MAX_ACTIVE_LOOPS}개의 매일 기도만 진행할 수 있습니다.` };
+        }
+
         const today = new Date().toISOString().split('T')[0];
 
         // 1. 루프 상태 active로 변경
@@ -288,17 +306,17 @@ export function useLoop() {
         });
 
         return { data: { loop, session }, error: null };
-    }, [user?.id, transitionTo]);
+    }, [user?.id, transitionTo, activeLoops.length]);
 
     /**
      * 활성 루프 새로고침
      */
-    const refreshActiveLoop = useCallback(async () => {
+    const refreshActiveLoops = useCallback(async () => {
         if (!user?.id) return;
 
-        const { data, error: fetchError } = await getActiveLoop(user.id);
+        const { data, error: fetchError } = await getActiveLoops(user.id);
         if (!fetchError) {
-            setActiveLoop(data);
+            setActiveLoops(data || []);
         }
     }, [user?.id]);
 
@@ -311,9 +329,9 @@ export function useLoop() {
             return { data: null, error: 'User not logged in' };
         }
 
-        // 이미 활성 루프가 있으면 에러
-        if (activeLoop) {
-            return { data: null, error: '이미 진행 중인 매일 기도가 있습니다.' };
+        // 최대 개수 체크
+        if (activeLoops.length >= MAX_ACTIVE_LOOPS) {
+            return { data: null, error: `최대 ${MAX_ACTIVE_LOOPS}개의 매일 기도만 진행할 수 있습니다.` };
         }
 
         setLoading(true);
@@ -349,7 +367,7 @@ export function useLoop() {
                 console.error('Failed to create first session:', sessionError);
             }
 
-            setActiveLoop(loop);
+            setActiveLoops(prev => [loop, ...prev]);
             return { data: { loop, session }, error: null };
         } catch (e) {
             console.error('Failed to create loop from prayer:', e);
@@ -358,11 +376,19 @@ export function useLoop() {
         } finally {
             setLoading(false);
         }
-    }, [user?.id, activeLoop]);
+    }, [user?.id, activeLoops.length]);
 
     return {
-        activeLoop,
-        hasActiveLoop: !!activeLoop,
+        // 복수형 (새로운 API)
+        activeLoops,
+        activeLoopCount: activeLoops.length,
+        canCreateLoop: activeLoops.length < MAX_ACTIVE_LOOPS,
+        maxLoops: MAX_ACTIVE_LOOPS,
+
+        // 단수형 (하위 호환성 - 첫 번째 루프 반환)
+        activeLoop: activeLoops[0] || null,
+        hasActiveLoop: activeLoops.length > 0,
+
         loading,
         error,
         createLoop,
@@ -373,6 +399,7 @@ export function useLoop() {
         changeEmotion,
         fetchHistory,
         resumeLoop,
-        refreshActiveLoop,
+        refreshActiveLoop: refreshActiveLoops, // 하위 호환성
+        refreshActiveLoops,
     };
 }

@@ -67,8 +67,9 @@ export const AuthProvider = ({ children }) => {
             }, 100);
           }
 
-          // INITIAL_SESSION 또는 TOKEN_REFRESHED 이벤트로 초기화 완료
-          if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+          // 세션이 있는 이벤트로 초기화 완료
+          // INITIAL_SESSION, TOKEN_REFRESHED, SIGNED_IN 모두 처리
+          if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
             completeInitialization(`onAuthStateChange(${event})`);
           }
         } else {

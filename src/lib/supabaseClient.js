@@ -702,6 +702,8 @@ export async function getActiveUsersCount() {
 export async function createLoop(userId, { title, topic, emotion, continuePrayer = true }) {
   if (!userId) return { data: null, error: 'User not logged in' };
 
+  const today = new Date().toISOString().split('T')[0];
+
   const { data, error } = await supabase
     .from('prayer_loops')
     .insert({
@@ -714,6 +716,7 @@ export async function createLoop(userId, { title, topic, emotion, continuePrayer
       status: 'active',
       started_at: new Date().toISOString(),
       total_days: 1,
+      last_session_date: today,  // 오늘 날짜로 설정
     })
     .select()
     .single();
@@ -917,19 +920,44 @@ export async function getLoopHistory(userId, { limit = 20, offset = 0, status = 
 /**
  * 일별 세션 생성
  */
-export async function createSession(loopId, userId, { dayNumber, emotion }) {
+export async function createSession(loopId, userId, { dayNumber, emotion, prayerTitle = null, prayerContent = null }) {
   const today = new Date().toISOString().split('T')[0];
+
+  // 먼저 오늘 세션이 이미 있는지 확인 (중복 생성 방지)
+  const { data: existing } = await supabase
+    .from('prayer_sessions')
+    .select('id')
+    .eq('loop_id', loopId)
+    .eq('session_date', today)
+    .maybeSingle();
+
+  if (existing) {
+    console.log('[createSession] Session already exists for today, skipping creation');
+    // 기존 세션 반환
+    const { data: existingSession } = await supabase
+      .from('prayer_sessions')
+      .select('*')
+      .eq('id', existing.id)
+      .single();
+    return { data: existingSession, error: null };
+  }
+
+  const insertData = {
+    loop_id: loopId,
+    user_id: userId,
+    session_date: today,
+    day_number: dayNumber,
+    emotion,
+    status: 'pending',
+  };
+
+  // 기도문 내용이 있으면 함께 저장
+  if (prayerTitle) insertData.prayer_title = prayerTitle;
+  if (prayerContent) insertData.prayer_content = prayerContent;
 
   const { data, error } = await supabase
     .from('prayer_sessions')
-    .insert({
-      loop_id: loopId,
-      user_id: userId,
-      session_date: today,
-      day_number: dayNumber,
-      emotion,
-      status: 'pending',
-    })
+    .insert(insertData)
     .select()
     .single();
 

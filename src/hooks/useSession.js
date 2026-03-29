@@ -44,6 +44,7 @@ export function useSession(loopId, loopData = null) {
                 }
 
                 // 2. 오늘 세션이 없으면 생성 (루프가 active 또는 continued 상태일 때만)
+                // 단, 첫 번째 세션은 createLoop에서 이미 생성하므로 여기서는 2일차부터만 생성
                 if (loopData && ['active', 'continued'].includes(loopData.status)) {
                     const today = new Date().toISOString().split('T')[0];
 
@@ -55,7 +56,15 @@ export function useSession(loopId, loopData = null) {
                         return;
                     }
 
-                    // 새 세션 생성
+                    // 1일차는 이미 생성되어 있어야 함 - 없으면 데이터 불일치
+                    if (loopData.total_days === 1) {
+                        console.warn('[useSession] Day 1 session missing, possible data inconsistency');
+                        // 1일차 세션이 없으면 생성하지 않고 에러로 처리하지 않음
+                        // (createLoop에서 생성되어야 함)
+                        return;
+                    }
+
+                    // 새 세션 생성 (2일차 이상) - createSession 내부에서 중복 체크함
                     const newDayNumber = (loopData.total_days || 0) + 1;
                     const { data: newSession, error: createError } = await createSession(
                         loopId,

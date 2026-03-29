@@ -279,19 +279,31 @@ export function useLoop() {
 
         const today = new Date().toISOString().split('T')[0];
 
-        // 1. 루프 상태 active로 변경
-        const { data: loop, error: loopError } = await transitionTo(loopId, 'active');
+        // 1. 현재 루프 정보 가져오기
+        const { data: currentLoop, error: fetchError } = await getLoopById(loopId);
+        if (fetchError || !currentLoop) {
+            return { data: null, error: 'Loop not found' };
+        }
+
+        const newDayNumber = (currentLoop.total_days || 0) + 1;
+
+        // 2. 루프 상태 active로 변경 + total_days 증가 (한 번에)
+        const { data: loop, error: loopError } = await updateLoopStatus(loopId, 'active', {
+            total_days: newDayNumber,
+            last_session_date: today,
+        });
+
         if (loopError) {
             return { data: null, error: loopError };
         }
 
-        // 2. 새 세션 생성
+        // 3. 새 세션 생성 (createSession 내부에서 중복 체크함)
         const { data: session, error: sessionError } = await createSession(
             loopId,
             user.id,
             {
-                dayNumber: loop.total_days + 1,
-                emotion: loop.current_emotion,
+                dayNumber: newDayNumber,
+                emotion: currentLoop.current_emotion,
             }
         );
 
@@ -299,14 +311,11 @@ export function useLoop() {
             console.error('Failed to create session on resume:', sessionError);
         }
 
-        // 3. total_days 증가
-        await updateLoopStatus(loopId, 'active', {
-            total_days: loop.total_days + 1,
-            last_session_date: today,
-        });
+        // 4. 활성 루프 목록에 추가
+        setActiveLoops(prev => [loop, ...prev.filter(l => l.id !== loopId)]);
 
         return { data: { loop, session }, error: null };
-    }, [user?.id, transitionTo, activeLoops.length]);
+    }, [user?.id, activeLoops.length]);
 
     /**
      * 활성 루프 새로고침

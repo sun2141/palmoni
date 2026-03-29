@@ -12,6 +12,20 @@ import { PrayTogetherModal } from '../../components/prayer/PrayTogetherModal';
 import './LoopDetail.css';
 
 /**
+ * 제목에서 일차 표시 제거 (예: "1일차 평안의 기도" -> "평안의 기도")
+ */
+function cleanPrayerTitle(title) {
+    if (!title) return title;
+    // "1일차 ", "Day 1 ", "Day1 ", "[1일차]" 등의 패턴 제거
+    return title
+        .replace(/^\d+일차\s*/i, '')
+        .replace(/^Day\s*\d+\s*/i, '')
+        .replace(/^\[\d+일차\]\s*/i, '')
+        .replace(/^\[Day\s*\d+\]\s*/i, '')
+        .trim();
+}
+
+/**
  * 기도 여정 상세 페이지 (Screen B)
  */
 export default function LoopDetail() {
@@ -216,7 +230,7 @@ export default function LoopDetail() {
                 {/* 기도문 표시 또는 생성 버튼 */}
                 {generatedPrayer ? (
                     <div className="prayer-card">
-                        <h3>{generatedPrayer.title}</h3>
+                        <h3>{cleanPrayerTitle(generatedPrayer.title)}</h3>
                         <div className="prayer-content">
                             {generatedPrayer.content}
                         </div>
@@ -264,7 +278,7 @@ export default function LoopDetail() {
             <PrayTogetherModal
                 isOpen={showPrayTogether}
                 onClose={() => setShowPrayTogether(false)}
-                title={generatedPrayer?.title}
+                title={cleanPrayerTitle(generatedPrayer?.title)}
                 content={generatedPrayer?.content}
                 onComplete={handlePrayComplete}
             />

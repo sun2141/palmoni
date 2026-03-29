@@ -1,20 +1,52 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoopStatusBadge } from './LoopStatusBadge';
 import { EmotionBadge } from './EmotionSelector';
+import { useLoop } from '../../hooks/useLoop';
 import './LoopCard.css';
 
 /**
  * 기도 여정 카드 (히스토리 목록용)
  */
-export function LoopCard({ loop, onClick }) {
+export function LoopCard({ loop, onClick, onResume }) {
     const navigate = useNavigate();
+    const { resumeLoop, canCreateLoop } = useLoop();
+    const [resuming, setResuming] = useState(false);
 
     const handleClick = () => {
+        // snoozed 상태면 클릭 무시 (다시 시작 버튼으로만 처리)
+        if (loop.status === 'snoozed') return;
+
         if (onClick) {
             onClick(loop);
         } else {
             navigate(`/loop/${loop.id}`);
         }
+    };
+
+    const handleResume = async (e) => {
+        e.stopPropagation(); // 카드 클릭 이벤트 방지
+
+        if (!canCreateLoop) {
+            alert('최대 3개의 매일 기도만 진행할 수 있습니다.');
+            return;
+        }
+
+        setResuming(true);
+        const { data, error } = await resumeLoop(loop.id);
+        setResuming(false);
+
+        if (error) {
+            alert(error);
+            return;
+        }
+
+        if (onResume) {
+            onResume(loop);
+        }
+
+        // 다시 시작된 루프로 이동
+        navigate(`/loop/${loop.id}`);
     };
 
     const formatDate = (dateString) => {
@@ -55,6 +87,16 @@ export function LoopCard({ loop, onClick }) {
 
                 {['active', 'checkin_due', 'continued'].includes(loop.status) && (
                     <button className="loop-continue-btn">이어가기</button>
+                )}
+
+                {loop.status === 'snoozed' && (
+                    <button
+                        className="loop-resume-btn"
+                        onClick={handleResume}
+                        disabled={resuming}
+                    >
+                        {resuming ? '시작 중...' : '▶️ 다시 시작'}
+                    </button>
                 )}
             </div>
         </div>

@@ -7,6 +7,7 @@ import './LoopHistory.css';
 
 const FILTER_OPTIONS = [
     { value: 'active', label: '진행 중', statuses: ['active', 'checkin_due', 'continued'] },
+    { value: 'snoozed', label: '일시중지', statuses: ['snoozed'] },
     { value: 'completed', label: '완료', statuses: ['completed'] },
     { value: 'all', label: '전체', statuses: null },
 ];

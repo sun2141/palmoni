@@ -35,7 +35,7 @@ export default function LoopDetail() {
 
     // 세션 및 체크인 훅
     const { todaysSession, markAsPrayed, requestCheckin, refreshSession } = useSession(loopId, loop);
-    const { isCheckinDue, submitCheckin } = useCheckin(loopId, todaysSession?.id);
+    const { submitCheckin } = useCheckin(loopId, todaysSession?.id);
 
     // 루프 데이터 로드
     useEffect(() => {
@@ -100,13 +100,11 @@ export default function LoopDetail() {
     const handlePrayComplete = useCallback(async () => {
         setShowPrayTogether(false);
 
-        // 체크인 시간이면 체크인 요청
-        if (isCheckinDue) {
-            // 루프 상태를 checkin_due로 변경
-            await transitionTo(loopId, 'checkin_due');
-            setShowCheckin(true);
-        }
-    }, [isCheckinDue, transitionTo, loopId]);
+        // 기도 완료 후 항상 체크인 옵션 제공
+        // (계속할지, 완료할지, 일시중지할지 선택)
+        await transitionTo(loopId, 'checkin_due');
+        setShowCheckin(true);
+    }, [transitionTo, loopId]);
 
     // 체크인 제출
     const handleCheckinSubmit = useCallback(async (response) => {
@@ -241,8 +239,8 @@ export default function LoopDetail() {
                     </div>
                 )}
 
-                {/* 체크인 버튼 (기도 완료 후 저녁 시간) */}
-                {generatedPrayer && (isCheckinDue || loop.status === 'checkin_due') && (
+                {/* 체크인 버튼 (기도 완료 후 표시) */}
+                {generatedPrayer && (
                     <button
                         className="checkin-trigger-btn"
                         onClick={handleOpenCheckin}

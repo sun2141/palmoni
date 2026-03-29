@@ -799,15 +799,34 @@ export async function getActiveLoops(userId) {
  * 기도 여정 상세 가져오기
  */
 export async function getLoopById(loopId) {
+  // 루프 정보와 함께 첫 번째 세션(원본 기도문 포함)도 가져오기
   const { data, error } = await supabase
     .from('prayer_loops')
-    .select('*')
+    .select(`
+      *,
+      prayer_sessions (
+        id,
+        day_number,
+        prayer_title,
+        prayer_content,
+        created_at
+      )
+    `)
     .eq('id', loopId)
     .single();
 
   if (error) {
     console.error('Error fetching loop:', error);
     return { data: null, error: error.message };
+  }
+
+  // 첫 번째 세션의 기도문을 원본으로 설정
+  if (data && data.prayer_sessions?.length > 0) {
+    const firstSession = data.prayer_sessions.sort((a, b) => a.day_number - b.day_number)[0];
+    data.original_prayer = {
+      title: firstSession.prayer_title,
+      content: firstSession.prayer_content,
+    };
   }
 
   return { data, error: null };

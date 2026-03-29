@@ -24,8 +24,7 @@ export default function LoopDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 기도 생성 상태
-    const [isGenerating, setIsGenerating] = useState(false);
+    // 기도 상태
     const [generatedPrayer, setGeneratedPrayer] = useState(null);
 
     // 모달 상태
@@ -73,49 +72,28 @@ export default function LoopDetail() {
         }
     }, [todaysSession, generatedPrayer]);
 
-    // 기도문 생성
-    const handleGeneratePrayer = useCallback(async () => {
+    // 원본 기도문으로 오늘의 기도 시작 (새 기도문 생성 없음)
+    const handleStartPrayer = useCallback(async () => {
         if (!loop || !todaysSession) return;
 
-        setIsGenerating(true);
-        setError(null);
+        // 원본 기도문 사용 (첫 번째 세션에서 가져온 것)
+        const originalPrayer = loop.original_prayer;
 
-        try {
-            const response = await fetch('/api/generate-prayer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    topic: loop.topic,
-                    loopContext: {
-                        loopId: loop.id,
-                        dayNumber: todaysSession.day_number,
-                        emotion: loop.current_emotion,
-                        continuePrayer: loop.continue_prayer,
-                    },
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to generate prayer');
-            }
-
-            const data = await response.json();
-            setGeneratedPrayer(data);
-
-            // 세션에 기도문 저장
-            await markAsPrayed({
-                title: data.title,
-                content: data.content,
-            });
-
-            // 함께 기도하기 모달 표시
-            setShowPrayTogether(true);
-        } catch (e) {
-            console.error('Failed to generate prayer:', e);
-            setError('기도문 생성에 실패했습니다. 다시 시도해주세요.');
-        } finally {
-            setIsGenerating(false);
+        if (!originalPrayer?.content) {
+            setError('기도문을 찾을 수 없습니다.');
+            return;
         }
+
+        setGeneratedPrayer(originalPrayer);
+
+        // 세션에 기도문 저장 (오늘 기도했음을 기록)
+        await markAsPrayed({
+            title: originalPrayer.title,
+            content: originalPrayer.content,
+        });
+
+        // 함께 기도하기 모달 표시
+        setShowPrayTogether(true);
     }, [loop, todaysSession, markAsPrayed]);
 
     // 함께 기도하기 완료
@@ -255,20 +233,10 @@ export default function LoopDetail() {
                     <div className="generate-section">
                         <button
                             className="generate-btn"
-                            onClick={handleGeneratePrayer}
-                            disabled={isGenerating}
+                            onClick={handleStartPrayer}
                         >
-                            {isGenerating ? (
-                                <>
-                                    <span className="generating-icon">🙏</span>
-                                    기도문 생성 중...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="pray-icon">🕊️</span>
-                                    오늘의 기도 시작하기
-                                </>
-                            )}
+                            <span className="pray-icon">🕊️</span>
+                            오늘의 기도 시작하기
                         </button>
                     </div>
                 )}

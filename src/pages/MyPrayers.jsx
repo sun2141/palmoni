@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
 import { useToast } from '../components/common/Toast';
 import { useLoop } from '../hooks/useLoop';
+import { PrayerImageShare } from '../components/share/PrayerImageShare';
+import { AskPrayerShare } from '../components/share/AskPrayerShare';
 import './MyPrayers.css';
 
 export function MyPrayers() {
@@ -23,6 +25,8 @@ export function MyPrayers() {
   const [emotionFilter, setEmotionFilter] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedPrayer, setSelectedPrayer] = useState(null);
+  const [imageSharePrayer, setImageSharePrayer] = useState(null);
+  const [askPrayerPrayer, setAskPrayerPrayer] = useState(null);
   const observerTarget = useRef(null);
   const offsetRef = useRef(0);
 
@@ -393,10 +397,17 @@ export function MyPrayers() {
                 <div className="prayer-actions">
                   <button
                     className="action-button"
-                    onClick={() => handleCopy(prayer)}
-                    title="복사하기"
+                    onClick={() => setImageSharePrayer(prayer)}
+                    title="이미지로 나누기"
                   >
-                    <span>📋</span> 복사
+                    <span>🖼️</span> 이미지
+                  </button>
+                  <button
+                    className="action-button"
+                    onClick={() => setAskPrayerPrayer(prayer)}
+                    title="기도 부탁하기"
+                  >
+                    <span>🙏</span> 부탁
                   </button>
                   <button
                     className="action-button"
@@ -481,10 +492,18 @@ export function MyPrayers() {
               <button
                 className="action-button"
                 onClick={() => {
-                  handleCopy(selectedPrayer);
+                  setImageSharePrayer(selectedPrayer);
                 }}
               >
-                <span>📋</span> 복사
+                <span>🖼️</span> 이미지
+              </button>
+              <button
+                className="action-button"
+                onClick={() => {
+                  setAskPrayerPrayer(selectedPrayer);
+                }}
+              >
+                <span>🙏</span> 기도 부탁
               </button>
               <button
                 className="action-button"
@@ -498,6 +517,22 @@ export function MyPrayers() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 이미지 공유 모달 */}
+      {imageSharePrayer && (
+        <PrayerImageShare
+          prayer={imageSharePrayer}
+          onClose={() => setImageSharePrayer(null)}
+        />
+      )}
+
+      {/* 기도 부탁하기 모달 */}
+      {askPrayerPrayer && (
+        <AskPrayerShare
+          prayer={askPrayerPrayer}
+          onClose={() => setAskPrayerPrayer(null)}
+        />
       )}
     </div>
   );

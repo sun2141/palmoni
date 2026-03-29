@@ -1,0 +1,212 @@
+.prayer-image-share-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.prayer-image-share-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prayer-image-share-modal .close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.prayer-image-share-modal .close-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.prayer-image-share-modal h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.prayer-image-share-modal .subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* 테마 선택 */
+.theme-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.theme-btn {
+  padding: 8px 16px;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.theme-btn:hover {
+  transform: scale(1.05);
+}
+
+.theme-btn.active {
+  border-color: #1f2937;
+  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.2);
+}
+
+/* 미리보기 */
+.image-preview {
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.preview-content h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.preview-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.preview-content .watermark {
+  display: block;
+  margin-top: 16px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* 액션 버튼 */
+.share-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-btn.save {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.action-btn.save:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.action-btn.share {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.action-btn.share:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .prayer-image-share-modal {
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+
+  .prayer-image-share-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .theme-selector {
+    gap: 8px;
+  }
+
+  .theme-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

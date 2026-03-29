@@ -1,0 +1,306 @@
+.ask-prayer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.ask-prayer-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ask-prayer-modal .close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.ask-prayer-modal .close-btn:hover {
+  background: #e5e7eb;
+}
+
+/* 헤더 */
+.modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.header-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 6px;
+}
+
+.modal-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* 기도 제목 표시 */
+.prayer-topic-display {
+  background: linear-gradient(135deg, #f0f4ff, #faf5ff);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.topic-label {
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.topic-text {
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 메시지 스타일 선택 */
+.message-style-selector {
+  margin-bottom: 16px;
+}
+
+.selector-label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.style-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.style-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  font-size: 13px;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.style-btn:hover {
+  border-color: #c4b5fd;
+}
+
+.style-btn.active {
+  border-color: #8b5cf6;
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+/* 추가 메모 */
+.custom-note-section {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.note-label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.optional {
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.note-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  resize: none;
+  height: 70px;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.note-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+}
+
+.note-input::placeholder {
+  color: #9ca3af;
+}
+
+.char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* 미리보기 */
+.message-preview {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.preview-label {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 공유 버튼 */
+.share-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.share-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-icon {
+  font-size: 20px;
+}
+
+.share-btn.kakao {
+  background: #fee500;
+  color: #191919;
+}
+
+.share-btn.kakao:hover {
+  background: #fdd835;
+}
+
+.share-btn.copy {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.share-btn.copy:hover {
+  background: #e5e7eb;
+}
+
+.share-btn.share {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.share-btn.share:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* 안내 문구 */
+.gentle-reminder {
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+  font-style: italic;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .ask-prayer-modal {
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+
+  .ask-prayer-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .style-btn {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+}

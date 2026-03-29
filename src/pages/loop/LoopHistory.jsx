@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLoop } from '../../hooks/useLoop';
+import { deleteLoop } from '../../lib/supabaseClient';
 import { LoopCard } from '../../components/loop/LoopCard';
 import './LoopHistory.css';
 
@@ -11,6 +12,15 @@ const FILTER_OPTIONS = [
     { value: 'completed', label: '완료', statuses: ['completed'] },
     { value: 'all', label: '전체', statuses: null },
 ];
+
+// 상태 우선순위 (낮을수록 위에 표시)
+const STATUS_PRIORITY = {
+    'active': 1,
+    'checkin_due': 1,
+    'continued': 1,
+    'snoozed': 2,
+    'completed': 3,
+};
 
 /**
  * 기도 여정 히스토리 페이지 (Screen G)
@@ -82,6 +92,39 @@ export default function LoopHistory() {
         }
     };
 
+    // 정렬된 루프 목록 (전체 보기에서 완료된 것은 아래로)
+    const sortedLoops = useMemo(() => {
+        if (filter !== 'all') return loops;
+
+        return [...loops].sort((a, b) => {
+            const priorityA = STATUS_PRIORITY[a.status] || 99;
+            const priorityB = STATUS_PRIORITY[b.status] || 99;
+
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB;
+            }
+
+            // 같은 우선순위면 최신순
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+    }, [loops, filter]);
+
+    // 루프 삭제
+    const handleDelete = async (loopId) => {
+        if (!confirm('이 매일 기도를 삭제하시겠습니까?\n관련된 모든 기록이 삭제됩니다.')) {
+            return;
+        }
+
+        const { error } = await deleteLoop(loopId);
+        if (error) {
+            alert('삭제에 실패했습니다: ' + error);
+            return;
+        }
+
+        // 목록에서 제거
+        setLoops(prev => prev.filter(l => l.id !== loopId));
+    };
+
     if (!user) {
         return (
             <div className="loop-history-page">
@@ -127,8 +170,13 @@ export default function LoopHistory() {
                 ) : (
                     <>
                         <div className="loop-list">
-                            {loops.map(loop => (
-                                <LoopCard key={loop.id} loop={loop} />
+                            {sortedLoops.map(loop => (
+                                <LoopCard
+                                    key={loop.id}
+                                    loop={loop}
+                                    onDelete={handleDelete}
+                                    showDelete={['completed', 'snoozed'].includes(loop.status)}
+                                />
                             ))}
                         </div>
 

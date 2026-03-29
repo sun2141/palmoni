@@ -8,19 +8,26 @@ import './LoopCard.css';
 /**
  * 기도 여정 카드 (히스토리 목록용)
  */
-export function LoopCard({ loop, onClick, onResume }) {
+export function LoopCard({ loop, onClick, onResume, onDelete, showDelete = false }) {
     const navigate = useNavigate();
     const { resumeLoop, canCreateLoop } = useLoop();
     const [resuming, setResuming] = useState(false);
 
     const handleClick = () => {
-        // snoozed 상태면 클릭 무시 (다시 시작 버튼으로만 처리)
-        if (loop.status === 'snoozed') return;
+        // snoozed나 completed 상태면 클릭 무시
+        if (['snoozed', 'completed'].includes(loop.status)) return;
 
         if (onClick) {
             onClick(loop);
         } else {
             navigate(`/loop/${loop.id}`);
+        }
+    };
+
+    const handleDelete = (e) => {
+        e.stopPropagation();
+        if (onDelete) {
+            onDelete(loop.id);
         }
     };
 
@@ -96,6 +103,16 @@ export function LoopCard({ loop, onClick, onResume }) {
                         disabled={resuming}
                     >
                         {resuming ? '시작 중...' : '▶️ 다시 시작'}
+                    </button>
+                )}
+
+                {showDelete && (
+                    <button
+                        className="loop-delete-btn"
+                        onClick={handleDelete}
+                        title="삭제"
+                    >
+                        🗑️
                     </button>
                 )}
             </div>

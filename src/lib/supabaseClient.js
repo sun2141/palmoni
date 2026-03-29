@@ -887,7 +887,37 @@ export async function updateLoopEmotion(loopId, emotion) {
 }
 
 /**
- * 기도 여정 히스토리 가져오기
+ * 기도 여정 삭제 (관련 세션, 체크인도 함께 삭제)
+ */
+export async function deleteLoop(loopId) {
+  // 1. 관련 체크인 삭제
+  await supabase
+    .from('prayer_checkins')
+    .delete()
+    .eq('loop_id', loopId);
+
+  // 2. 관련 세션 삭제
+  await supabase
+    .from('prayer_sessions')
+    .delete()
+    .eq('loop_id', loopId);
+
+  // 3. 루프 삭제
+  const { error } = await supabase
+    .from('prayer_loops')
+    .delete()
+    .eq('id', loopId);
+
+  if (error) {
+    console.error('Error deleting loop:', error);
+    return { error: error.message };
+  }
+
+  return { error: null };
+}
+
+/**
+ * 기도 여정 히스토리 가져오기 (완료된 것은 아래로)
  */
 export async function getLoopHistory(userId, { limit = 20, offset = 0, status = null } = {}) {
   if (!userId) return { data: [], error: 'User not logged in', count: 0 };

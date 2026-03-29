@@ -77,7 +77,7 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
         limit: DAILY_LIMIT_ANONYMOUS,
         used: count,
         remaining: 0,
-        message: '오늘의 기도문 체험 횟수를 모두 사용하셨습니다. 회원가입하시면 기도문이 저장되고, 매일 3회 기도를 맡길 수 있습니다!'
+        message: '오늘의 기도문 체험 횟수를 모두 사용하셨습니다. 회원가입하시면 기도문이 저장되고, 매일 함께 기도할 수 있습니다!'
       };
     }
 

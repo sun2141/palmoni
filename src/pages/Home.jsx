@@ -514,7 +514,7 @@ export function Home() {
                         <strong>무료 회원가입</strong>하시면 기도문이 저장되고, 기도 기록이 남아요
                     </p>
                     <div className="signup-benefits">
-                        <span className="benefit-item">✓ 매일 3회 기도</span>
+                        <span className="benefit-item">✓ 매일 함께 기도</span>
                         <span className="benefit-item">✓ 기도문 자동 저장</span>
                         <span className="benefit-item">✓ 연속 기도 기록</span>
                     </div>

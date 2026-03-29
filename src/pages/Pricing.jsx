@@ -21,8 +21,8 @@ export function Pricing() {
       <div className="pricing-header">
         <h1>Palmoni는 무료입니다</h1>
         <p className="subtitle">
-          Someone is praying for you.<br />
-          이름 없는 존재가 당신을 위해 기도합니다.
+          Someone is praying with you.<br />
+          누군가 당신과 함께 기도합니다.
         </p>
       </div>
 

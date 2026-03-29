@@ -395,7 +395,7 @@ export function Home() {
                             onClick={async () => {
                                 const shareData = {
                                     title: 'Palmoni - 기도 앱',
-                                    text: '이름 없는 존재가 당신을 위해 기도합니다. Palmoni와 함께 기도해보세요!',
+                                    text: '누군가 당신과 함께 기도합니다. Palmoni에서 기도해보세요!',
                                     url: 'https://palmoni.vercel.app'
                                 };
                                 if (navigator.share) {
@@ -437,7 +437,7 @@ export function Home() {
                     PALMONI
                 </h1>
                 <p className="hero-subtitle">
-                    이름 없는 존재와<br />
+                    누군가 당신과<br />
                     함께 기도합니다
                 </p>
             </div>
@@ -654,7 +654,7 @@ export function Home() {
                         onClick={async () => {
                             const shareData = {
                                 title: 'Palmoni - 기도 앱',
-                                text: '이름 없는 존재가 당신을 위해 기도합니다. Palmoni와 함께 기도해보세요!',
+                                text: '누군가 당신과 함께 기도합니다. Palmoni에서 기도해보세요!',
                                 url: 'https://palmoni.vercel.app'
                             };
                             if (navigator.share) {

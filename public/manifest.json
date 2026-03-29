@@ -1,7 +1,7 @@
 {
   "name": "Palmoni - 기도 앱",
   "short_name": "Palmoni",
-  "description": "이름 없는 존재가 당신을 위해 기도합니다",
+  "description": "누군가 당신과 함께 기도합니다",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#EEEEFF",

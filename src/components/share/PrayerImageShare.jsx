@@ -106,7 +106,7 @@ export function PrayerImageShare({ prayer, onClose }) {
     ctx.font = '28px "Noto Sans KR", sans-serif';
     ctx.textAlign = 'center';
     ctx.globalAlpha = 0.7;
-    ctx.fillText('Palmoni - 이름 없는 존재가 당신을 위해 기도합니다', width / 2, height - 120);
+    ctx.fillText('Palmoni - 누군가 당신과 함께 기도합니다', width / 2, height - 120);
     ctx.globalAlpha = 1;
 
     setIsGenerating(false);

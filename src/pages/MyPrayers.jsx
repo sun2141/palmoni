@@ -155,7 +155,7 @@ export function MyPrayers() {
 
   // Handle copy
   const handleCopy = async (prayer) => {
-    const text = `${prayer.title}\n\n${prayer.content}\n\n- Palmoni가 당신을 위해 기도했습니다`;
+    const text = `${prayer.title}\n\n${prayer.content}\n\n- 누군가 당신과 함께 기도합니다 (Palmoni)`;
     await navigator.clipboard.writeText(text);
     toast.success('기도문이 복사되었습니다!');
   };

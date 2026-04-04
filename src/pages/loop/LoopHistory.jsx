@@ -113,9 +113,13 @@ export default function LoopHistory() {
 
     // 루프 삭제
     const handleDelete = async (loopId) => {
-        if (!confirm('이 매일 기도를 삭제하시겠습니까?\n관련된 모든 기록이 삭제됩니다.')) {
-            return;
-        }
+        const loop = loops.find(l => l.id === loopId);
+        const isActive = loop && ['active', 'checkin_due', 'continued'].includes(loop.status);
+        const message = isActive
+            ? '진행 중인 매일 기도를 삭제하시겠습니까?\n기도 기록이 모두 사라집니다.'
+            : '이 매일 기도를 삭제하시겠습니까?\n관련된 모든 기록이 삭제됩니다.';
+
+        if (!confirm(message)) return;
 
         const { error } = await deleteLoop(loopId);
         if (error) {
@@ -198,7 +202,7 @@ export default function LoopHistory() {
                                     loop={loop}
                                     onDelete={handleDelete}
                                     onEdit={handleEdit}
-                                    showDelete={['completed', 'snoozed'].includes(loop.status)}
+                                    showDelete={true}
                                     showEdit={!['completed'].includes(loop.status)}
                                 />
                             ))}

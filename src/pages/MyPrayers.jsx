@@ -19,6 +19,7 @@ export function MyPrayers() {
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [convertingPrayerId, setConvertingPrayerId] = useState(null);
+  const [convertedPrayerIds, setConvertedPrayerIds] = useState(new Set());
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -243,6 +244,9 @@ export function MyPrayers() {
         return;
       }
 
+      // 전환 완료된 기도 ID 기록 → 버튼 즉시 숨김
+      setConvertedPrayerIds(prev => new Set([...prev, prayer.id]));
+
       toast.success('매일 기도가 시작되었습니다!');
       // Navigate to loop detail page
       navigate(`/loop/${data.loop.id}`);
@@ -379,8 +383,8 @@ export function MyPrayers() {
                   </button>
                 )}
 
-                {/* Daily Prayer Conversion Button - only for today's prayers */}
-                {isCreatedToday(prayer.created_at) && canCreateLoop && !loopLoading && (
+                {/* Daily Prayer Conversion Button - only for today's prayers, not yet converted */}
+                {isCreatedToday(prayer.created_at) && canCreateLoop && !loopLoading && !convertedPrayerIds.has(prayer.id) && (
                   <button
                     className="convert-to-loop-btn"
                     onClick={() => handleConvertToLoop(prayer)}
@@ -473,8 +477,8 @@ export function MyPrayers() {
               {selectedPrayer.content}
             </div>
 
-            {/* Daily Prayer Conversion Button - only for today's prayers */}
-            {isCreatedToday(selectedPrayer.created_at) && canCreateLoop && !loopLoading && (
+            {/* Daily Prayer Conversion Button - only for today's prayers, not yet converted */}
+            {isCreatedToday(selectedPrayer.created_at) && canCreateLoop && !loopLoading && !convertedPrayerIds.has(selectedPrayer.id) && (
               <button
                 className="convert-to-loop-btn modal"
                 onClick={() => handleConvertToLoop(selectedPrayer)}

@@ -108,6 +108,21 @@
     transform: none;
 }
 
+.loop-edit-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #f3f4f6;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.loop-edit-btn:hover {
+    background: #e0e7ff;
+    transform: scale(1.05);
+}
+
 .loop-delete-btn {
     padding: 6px 10px;
     border-radius: 8px;

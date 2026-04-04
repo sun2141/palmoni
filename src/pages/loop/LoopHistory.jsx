@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLoop } from '../../hooks/useLoop';
-import { deleteLoop } from '../../lib/supabaseClient';
+import { deleteLoop, updateLoopInfo } from '../../lib/supabaseClient';
 import { LoopCard } from '../../components/loop/LoopCard';
+import { LoopEditModal } from '../../components/loop/LoopEditModal';
 import './LoopHistory.css';
 
 const FILTER_OPTIONS = [
@@ -32,9 +33,10 @@ export default function LoopHistory() {
 
     const [loops, setLoops] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all');
+    const [filter, setFilter] = useState('active');
     const [hasMore, setHasMore] = useState(true);
     const [offset, setOffset] = useState(0);
+    const [editingLoop, setEditingLoop] = useState(null);
 
     const LIMIT = 20;
 
@@ -125,6 +127,23 @@ export default function LoopHistory() {
         setLoops(prev => prev.filter(l => l.id !== loopId));
     };
 
+    // 편집 모달 열기
+    const handleEdit = (loop) => {
+        setEditingLoop(loop);
+    };
+
+    // 편집 저장
+    const handleEditSave = async ({ title, topic, emotion }) => {
+        if (!editingLoop) return;
+        const { data, error } = await updateLoopInfo(editingLoop.id, { title, topic, emotion });
+        if (error) {
+            alert('수정에 실패했습니다: ' + error);
+            return;
+        }
+        setLoops(prev => prev.map(l => l.id === editingLoop.id ? { ...l, ...data } : l));
+        setEditingLoop(null);
+    };
+
     if (!user) {
         return (
             <div className="loop-history-page">
@@ -139,10 +158,13 @@ export default function LoopHistory() {
     return (
         <div className="loop-history-page">
             <header className="history-header">
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    ← 뒤로
+                <button className="back-button" onClick={() => navigate('/')}>
+                    ← 홈
                 </button>
-                <h1>매일 기도 기록</h1>
+                <h1>매일 기도</h1>
+                <button className="new-loop-btn" onClick={() => navigate('/loop/new')}>
+                    + 새 기도
+                </button>
             </header>
 
             <div className="filter-tabs">
@@ -175,7 +197,9 @@ export default function LoopHistory() {
                                     key={loop.id}
                                     loop={loop}
                                     onDelete={handleDelete}
+                                    onEdit={handleEdit}
                                     showDelete={['completed', 'snoozed'].includes(loop.status)}
+                                    showEdit={!['completed'].includes(loop.status)}
                                 />
                             ))}
                         </div>
@@ -198,13 +222,14 @@ export default function LoopHistory() {
                 )}
             </div>
 
-            {/* 새 여정 시작 FAB */}
-            <button
-                className="fab-new-loop"
-                onClick={() => navigate('/loop/new')}
-            >
-                <span>+</span>
-            </button>
+            {/* 편집 모달 */}
+            {editingLoop && (
+                <LoopEditModal
+                    loop={editingLoop}
+                    onSave={handleEditSave}
+                    onClose={() => setEditingLoop(null)}
+                />
+            )}
         </div>
     );
 }

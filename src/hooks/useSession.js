@@ -46,7 +46,7 @@ export function useSession(loopId, loopData = null) {
                 // 2. 오늘 세션이 없으면 생성 (루프가 active 또는 continued 상태일 때만)
                 // 단, 첫 번째 세션은 createLoop에서 이미 생성하므로 여기서는 2일차부터만 생성
                 if (loopData && ['active', 'continued'].includes(loopData.status)) {
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 
                     // 이미 오늘 세션이 있는지 다시 확인 (race condition 방지)
                     if (loopData.last_session_date === today) {

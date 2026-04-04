@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-03-31
+> 마지막 업데이트: 2026-04-05
 
 ## 프로젝트 개요
 
@@ -59,6 +59,35 @@ snoozed ──(다시 시작)──> active
 - PWA 지원 (오프라인, 홈 화면 추가)
 - 구글 로그인 (Supabase Auth)
 - Open Graph 메타 태그
+
+---
+
+## 최근 작업 내역 (2026-04-05)
+
+### 완료된 작업
+
+#### 2. KST 자정 기준 날짜 리셋 버그 수정
+- **문제**: 자정이 지나도 기도 남은 횟수가 리셋되지 않음 (09:00 KST에 리셋됨)
+- **원인**: 모든 날짜 계산이 `new Date().toISOString().split('T')[0]`(UTC 날짜) 사용
+  - `checkRateLimit` 쿼리: `.gte('created_at', `${today}T00:00:00Z`)` → UTC 자정 기준
+  - 한국 시간 자정(00:00 KST) = UTC 전날 15:00 → 어제 기도가 오늘 사용분으로 계속 잡힘
+- **해결**:
+  - `getTodayKST()` / `getYesterdayKST()` 헬퍼 함수 추가 (`Intl.DateTimeFormat` Asia/Seoul)
+  - `checkRateLimit` 쿼리 boundary: `T00:00:00Z` → `T00:00:00+09:00` (KST 자정 기준)
+  - 전체 날짜 사용 함수 KST로 통일: `checkRateLimit`, `updateStreak`, `getTodayPrayerSlots`, `createLoop`, `createSession`, `getTodaysLoopSession`, `saveTodaysPrayerSession`, `getTodaysPrayerSession`
+  - `useSession.js`, `useLoop.js`의 날짜 비교도 KST로 통일
+- **파일**: `src/lib/supabaseClient.js`, `src/hooks/useSession.js`, `src/hooks/useLoop.js`
+
+#### 1. 매일 기도 전환 버튼 중복 표시 버그 수정
+- **문제**: 이미 매일 기도로 등록된 기도문에도 "매일 기도로 전환" 버튼이 계속 표시됨
+- **원인**: `convertedPrayerIds`가 인메모리 상태여서 페이지 이동 시 초기화됨. `prayer_loops` 테이블에 원본 기도문 ID 추적 컬럼 없음
+- **해결**:
+  - `prayer_loops` 테이블에 `source_prayer_id` 컬럼 추가 (마이그레이션 완료)
+  - `createLoop` API에 `sourcePrayerId` 파라미터 추가
+  - `createLoopFromPrayer`에서 `prayer.id`를 `source_prayer_id`로 저장
+  - `useLoop`에서 `prayerIdsInLoop` Set 노출 (활성 루프의 source_prayer_id 목록)
+  - `MyPrayers`의 버튼 조건에 `!prayerIdsInLoop.has(prayer.id)` 추가
+- **파일**: `supabase/migrations/20260404_add_source_prayer_id_to_loops.sql`, `src/lib/supabaseClient.js`, `src/hooks/useLoop.js`, `src/pages/MyPrayers.jsx`
 
 ---
 
@@ -154,6 +183,8 @@ palmoni/
 
 ### 현재 이슈
 - 없음 (테스트 필요)
+
+> 참고: 2026-04-04 이전에 생성된 매일 기도는 `source_prayer_id`가 없어 기존 기도문에는 버튼이 계속 표시될 수 있음. 신규 등록분부터 정상 동작.
 
 ### 향후 개선 사항
 1. **타임라인 뷰** (`/loop/:id/timeline`) - 기도 여정 시각화

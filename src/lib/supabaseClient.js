@@ -14,6 +14,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 /**
+ * 한국 시간(KST, UTC+9) 기준 오늘 날짜 반환 (YYYY-MM-DD)
+ */
+function getTodayKST() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+}
+
+/**
+ * 한국 시간(KST, UTC+9) 기준 어제 날짜 반환 (YYYY-MM-DD)
+ */
+function getYesterdayKST() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date(Date.now() - 86400000));
+}
+
+/**
  * Rate limiting helper
  *
  * 전략:
@@ -22,17 +36,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
  * - 프리미엄: 무제한 (추후)
  */
 export async function checkRateLimit(userId = null, anonymousId = null) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
   const DAILY_LIMIT_FREE = 3;
   const DAILY_LIMIT_ANONYMOUS = 3;
 
   if (userId) {
-    // 로그인 사용자: 하루 3회 제한
+    // 로그인 사용자: 하루 3회 제한 (KST 자정 기준)
     const { count, error } = await supabase
       .from('usage_logs')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('created_at', `${today}T00:00:00Z`);
+      .gte('created_at', `${today}T00:00:00+09:00`);
 
     if (error) {
       console.error('Error checking user usage:', error);
@@ -58,12 +72,12 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
       remaining: DAILY_LIMIT_FREE - count
     };
   } else if (anonymousId) {
-    // 비로그인 사용자: 미리보기만 가능, 하루 3회
+    // 비로그인 사용자: 미리보기만 가능, 하루 3회 (KST 자정 기준)
     const { count, error } = await supabase
       .from('usage_logs')
       .select('*', { count: 'exact', head: true })
       .eq('anonymous_id', anonymousId)
-      .gte('created_at', `${today}T00:00:00Z`);
+      .gte('created_at', `${today}T00:00:00+09:00`);
 
     if (error) {
       console.error('Error checking anonymous usage:', error);
@@ -133,7 +147,7 @@ export async function logUsage(userId = null, anonymousId = null, action = 'pray
 export async function updateStreak(userId) {
   if (!userId) return { error: 'User not logged in' };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   // 현재 프로필 가져오기
   const { data: profile, error: profileError } = await supabase
@@ -158,7 +172,7 @@ export async function updateStreak(userId) {
   }
 
   // 어제 기도한 경우 스트릭 증가
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const yesterday = getYesterdayKST();
   if (lastPrayerDate === yesterday) {
     newStreak += 1;
   } else {
@@ -356,7 +370,7 @@ export async function savePrayerSchedule(userId, scheduleData) {
  * 오늘의 기도 슬롯 가져오기
  */
 export async function getTodayPrayerSlots(userId) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   const { data, error } = await supabase
     .from('daily_prayer_slots')
@@ -467,7 +481,7 @@ export async function getPrayerStats(userId) {
 export async function saveTodaysPrayerSession(userId, sessionData) {
   if (!userId) return { error: 'User not logged in' };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   // 기존 세션 확인
   const { data: existing } = await supabase
@@ -535,7 +549,7 @@ export async function saveTodaysPrayerSession(userId, sessionData) {
 export async function getTodaysPrayerSession(userId) {
   if (!userId) return { data: null, error: 'User not logged in' };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   // 오늘 세션 확인
   const { data: todaySession, error: todayError } = await supabase
@@ -699,25 +713,31 @@ export async function getActiveUsersCount() {
 /**
  * 기도 여정 생성
  */
-export async function createLoop(userId, { title, topic, emotion, continuePrayer = true }) {
+export async function createLoop(userId, { title, topic, emotion, continuePrayer = true, sourcePrayerId = null }) {
   if (!userId) return { data: null, error: 'User not logged in' };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
+
+  const insertData = {
+    user_id: userId,
+    title,
+    topic,
+    initial_emotion: emotion,
+    current_emotion: emotion,
+    continue_prayer: continuePrayer,
+    status: 'active',
+    started_at: new Date().toISOString(),
+    total_days: 1,
+    last_session_date: today,
+  };
+
+  if (sourcePrayerId) {
+    insertData.source_prayer_id = sourcePrayerId;
+  }
 
   const { data, error } = await supabase
     .from('prayer_loops')
-    .insert({
-      user_id: userId,
-      title,
-      topic,
-      initial_emotion: emotion,
-      current_emotion: emotion,
-      continue_prayer: continuePrayer,
-      status: 'active',
-      started_at: new Date().toISOString(),
-      total_days: 1,
-      last_session_date: today,  // 오늘 날짜로 설정
-    })
+    .insert(insertData)
     .select()
     .single();
 
@@ -982,7 +1002,7 @@ export async function getLoopHistory(userId, { limit = 20, offset = 0, status = 
  * 일별 세션 생성
  */
 export async function createSession(loopId, userId, { dayNumber, emotion, prayerTitle = null, prayerContent = null }) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   // 먼저 오늘 세션이 이미 있는지 확인 (중복 생성 방지)
   const { data: existing } = await supabase
@@ -1034,7 +1054,7 @@ export async function createSession(loopId, userId, { dayNumber, emotion, prayer
  * 오늘의 세션 가져오기
  */
 export async function getTodaysLoopSession(loopId) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayKST();
 
   const { data, error } = await supabase
     .from('prayer_sessions')

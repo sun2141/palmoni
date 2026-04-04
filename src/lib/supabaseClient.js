@@ -823,13 +823,20 @@ export async function getLoopById(loopId) {
     return { data: null, error: error.message };
   }
 
-  // 첫 번째 세션의 기도문을 원본으로 설정
+  // 기도문이 저장된 세션 중 가장 최신 것을 원본으로 설정
   if (data && data.prayer_sessions?.length > 0) {
-    const firstSession = data.prayer_sessions.sort((a, b) => a.day_number - b.day_number)[0];
-    data.original_prayer = {
-      title: firstSession.prayer_title,
-      content: firstSession.prayer_content,
-    };
+    const sessionsWithPrayer = data.prayer_sessions.filter(s => s.prayer_content);
+    if (sessionsWithPrayer.length > 0) {
+      // 기도문이 있는 세션 중 가장 최근 것 사용
+      const latestPrayerSession = sessionsWithPrayer.sort((a, b) => b.day_number - a.day_number)[0];
+      data.original_prayer = {
+        title: latestPrayerSession.prayer_title,
+        content: latestPrayerSession.prayer_content,
+      };
+    } else {
+      // 아직 기도문이 생성된 적 없음
+      data.original_prayer = null;
+    }
   }
 
   return { data, error: null };

@@ -609,7 +609,7 @@ export function Home() {
                             </div>
                             <button
                                 className="journey-prompt-btn"
-                                onClick={() => navigate('/loop/new', { state: { topic } })}
+                                onClick={() => navigate('/loop/history')}
                             >
                                 시작하기
                             </button>
@@ -640,7 +640,7 @@ export function Home() {
                     </button>
                     <button
                         className="bottom-nav-btn loop-journey"
-                        onClick={() => navigate('/loop/new')}
+                        onClick={() => navigate('/loop/history')}
                     >
                         <span className="nav-icon">🌱</span>
                         <span className="nav-text">매일 기도</span>

@@ -836,6 +836,30 @@ export async function getLoopById(loopId) {
 }
 
 /**
+ * 기도 여정 기본 정보 수정 (제목, 기도 내용, 감정)
+ */
+export async function updateLoopInfo(loopId, { title, topic, emotion } = {}) {
+  const updateData = { updated_at: new Date().toISOString() };
+  if (title !== undefined) updateData.title = title;
+  if (topic !== undefined) updateData.topic = topic;
+  if (emotion !== undefined) updateData.current_emotion = emotion;
+
+  const { data, error } = await supabase
+    .from('prayer_loops')
+    .update(updateData)
+    .eq('id', loopId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating loop info:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
+/**
  * 기도 여정 상태 업데이트
  */
 export async function updateLoopStatus(loopId, status, additionalData = {}) {

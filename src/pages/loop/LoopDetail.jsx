@@ -40,6 +40,7 @@ export default function LoopDetail() {
 
     // 기도 상태
     const [generatedPrayer, setGeneratedPrayer] = useState(null);
+    const [isGeneratingPrayer, setIsGeneratingPrayer] = useState(false);
 
     // 모달 상태
     const [showPrayTogether, setShowPrayTogether] = useState(false);
@@ -86,29 +87,71 @@ export default function LoopDetail() {
         }
     }, [todaysSession, generatedPrayer]);
 
-    // 원본 기도문으로 오늘의 기도 시작 (새 기도문 생성 없음)
+    // 기도문 생성 API 호출
+    const generatePrayerContent = useCallback(async () => {
+        if (!loop) return null;
+        setIsGeneratingPrayer(true);
+        try {
+            const loopContext = {
+                dayNumber: todaysSession?.day_number || loop.total_days || 1,
+                emotion: loop.current_emotion || 'peace',
+                continuePrayer: loop.continue_prayer !== false,
+            };
+            const response = await fetch('/api/generate-prayer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: loop.topic, loopContext }),
+            });
+            if (!response.ok) throw new Error('기도문 생성에 실패했습니다.');
+            const data = await response.json();
+            return { title: data.title, content: data.content };
+        } catch (e) {
+            console.error('Failed to generate prayer:', e);
+            setError('기도문을 생성하는 중 오류가 발생했습니다. 다시 시도해주세요.');
+            return null;
+        } finally {
+            setIsGeneratingPrayer(false);
+        }
+    }, [loop, todaysSession]);
+
+    // 오늘의 기도 시작 (저장된 기도문 사용 또는 새로 생성)
     const handleStartPrayer = useCallback(async () => {
         if (!loop || !todaysSession) return;
 
-        // 원본 기도문 사용 (첫 번째 세션에서 가져온 것)
-        const originalPrayer = loop.original_prayer;
-
-        if (!originalPrayer?.content) {
-            setError('기도문을 찾을 수 없습니다.');
+        // 1) 이미 오늘 기도문이 세션에 저장돼 있으면 그대로 사용
+        if (todaysSession.prayer_content) {
+            const prayer = {
+                title: todaysSession.prayer_title,
+                content: todaysSession.prayer_content,
+            };
+            setGeneratedPrayer(prayer);
+            setShowPrayTogether(true);
             return;
         }
 
-        setGeneratedPrayer(originalPrayer);
+        // 2) 원본 기도문(첫 번째 세션)이 있으면 사용
+        const originalPrayer = loop.original_prayer;
+        if (originalPrayer?.content) {
+            setGeneratedPrayer(originalPrayer);
+            await markAsPrayed({
+                title: originalPrayer.title,
+                content: originalPrayer.content,
+            });
+            setShowPrayTogether(true);
+            return;
+        }
 
-        // 세션에 기도문 저장 (오늘 기도했음을 기록)
+        // 3) 기도문이 없으면 새로 생성 (첫 기도 또는 기도문 분실)
+        const newPrayer = await generatePrayerContent();
+        if (!newPrayer) return;
+
+        setGeneratedPrayer(newPrayer);
         await markAsPrayed({
-            title: originalPrayer.title,
-            content: originalPrayer.content,
+            title: newPrayer.title,
+            content: newPrayer.content,
         });
-
-        // 함께 기도하기 모달 표시
         setShowPrayTogether(true);
-    }, [loop, todaysSession, markAsPrayed]);
+    }, [loop, todaysSession, markAsPrayed, generatePrayerContent]);
 
     // 함께 기도하기 완료
     const handlePrayComplete = useCallback(async () => {
@@ -246,10 +289,14 @@ export default function LoopDetail() {
                         <button
                             className="generate-btn"
                             onClick={handleStartPrayer}
+                            disabled={isGeneratingPrayer}
                         >
                             <span className="pray-icon">🕊️</span>
-                            오늘의 기도 시작하기
+                            {isGeneratingPrayer ? '기도문 준비 중...' : '오늘의 기도 시작하기'}
                         </button>
+                        {isGeneratingPrayer && (
+                            <p className="generating-hint">잠시만요, 기도문을 준비하고 있어요 🙏</p>
+                        )}
                     </div>
                 )}
 

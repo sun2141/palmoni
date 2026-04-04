@@ -19,6 +19,27 @@
     z-index: 10;
 }
 
+.history-header h1 {
+    flex: 1;
+}
+
+.new-loop-btn {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.new-loop-btn:hover {
+    opacity: 0.85;
+}
+
 .back-button {
     background: none;
     border: none;
@@ -34,6 +55,7 @@
     font-weight: 600;
     color: #1f2937;
     margin: 0;
+    flex: 1;
 }
 
 .filter-tabs {

@@ -8,7 +8,7 @@ import './LoopCard.css';
 /**
  * 기도 여정 카드 (히스토리 목록용)
  */
-export function LoopCard({ loop, onClick, onResume, onDelete, showDelete = false }) {
+export function LoopCard({ loop, onClick, onResume, onDelete, onEdit, showDelete = false, showEdit = false }) {
     const navigate = useNavigate();
     const { resumeLoop, canCreateLoop } = useLoop();
     const [resuming, setResuming] = useState(false);
@@ -28,6 +28,13 @@ export function LoopCard({ loop, onClick, onResume, onDelete, showDelete = false
         e.stopPropagation();
         if (onDelete) {
             onDelete(loop.id);
+        }
+    };
+
+    const handleEdit = (e) => {
+        e.stopPropagation();
+        if (onEdit) {
+            onEdit(loop);
         }
     };
 
@@ -103,6 +110,16 @@ export function LoopCard({ loop, onClick, onResume, onDelete, showDelete = false
                         disabled={resuming}
                     >
                         {resuming ? '시작 중...' : '▶️ 다시 시작'}
+                    </button>
+                )}
+
+                {showEdit && (
+                    <button
+                        className="loop-edit-btn"
+                        onClick={handleEdit}
+                        title="수정"
+                    >
+                        ✏️
                     </button>
                 )}
 

@@ -12,7 +12,7 @@ export function MyPrayers() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
-  const { canCreateLoop, createLoopFromPrayer, loading: loopLoading, activeLoopCount, maxLoops } = useLoop();
+  const { canCreateLoop, createLoopFromPrayer, loading: loopLoading, activeLoopCount, maxLoops, prayerIdsInLoop } = useLoop();
 
   // Debug: 활성 루프 상태 확인
   console.log('[MyPrayers] canCreateLoop:', canCreateLoop, 'loopLoading:', loopLoading, 'activeLoopCount:', activeLoopCount);
@@ -384,7 +384,7 @@ export function MyPrayers() {
                 )}
 
                 {/* Daily Prayer Conversion Button - only for today's prayers, not yet converted */}
-                {isCreatedToday(prayer.created_at) && canCreateLoop && !loopLoading && !convertedPrayerIds.has(prayer.id) && (
+                {isCreatedToday(prayer.created_at) && canCreateLoop && !loopLoading && !convertedPrayerIds.has(prayer.id) && !prayerIdsInLoop.has(prayer.id) && (
                   <button
                     className="convert-to-loop-btn"
                     onClick={() => handleConvertToLoop(prayer)}

@@ -277,7 +277,7 @@ export function useLoop() {
             return { data: null, error: `최대 ${MAX_ACTIVE_LOOPS}개의 매일 기도만 진행할 수 있습니다.` };
         }
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 
         // 1. 현재 루프 정보 가져오기
         const { data: currentLoop, error: fetchError } = await getLoopById(loopId);
@@ -353,6 +353,7 @@ export function useLoop() {
                 topic: prayer.topic,
                 emotion: prayer.emotion || 'peace',
                 continuePrayer: true,
+                sourcePrayerId: prayer.id || null,
             });
 
             if (loopError) {
@@ -387,12 +388,20 @@ export function useLoop() {
         }
     }, [user?.id, activeLoops.length]);
 
+    // 이미 매일 기도로 등록된 기도문 ID 목록
+    const prayerIdsInLoop = new Set(
+        activeLoops
+            .filter(loop => loop.source_prayer_id)
+            .map(loop => loop.source_prayer_id)
+    );
+
     return {
         // 복수형 (새로운 API)
         activeLoops,
         activeLoopCount: activeLoops.length,
         canCreateLoop: activeLoops.length < MAX_ACTIVE_LOOPS,
         maxLoops: MAX_ACTIVE_LOOPS,
+        prayerIdsInLoop,
 
         // 단수형 (하위 호환성 - 첫 번째 루프 반환)
         activeLoop: activeLoops[0] || null,

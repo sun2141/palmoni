@@ -22,7 +22,7 @@ const MAX_ACTIVE_LOOPS = 3;
 const STATE_TRANSITIONS = {
     active: ['checkin_due'],
     checkin_due: ['continued', 'completed', 'snoozed'],
-    continued: ['active'],
+    continued: ['active', 'checkin_due'],
     completed: [],
     snoozed: ['active'],
 };

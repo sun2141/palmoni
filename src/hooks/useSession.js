@@ -52,15 +52,24 @@ export function useSession(loopId, loopData = null) {
                     if (loopData.last_session_date === today) {
                         // 이미 오늘 세션 있음 (다른 탭에서 생성됨)
                         const { data: refreshed } = await getTodaysLoopSession(loopId);
-                        setTodaysSession(refreshed);
-                        return;
+                        if (refreshed) {
+                            setTodaysSession(refreshed);
+                            return;
+                        }
+                        // last_session_date가 오늘이지만 세션이 없는 경우 (생성 실패 등) → 아래에서 생성
                     }
 
-                    // 1일차는 이미 생성되어 있어야 함 - 없으면 데이터 불일치
+                    // 1일차는 이미 생성되어 있어야 하지만, 없으면 여기서 생성
                     if (loopData.total_days === 1) {
-                        console.warn('[useSession] Day 1 session missing, possible data inconsistency');
-                        // 1일차 세션이 없으면 생성하지 않고 에러로 처리하지 않음
-                        // (createLoop에서 생성되어야 함)
+                        console.warn('[useSession] Day 1 session missing, creating now');
+                        const { data: newSession, error: createError } = await createSession(
+                            loopId,
+                            user.id,
+                            { dayNumber: 1, emotion: loopData.current_emotion }
+                        );
+                        if (!createError && newSession) {
+                            setTodaysSession(newSession);
+                        }
                         return;
                     }
 
@@ -97,7 +106,9 @@ export function useSession(loopId, loopData = null) {
         };
 
         loadOrCreateSession();
-    }, [loopId, loopData, user?.id]);
+    // loopData 객체 전체 대신 필요한 원시값만 의존성으로 사용 (불필요한 재실행 방지)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loopId, loopData?.id, loopData?.status, loopData?.total_days, loopData?.last_session_date, loopData?.current_emotion, user?.id]);
 
     /**
      * 기도 완료 기록

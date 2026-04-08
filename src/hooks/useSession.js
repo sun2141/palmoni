@@ -59,8 +59,9 @@ export function useSession(loopId, loopData = null) {
                         // last_session_date가 오늘이지만 세션이 없는 경우 (생성 실패 등) → 아래에서 생성
                     }
 
-                    // 1일차는 이미 생성되어 있어야 하지만, 없으면 여기서 생성
-                    if (loopData.total_days === 1) {
+                    // 1일차 세션 누락 처리: last_session_date가 오늘이면 진짜 누락된 1일차
+                    // last_session_date가 오늘이 아니면 새 날이므로 2일차 이상으로 처리
+                    if (loopData.total_days === 1 && loopData.last_session_date === today) {
                         console.warn('[useSession] Day 1 session missing, creating now');
                         const { data: newSession, error: createError } = await createSession(
                             loopId,

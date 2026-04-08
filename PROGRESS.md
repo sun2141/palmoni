@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-04-05
+> 마지막 업데이트: 2026-04-09
 
 ## 프로젝트 개요
 
@@ -59,6 +59,22 @@ snoozed ──(다시 시작)──> active
 - PWA 지원 (오프라인, 홈 화면 추가)
 - 구글 로그인 (Supabase Auth)
 - Open Graph 메타 태그
+
+---
+
+## 최근 작업 내역 (2026-04-09)
+
+### 완료된 작업
+
+#### 1. 매일 기도 일수 1일에서 증가하지 않는 버그 수정
+- **문제**: 매일 기도(Loop)의 "N일째" 카운트가 2일차부터 증가하지 않고 계속 1일 유지
+- **원인**: `useSession.js`의 1일차 세션 누락 처리 조건 버그
+  - `if (loopData.total_days === 1)` 조건이 Day 1 세션 누락 케이스 전용인데, Day 2 진입 시에도 `total_days === 1` 이므로 잘못 실행됨
+  - 2일차에 새 세션을 만들어야 할 때 1일차 세션을 생성하고 return → `total_days` 업데이트 없음
+- **해결**: 조건에 `loopData.last_session_date === today` 추가
+  - `total_days === 1 && last_session_date === today` : 오늘 생성된 루프의 1일차 세션 누락 → 1일차 세션 생성
+  - `total_days === 1 && last_session_date !== today` : 새로운 날 → 2일차 세션 생성 및 `total_days` 증가
+- **파일**: `src/hooks/useSession.js`
 
 ---
 
@@ -198,12 +214,18 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
-66b12c8 Feature: Sort completed prayers to bottom and add delete function
-bc49466 Fix: Prevent duplicate session creation in daily prayer
-c7410e5 Feature: Add resume functionality for snoozed loops
-1213625 Fix: Remove day number from prayer titles
-f07ab69 Fix: Show checkin modal immediately after prayer completion
+d484e23 Fix: Session loading, state transitions, and prayer error handling
+48df109 Merge: KST timezone fix and loop source tracking
+90b7302 Fix: Use KST midnight for daily prayer limit reset and loop date tracking
+5e2a0e6 Merge: fix duplicate loop conversion from MyPrayers
+50abf6a Fix: Hide convert-to-loop button after prayer is converted
+fc88a3e Merge: fix prayer loading and allow deleting active loops
+2a892ef Fix: Load most recent saved prayer and allow deleting active loops
+13342e3 Merge branch 'claude/charming-rhodes' into master
+8586400 Feature: Loop list as default entry point, editable loops, and fix prayer continuation
+b669cfc Docs: Add PROGRESS.md with project status and implementation details
 ```
+
 
 ---
 

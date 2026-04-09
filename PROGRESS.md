@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
 d484e23 Fix: Session loading, state transitions, and prayer error handling
 48df109 Merge: KST timezone fix and loop source tracking
 90b7302 Fix: Use KST midnight for daily prayer limit reset and loop date tracking
@@ -223,7 +224,6 @@ fc88a3e Merge: fix prayer loading and allow deleting active loops
 2a892ef Fix: Load most recent saved prayer and allow deleting active loops
 13342e3 Merge branch 'claude/charming-rhodes' into master
 8586400 Feature: Loop list as default entry point, editable loops, and fix prayer continuation
-b669cfc Docs: Add PROGRESS.md with project status and implementation details
 ```
 
 

@@ -28,6 +28,7 @@ export function MyPrayers() {
   const [selectedPrayer, setSelectedPrayer] = useState(null);
   const [imageSharePrayer, setImageSharePrayer] = useState(null);
   const [askPrayerPrayer, setAskPrayerPrayer] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const observerTarget = useRef(null);
   const offsetRef = useRef(0);
 
@@ -50,6 +51,7 @@ export function MyPrayers() {
 
     if (reset) {
       setLoading(true);
+      setLoadError(false);
       offsetRef.current = 0;
       setPrayers([]);
     } else {
@@ -66,6 +68,7 @@ export function MyPrayers() {
 
       if (error) {
         console.error('Error loading prayers:', error);
+        setLoadError(true);
         setLoading(false);
         setLoadingMore(false);
         return;
@@ -313,19 +316,50 @@ export function MyPrayers() {
         </div>
       </div>
 
-      {/* Prayers list */}
-      {loading ? (
-        <div className="loading-state">
-          <div className="loader"></div>
-          <p>기도문을 불러오는 중...</p>
+      {/* Error state */}
+      {loadError && !loading && (
+        <div className="error-state">
+          <span className="error-icon">⚠️</span>
+          <h3>불러오기 실패</h3>
+          <p>기도문을 가져오는 중 오류가 발생했습니다.</p>
+          <button className="retry-button" onClick={() => loadPrayers(true)}>
+            다시 시도
+          </button>
         </div>
-      ) : filteredPrayers.length === 0 ? (
+      )}
+
+      {/* Prayers list */}
+      {!loadError && loading ? (
+        <div className="prayers-grid">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="skeleton-card" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="skeleton" style={{ width: '80px', height: '24px' }}></div>
+                <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
+              </div>
+              <div className="skeleton skeleton-text" style={{ width: '85%', height: '20px' }}></div>
+              <div className="skeleton" style={{ width: '100%', height: '36px' }}></div>
+              <div className="skeleton skeleton-text" style={{ width: '100%', height: '14px' }}></div>
+              <div className="skeleton skeleton-text" style={{ width: '90%', height: '14px' }}></div>
+              <div className="skeleton skeleton-text" style={{ width: '70%', height: '14px' }}></div>
+              <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(108,71,255,0.08)' }}>
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="skeleton" style={{ flex: 1, height: '36px' }}></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : !loadError && filteredPrayers.length === 0 ? (
         <div className="empty-state">
           {searchQuery ? (
             <>
               <p className="empty-icon">🔍</p>
               <h3>검색 결과가 없습니다</h3>
               <p>다른 검색어로 시도해보세요.</p>
+              <button className="primary-button" onClick={() => setSearchQuery('')}>
+                검색 초기화
+              </button>
             </>
           ) : emotionFilter ? (
             <>
@@ -347,7 +381,7 @@ export function MyPrayers() {
             </>
           )}
         </div>
-      ) : (
+      ) : !loadError ? (
         <div className="prayers-grid">
           {filteredPrayers.map(prayer => {
             const emotionInfo = getEmotionInfo(prayer.emotion);
@@ -444,7 +478,7 @@ export function MyPrayers() {
             </div>
           )}
         </div>
-      )}
+      ) : null}
 
       {/* Prayer Detail Modal */}
       {selectedPrayer && (

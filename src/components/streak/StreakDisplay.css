@@ -1,5 +1,5 @@
 /* ========================================
-   Streak Display - Morning Prayer Theme
+   Streak Display - Soft Intelligence Theme
    ======================================== */
 
 /* Compact Streak */
@@ -7,12 +7,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.2rem 0.5rem;
-  background: rgba(255, 248, 240, 0.8);
-  border: 1.5px solid rgba(201, 168, 124, 0.3);
+  padding: 0.2rem 0.625rem;
+  background: rgba(108, 71, 255, 0.08);
+  border: 1.5px solid rgba(108, 71, 255, 0.2);
   border-radius: var(--radius-full, 9999px);
-  font-weight: 600;
-  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  font-weight: 700;
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   white-space: nowrap;
   max-width: 100%;
 }
@@ -22,7 +22,8 @@
 }
 
 .streak-compact .streak-number {
-  color: var(--bronze-deep, #8b5e3c);
+  color: var(--color-primary, #6C47FF);
+  font-family: 'Space Mono', monospace;
 }
 
 /* Main Streak Container */
@@ -37,10 +38,10 @@
   align-items: center;
   gap: clamp(0.75rem, 3vw, 1.25rem);
   padding: clamp(0.75rem, 3vw, 1.25rem);
-  background: linear-gradient(135deg, rgba(255, 251, 245, 0.95) 0%, rgba(255, 240, 227, 0.9) 100%);
-  border: 1.5px solid rgba(201, 168, 124, 0.3);
-  border-radius: var(--radius-lg, 20px);
-  box-shadow: 0 4px 20px rgba(139, 94, 60, 0.1);
+  background: linear-gradient(135deg, rgba(108, 71, 255, 0.06) 0%, rgba(139, 111, 255, 0.04) 100%);
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
   width: 100%;
   box-sizing: border-box;
 }
@@ -53,12 +54,8 @@
 }
 
 @keyframes gentle-pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); opacity: 0.85; }
 }
 
 .streak-content {
@@ -67,24 +64,28 @@
 }
 
 .streak-label {
-  font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-  color: var(--text-secondary, #4a3f38);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.6rem, 2.5vw, 0.65rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted, #6B7280);
   margin-bottom: 0.2rem;
-  font-weight: 500;
 }
 
 .streak-number-large {
   font-size: clamp(1.75rem, 7vw, 2.5rem);
   font-weight: 800;
   line-height: 1;
-  color: var(--bronze-deep, #8b5e3c);
+  color: var(--color-primary, #6C47FF);
+  font-family: 'Space Mono', monospace;
 }
 
 .streak-unit {
-  font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+  font-size: clamp(0.9rem, 3.5vw, 1.1rem);
   margin-left: 0.2rem;
   font-weight: 600;
-  color: var(--text-secondary, #4a3f38);
+  color: var(--text-muted, #6B7280);
 }
 
 /* Stats */
@@ -102,15 +103,23 @@
   justify-content: center;
   min-height: clamp(70px, 20vw, 100px);
   padding: clamp(0.5rem, 2vw, 0.875rem);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(201, 168, 124, 0.2);
-  border-radius: var(--radius-md, 12px);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(108, 71, 255, 0.1);
+  border-radius: var(--radius-sm, 8px);
+  transition: border-color var(--duration-fast, 150ms);
+}
+
+.streak-stat:hover {
+  border-color: rgba(108, 71, 255, 0.25);
 }
 
 .stat-label {
-  font-size: clamp(10px, 2.5vw, 12px);
-  font-weight: 400;
-  color: #8B7355;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.55rem, 2.5vw, 0.6rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #6B7280);
   margin-bottom: 0.3rem;
   text-align: center;
 }
@@ -118,32 +127,32 @@
 .stat-value {
   font-size: clamp(18px, 5vw, 22px);
   font-weight: 700;
-  color: #2C1810;
+  color: var(--text-primary, #1A1A2E);
 }
 
 /* Next Milestone */
 .streak-next-milestone {
   margin-top: 0.5rem;
   padding: clamp(0.625rem, 2.5vw, 0.875rem);
-  background: rgba(76, 175, 80, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.2);
-  border-radius: var(--radius-md, 12px);
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-sm, 8px);
 }
 
 .milestone-progress {
   width: 100%;
-  height: clamp(4px, 1.5vw, 6px);
-  background: rgba(201, 168, 124, 0.2);
-  border-radius: 3px;
+  height: clamp(4px, 1.5vw, 5px);
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-full, 9999px);
   overflow: hidden;
   margin-bottom: 0.5rem;
 }
 
 .milestone-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-green, #4caf50), var(--accent-teal, #26a69a));
-  transition: width 0.4s ease;
-  border-radius: 3px;
+  background: linear-gradient(90deg, #10B981, #059669);
+  transition: width 0.6s var(--ease-smooth);
+  border-radius: var(--radius-full, 9999px);
 }
 
 .milestone-text {
@@ -154,80 +163,76 @@
 }
 
 .milestone-icon {
-  font-size: clamp(1rem, 4vw, 1.25rem);
+  font-size: clamp(1rem, 4vw, 1.2rem);
 }
 
 .milestone-label {
-  font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-  color: var(--text-secondary, #4a3f38);
-  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.6rem, 2.5vw, 0.65rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #059669;
 }
 
 /* Celebration Modal */
 .streak-celebration {
   position: fixed;
   inset: 0;
-  background: rgba(26, 21, 18, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(26, 26, 46, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn var(--duration-fast, 150ms) var(--ease-smooth);
   padding: 1rem;
 }
 
 .celebration-content {
-  background: linear-gradient(135deg, #fffbf5 0%, #fff0e3 100%);
+  background: white;
   padding: 2.5rem 2rem;
-  border-radius: var(--radius-lg, 24px);
+  border-radius: var(--radius-md, 12px);
   text-align: center;
-  animation: celebrationPop 0.4s ease;
-  box-shadow: 0 24px 48px rgba(139, 94, 60, 0.2);
-  border: 2px solid rgba(201, 168, 124, 0.3);
+  animation: celebrationPop var(--duration-base, 300ms) var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  box-shadow: var(--shadow-xl, 0 16px 48px rgba(26, 26, 46, 0.12));
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
   max-width: 360px;
   width: 100%;
 }
 
 @keyframes celebrationPop {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .celebration-icon {
   font-size: 4.5rem;
   margin-bottom: 0.75rem;
-  animation: bounce 0.6s ease;
+  display: block;
+  animation: bounceIn 0.6s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) 0.1s both;
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .celebration-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-style: italic;
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--bronze-deep, #8b5e3c);
+  font-weight: 700;
+  color: var(--color-primary, #6C47FF);
   margin-bottom: 0.375rem;
 }
 
 .celebration-message {
-  font-size: 1.25rem;
-  color: var(--text-secondary, #4a3f38);
+  font-size: 1.125rem;
+  color: var(--text-secondary, #4B5563);
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
@@ -240,14 +245,15 @@
 .streak-encouragement {
   margin-top: 0.75rem;
   padding: 0.875rem;
-  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
-  color: white;
-  border-radius: var(--radius-md, 16px);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.08) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #059669;
+  border-radius: var(--radius-sm, 8px);
   display: flex;
   align-items: center;
   gap: 0.625rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .encouragement-icon {
@@ -262,11 +268,11 @@
 .streak-motivation {
   margin-top: 0.75rem;
   padding: 0.75rem 1rem;
-  background: rgba(201, 168, 124, 0.1);
-  border-left: 3px solid var(--bronze-mid, #a67c52);
-  border-radius: var(--radius-sm, 8px);
+  background: rgba(108, 71, 255, 0.04);
+  border-left: 3px solid var(--color-primary, #6C47FF);
+  border-radius: 0 var(--radius-xs, 6px) var(--radius-xs, 6px) 0;
   font-size: 0.85rem;
-  color: var(--bronze-deep, #8b5e3c);
+  color: var(--text-secondary, #4B5563);
 }
 
 .motivation-text {
@@ -278,7 +284,7 @@
   to { opacity: 1; }
 }
 
-/* Small phones (320px and below) */
+/* Small phones (360px and below) */
 @media (max-width: 360px) {
   .streak-main {
     gap: 0.5rem;

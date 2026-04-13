@@ -12,6 +12,12 @@
   position: relative;
   overflow-x: hidden;
   box-sizing: border-box;
+  animation: pageEnter var(--duration-base, 300ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* === Pull-to-Refresh === */
@@ -95,8 +101,8 @@
 .start-free-btn:hover {
   background: white;
   color: var(--color-dark, #1A1A2E);
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .user-profile-bar {
@@ -229,11 +235,17 @@
 /* === Prayer Input Section === */
 .prayer-input-section {
   background: white;
-  border: 2px solid rgba(108, 71, 255, 0.2);
-  border-radius: 4px;
+  border: 1.5px solid rgba(108, 71, 255, 0.18);
+  border-radius: var(--radius-sm, 8px);
   padding: 1.5rem;
   margin-bottom: 1rem;
-  box-shadow: none;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+  transition: border-color var(--duration-fast, 150ms);
+}
+
+.prayer-input-section:focus-within {
+  border-color: rgba(108, 71, 255, 0.4);
+  box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
 }
 
 .input-header {
@@ -301,8 +313,8 @@
   background: white;
   color: var(--color-primary, #6C47FF);
   border-color: var(--color-primary, #6C47FF);
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .pray-cta-btn:disabled {
@@ -366,12 +378,12 @@
 /* === Signup Prompt === */
 .signup-prompt {
   background: white;
-  border: 2px solid rgba(108, 71, 255, 0.15);
-  border-radius: 4px;
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
+  border-radius: var(--radius-sm, 8px);
   padding: 1.5rem;
   margin: 1rem 0;
   text-align: center;
-  box-shadow: none;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .signup-prompt p {
@@ -428,19 +440,19 @@
 .signup-cta-btn:hover {
   background: white;
   color: var(--color-primary, #6C47FF);
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 /* === Prayer Result Card === */
 .prayer-result-card {
   background: white;
-  border: 2px solid rgba(108, 71, 255, 0.2);
-  border-radius: 4px;
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
+  border-radius: var(--radius-sm, 8px);
   padding: 1.5rem;
   margin: 1.5rem 0;
-  box-shadow: none;
-  animation: fadeUp 0.5s ease-out;
+  box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+  animation: fadeUp 0.5s var(--ease-out, cubic-bezier(0, 0, 0.2, 1));
 }
 
 @keyframes fadeUp {
@@ -532,7 +544,8 @@
   background: var(--color-primary, #6C47FF);
   border-color: var(--color-primary, #6C47FF);
   color: white;
-  transform: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .action-btn.saved {
@@ -617,9 +630,9 @@
   margin-top: 2rem;
   padding: 10px;
   background: white;
-  border: 2px solid rgba(108, 71, 255, 0.15);
-  border-radius: 4px;
-  box-shadow: none;
+  border: 1.5px solid rgba(108, 71, 255, 0.12);
+  border-radius: var(--radius-sm, 8px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .bottom-nav-btn {
@@ -633,8 +646,8 @@
   max-width: 80px;
   padding: 10px 6px;
   background: white;
-  border: 1.5px solid rgba(108, 71, 255, 0.2);
-  border-radius: 4px;
+  border: 1.5px solid rgba(108, 71, 255, 0.18);
+  border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
   font-size: 0.6rem;
   font-weight: 700;
@@ -642,7 +655,7 @@
   letter-spacing: 0.04em;
   color: var(--color-primary, #6C47FF);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth);
   min-height: auto;
 }
 
@@ -650,8 +663,8 @@
   background: var(--color-primary, #6C47FF);
   color: white;
   border-color: var(--color-primary, #6C47FF);
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .bottom-nav-btn.logout {
@@ -664,13 +677,13 @@
   background: #DC2626;
   border-color: #DC2626;
   color: white;
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .bottom-nav-btn.share {
   background: white;
-  border-color: rgba(108, 71, 255, 0.2);
+  border-color: rgba(108, 71, 255, 0.18);
   color: var(--color-primary, #6C47FF);
 }
 
@@ -678,6 +691,8 @@
   background: var(--color-primary, #6C47FF);
   color: white;
   border-color: var(--color-primary, #6C47FF);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .bottom-nav-btn.icon-only {
@@ -861,9 +876,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 16px 20px;
-  background: rgba(108, 71, 255, 0.05);
-  border: 2px solid rgba(108, 71, 255, 0.15);
-  border-radius: 4px;
+  background: rgba(108, 71, 255, 0.04);
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
+  border-radius: var(--radius-sm, 8px);
   margin-bottom: 1rem;
 }
 
@@ -891,18 +906,18 @@
 }
 
 .yesterday-dismiss {
-  padding: 8px 20px;
+  padding: 8px 18px;
   background: var(--color-primary, #6C47FF);
   color: white;
-  border: 2px solid var(--color-primary, #6C47FF);
-  border-radius: 4px;
+  border: 1.5px solid var(--color-primary, #6C47FF);
+  border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth);
   flex-shrink: 0;
   min-height: auto;
   box-shadow: none;
@@ -911,7 +926,8 @@
 .yesterday-dismiss:hover {
   background: white;
   color: var(--color-primary, #6C47FF);
-  transform: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .yesterday-dismiss:active {
@@ -927,8 +943,8 @@
   padding: 16px;
   margin-top: 16px;
   background: rgba(16, 185, 129, 0.05);
-  border: 2px solid rgba(16, 185, 129, 0.2);
-  border-radius: 4px;
+  border: 1.5px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-sm, 8px);
 }
 
 .journey-prompt-content {
@@ -964,8 +980,8 @@
   padding: 8px 16px;
   background: #10B981;
   color: white;
-  border: 2px solid #10B981;
-  border-radius: 4px;
+  border: 1.5px solid #10B981;
+  border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
   font-size: 0.7rem;
   font-weight: 700;
@@ -981,8 +997,8 @@
 .journey-prompt-btn:hover {
   background: white;
   color: #10B981;
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .journey-prompt-btn:active {

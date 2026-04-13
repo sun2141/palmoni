@@ -1,9 +1,15 @@
 .loop-detail-page {
     min-height: 100vh;
-    background: linear-gradient(180deg, #f8f7ff 0%, #ffffff 100%);
+    background: var(--gradient-bg, linear-gradient(180deg, #EEEEFF 0%, #F0F4FF 60%, #E8F8FF 100%));
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    animation: pageEnter var(--duration-base, 300ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
+}
+
+@keyframes pageEnter {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .loop-detail-header {
@@ -11,21 +17,39 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    background: white;
-    border-bottom: 1px solid #f3f4f6;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(108, 71, 255, 0.1);
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
 .back-button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #6b7280;
+    background: white;
+    border: 1.5px solid rgba(108, 71, 255, 0.2);
+    border-radius: var(--radius-sm, 8px);
+    font-size: 13px;
+    color: var(--color-primary, #6C47FF);
     cursor: pointer;
-    padding: 8px;
-    margin: -8px;
+    padding: 7px 14px;
+    transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+    min-height: auto;
+    box-shadow: none;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+}
+
+.back-button:hover {
+    background: var(--color-primary, #6C47FF);
+    border-color: var(--color-primary, #6C47FF);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .loop-content {
@@ -33,6 +57,10 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .loop-title-section {
@@ -43,132 +71,185 @@
 }
 
 .loop-title-section h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
     font-size: 22px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--text-primary, #1A1A2E);
     margin: 0;
     flex: 1;
+    line-height: 1.3;
 }
 
 .loop-topic {
     padding: 16px;
     background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-md, 12px);
+    border: 1px solid rgba(108, 71, 255, 0.12);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .loop-topic p {
     font-size: 15px;
-    color: #4b5563;
-    line-height: 1.6;
+    color: var(--text-secondary, #4B5563);
+    line-height: 1.7;
     margin: 0;
 }
 
 .loop-stats {
     display: flex;
-    gap: 16px;
+    gap: 12px;
 }
 
 .stat {
+    flex: 1;
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     gap: 4px;
-    padding: 12px 20px;
+    padding: 16px 12px;
     background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-md, 12px);
+    border: 1px solid rgba(108, 71, 255, 0.12);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+    transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+.stat:hover {
+    border-color: rgba(108, 71, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
 }
 
 .stat-value {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
-    color: #6C47FF;
+    color: var(--color-primary, #6C47FF);
+    line-height: 1;
 }
 
 .stat-label {
-    font-size: 14px;
-    color: #6b7280;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #6B7280);
 }
 
 /* Prayer Card */
 .prayer-card {
     background: white;
-    border-radius: 16px;
+    border-radius: var(--radius-md, 12px);
     padding: 20px;
-    box-shadow: 0 2px 12px rgba(108, 71, 255, 0.08);
+    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
     border: 1px solid rgba(108, 71, 255, 0.1);
+    transition: all var(--duration-base, 300ms) var(--ease-smooth);
+}
+
+.prayer-card:hover {
+    box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 46, 0.1));
+    border-color: rgba(108, 71, 255, 0.2);
 }
 
 .prayer-card h3 {
-    font-size: 17px;
-    font-weight: 600;
-    color: #6C47FF;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary, #6C47FF);
     margin: 0 0 16px 0;
 }
 
 .prayer-content {
     font-size: 15px;
-    color: #374151;
-    line-height: 1.8;
+    color: var(--text-secondary, #4B5563);
+    line-height: 1.85;
     white-space: pre-wrap;
     max-height: 300px;
     overflow-y: auto;
     padding-right: 8px;
+    word-break: keep-all;
+    letter-spacing: -0.01em;
 }
 
 .pray-again-btn {
-    margin-top: 20px;
+    margin-top: 16px;
     width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 2px solid #6C47FF;
-    background: transparent;
-    color: #6C47FF;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 8px);
+    border: 2px solid rgba(108, 71, 255, 0.2);
+    background: rgba(108, 71, 255, 0.04);
+    color: var(--color-primary, #6C47FF);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+    min-height: auto;
+    box-shadow: none;
 }
 
 .pray-again-btn:hover {
-    background: rgba(108, 71, 255, 0.05);
+    background: var(--color-primary, #6C47FF);
+    border-color: var(--color-primary, #6C47FF);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 /* Generate Section */
 .generate-section {
-    padding: 40px 0;
+    padding: 16px 0;
 }
 
 .generate-btn {
     width: 100%;
-    padding: 20px;
-    border-radius: 16px;
-    border: none;
-    background: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%);
+    padding: 18px;
+    border-radius: var(--radius-md, 12px);
+    border: 2px solid var(--color-primary, #6C47FF);
+    background: var(--color-primary, #6C47FF);
     color: white;
-    font-size: 18px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--duration-base, 300ms) var(--ease-smooth);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    box-shadow: none;
+    min-height: auto;
 }
 
 .generate-btn:hover:not(:disabled) {
+    background: white;
+    color: var(--color-primary, #6C47FF);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108, 71, 255, 0.3);
+    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+}
+
+.generate-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
 }
 
 .generate-btn:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .pray-icon,
 .generating-icon {
-    font-size: 24px;
+    font-size: 22px;
 }
 
 .generating-icon {
@@ -176,36 +257,39 @@
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
 }
 
 /* Checkin Trigger */
 .checkin-trigger-btn {
     width: 100%;
     padding: 16px;
-    border-radius: 12px;
-    border: 2px dashed #f97316;
+    border-radius: var(--radius-md, 12px);
+    border: 2px dashed rgba(249, 115, 22, 0.5);
     background: rgba(249, 115, 22, 0.05);
     color: #f97316;
-    font-size: 15px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
-    transition: all 0.2s ease;
-    animation: checkinPulse 2s ease-in-out infinite;
+    transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+    animation: checkinPulse 2.5s ease-in-out infinite;
+    min-height: auto;
+    box-shadow: none;
 }
 
 @keyframes checkinPulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2);
-    }
-    50% {
-        box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
-    }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2); }
+    50% { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); }
 }
 
 .checkin-trigger-btn:hover {
-    background: rgba(249, 115, 22, 0.1);
+    background: rgba(249, 115, 22, 0.12);
+    border-color: rgba(249, 115, 22, 0.7);
+    transform: translateY(-1px);
 }
 
 /* Footer */
@@ -217,14 +301,23 @@
 .history-link {
     background: none;
     border: none;
-    color: #6b7280;
-    font-size: 14px;
+    color: var(--text-muted, #6B7280);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     cursor: pointer;
     text-decoration: underline;
+    min-height: auto;
+    box-shadow: none;
+    transition: color var(--duration-fast, 150ms);
 }
 
 .history-link:hover {
-    color: #6C47FF;
+    color: var(--color-primary, #6C47FF);
+    transform: none;
+    box-shadow: none;
 }
 
 /* States */
@@ -237,34 +330,52 @@
     min-height: 60vh;
     padding: 40px 20px;
     text-align: center;
-}
-
-.loading-icon,
-.error-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    gap: 1rem;
 }
 
 .loading-icon {
-    animation: pulse 1.5s ease-in-out infinite;
+    font-size: 48px;
+    animation: float 2s ease-in-out infinite;
+}
+
+.error-icon {
+    font-size: 48px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .loading-state p,
 .error-state p {
-    font-size: 16px;
-    color: #6b7280;
-    margin: 0 0 20px 0;
+    font-size: 15px;
+    color: var(--text-muted, #6B7280);
+    margin: 0;
 }
 
 .error-state button {
-    padding: 12px 24px;
-    border-radius: 12px;
-    border: none;
-    background: #6C47FF;
+    padding: 12px 28px;
+    border-radius: var(--radius-sm, 8px);
+    border: 2px solid var(--color-primary, #6C47FF);
+    background: var(--color-primary, #6C47FF);
     color: white;
-    font-size: 15px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
+    transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+    min-height: auto;
+    box-shadow: none;
+}
+
+.error-state button:hover {
+    background: white;
+    color: var(--color-primary, #6C47FF);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 /* === Mobile Responsive === */
@@ -274,12 +385,12 @@
     }
 
     .loop-content {
-        padding: 20px 16px;
-        gap: 16px;
+        padding: 16px;
+        gap: 14px;
     }
 
     .loop-title-section h1 {
-        font-size: 20px;
+        font-size: 19px;
     }
 
     .loop-topic {
@@ -291,27 +402,19 @@
     }
 
     .loop-stats {
-        gap: 12px;
+        gap: 10px;
     }
 
     .stat {
-        padding: 10px 16px;
+        padding: 12px 8px;
     }
 
     .stat-value {
-        font-size: 20px;
-    }
-
-    .stat-label {
-        font-size: 13px;
+        font-size: 22px;
     }
 
     .prayer-card {
         padding: 16px;
-    }
-
-    .prayer-card h3 {
-        font-size: 16px;
     }
 
     .prayer-content {
@@ -319,27 +422,18 @@
         max-height: 250px;
     }
 
-    .pray-again-btn {
-        padding: 12px;
-        font-size: 14px;
-    }
-
     .generate-btn {
-        padding: 18px;
-        font-size: 16px;
+        padding: 16px;
+        font-size: 0.8rem;
     }
 
     .pray-icon,
     .generating-icon {
-        font-size: 22px;
+        font-size: 20px;
     }
 
     .checkin-trigger-btn {
         padding: 14px;
-        font-size: 14px;
-    }
-
-    .history-link {
-        font-size: 13px;
+        font-size: 0.75rem;
     }
 }

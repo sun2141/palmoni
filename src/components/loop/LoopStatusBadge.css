@@ -2,11 +2,15 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: color-mix(in srgb, var(--status-color) 15%, white);
-    font-size: 13px;
-    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: var(--radius-xs, 6px);
+    background: color-mix(in srgb, var(--status-color) 12%, white);
+    border: 1px solid color-mix(in srgb, var(--status-color) 30%, transparent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .loop-status-badge.small {

@@ -17,11 +17,11 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm, 8px);
   background: white;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid;
-  font-size: 0.9rem;
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 46, 0.1));
+  border: 1.5px solid;
+  font-size: 0.875rem;
   font-weight: 500;
   animation: toastEnter 0.3s var(--ease-spring);
   cursor: pointer;

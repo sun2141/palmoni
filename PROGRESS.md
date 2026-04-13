@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-04-10
+> 마지막 업데이트: 2026-04-13
 
 ## 프로젝트 개요
 
@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
@@ -223,8 +224,9 @@ d484e23 Fix: Session loading, state transitions, and prayer error handling
 5e2a0e6 Merge: fix duplicate loop conversion from MyPrayers
 50abf6a Fix: Hide convert-to-loop button after prayer is converted
 fc88a3e Merge: fix prayer loading and allow deleting active loops
-2a892ef Fix: Load most recent saved prayer and allow deleting active loops
 ```
+
+> 마지막 커밋 동기화: 2026-04-13
 
 
 ---

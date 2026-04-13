@@ -33,6 +33,7 @@ export default function LoopHistory() {
 
     const [loops, setLoops] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
     const [filter, setFilter] = useState('active');
     const [hasMore, setHasMore] = useState(true);
     const [offset, setOffset] = useState(0);
@@ -45,6 +46,7 @@ export default function LoopHistory() {
         if (!user) return;
 
         setLoading(true);
+        if (reset) setLoadError(false);
 
         const newOffset = reset ? 0 : offset;
         const filterOption = FILTER_OPTIONS.find(f => f.value === filter);
@@ -58,6 +60,7 @@ export default function LoopHistory() {
 
         if (error) {
             console.error('Failed to load history:', error);
+            setLoadError(true);
             setLoading(false);
             return;
         }
@@ -184,7 +187,32 @@ export default function LoopHistory() {
             </div>
 
             <div className="history-content">
-                {loops.length === 0 && !loading ? (
+                {loadError ? (
+                    <div className="error-state">
+                        <span className="error-icon">⚠️</span>
+                        <h3>불러오기 실패</h3>
+                        <p>매일 기도 목록을 가져오는 중 오류가 발생했습니다.</p>
+                        <button className="retry-button" onClick={() => loadLoops(true)}>
+                            다시 시도
+                        </button>
+                    </div>
+                ) : loading && loops.length === 0 ? (
+                    <div className="loop-list">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="skeleton-card" style={{ animationDelay: `${i * 0.1}s` }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div className="skeleton" style={{ width: '120px', height: '20px' }}></div>
+                                    <div className="skeleton" style={{ width: '60px', height: '20px', borderRadius: '9999px' }}></div>
+                                </div>
+                                <div className="skeleton skeleton-text" style={{ width: '70%', height: '14px' }}></div>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <div className="skeleton" style={{ width: '80px', height: '28px', borderRadius: '8px' }}></div>
+                                    <div className="skeleton" style={{ width: '80px', height: '28px', borderRadius: '8px' }}></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : loops.length === 0 && !loading ? (
                     <div className="empty-state">
                         <span className="empty-icon">📚</span>
                         <h3>아직 매일 기도가 없어요</h3>

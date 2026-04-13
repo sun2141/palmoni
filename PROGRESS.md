@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+0504ffa Fix: ESC 키 모달 닫기 및 모달 간 충돌 방지
 6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
 c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
@@ -223,7 +224,6 @@ d484e23 Fix: Session loading, state transitions, and prayer error handling
 48df109 Merge: KST timezone fix and loop source tracking
 90b7302 Fix: Use KST midnight for daily prayer limit reset and loop date tracking
 5e2a0e6 Merge: fix duplicate loop conversion from MyPrayers
-50abf6a Fix: Hide convert-to-loop button after prayer is converted
 ```
 
 

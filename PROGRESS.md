@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
 d484e23 Fix: Session loading, state transitions, and prayer error handling
@@ -223,7 +224,6 @@ d484e23 Fix: Session loading, state transitions, and prayer error handling
 50abf6a Fix: Hide convert-to-loop button after prayer is converted
 fc88a3e Merge: fix prayer loading and allow deleting active loops
 2a892ef Fix: Load most recent saved prayer and allow deleting active loops
-13342e3 Merge branch 'claude/charming-rhodes' into master
 ```
 
 

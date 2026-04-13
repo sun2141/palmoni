@@ -1,5 +1,9 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 
+/* Variant Typography System */
+/* Playfair Display: h1, h2 serif italic headers */
+/* Space Mono: buttons, labels, uppercase UI */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -87,13 +91,17 @@
     --shadow-orb: 0 20px 60px rgba(108, 71, 255, 0.3);
 
     /* === Spacing & Radius === */
-    --radius-xs: 8px;
-    --radius-sm: 12px;
-    --radius-md: 16px;
-    --radius-lg: 20px;
-    --radius-xl: 24px;
-    --radius-pill: 50px;
+    --radius-xs: 4px;
+    --radius-sm: 4px;
+    --radius-md: 4px;
+    --radius-lg: 4px;
+    --radius-xl: 4px;
+    --radius-pill: 4px;
     --radius-full: 9999px;
+
+    /* === Variant Typography === */
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-mono: 'Space Mono', 'Courier New', monospace;
 
     /* === Animation === */
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -251,14 +259,21 @@ body {
 
 /* ===== Typography ===== */
 h1 {
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-family: var(--font-serif);
+  font-style: italic;
   font-size: clamp(2rem, 10vw, 2.5rem);
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-align: center;
   line-height: 1.2;
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
 }
 
 .subtitle {
@@ -507,16 +522,16 @@ textarea:focus {
 button {
   padding: 1rem 1.5rem;
   border-radius: var(--radius-pill);
-  border: none;
+  border: 2px solid var(--color-dark);
   background: var(--color-dark);
   color: white;
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-smooth);
-  box-shadow: var(--shadow-button);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -524,21 +539,25 @@ button {
   position: relative;
   overflow: hidden;
   min-height: 52px;
+  box-shadow: none;
 }
 
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  background: #2a2a4e;
+  background: white;
+  color: var(--color-dark);
+  border-color: var(--color-dark);
+  transform: none;
+  box-shadow: none;
 }
 
 button:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
 }
 
 button:disabled {
   background: #E5E7EB;
   color: var(--text-light);
+  border-color: #E5E7EB;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -548,26 +567,27 @@ button:disabled {
 .primary-cta {
   width: 100%;
   background: var(--color-dark);
+  color: white;
+  border: 2px solid var(--color-dark);
   padding: 1.125rem 1.5rem;
   font-weight: 700;
-  font-size: 1.0625rem;
 }
 
 .primary-cta:hover {
-  background: #2a2a4e;
+  background: white;
+  color: var(--color-dark);
 }
 
 /* Secondary Button */
 .secondary-btn {
   background: white;
   color: var(--color-dark);
-  border: 1.5px solid rgba(26, 26, 46, 0.15);
-  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--color-dark);
 }
 
 .secondary-btn:hover {
-  background: #F9FAFB;
-  border-color: var(--color-dark);
+  background: var(--color-dark);
+  color: white;
 }
 
 /* ===== Prayer Result ===== */
@@ -583,13 +603,14 @@ button:disabled {
 }
 
 .prayer-result h2 {
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-family: var(--font-serif);
+  font-style: italic;
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--text-primary);
   text-align: center;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
 }
 
 .prayer-content {

@@ -19,7 +19,10 @@
 
 .checkin-sheet {
     background: white;
-    border-radius: 24px 24px 0 0;
+    border-radius: 4px 4px 0 0;
+    border-top: 2px solid rgba(108, 71, 255, 0.2);
+    border-left: 2px solid rgba(108, 71, 255, 0.2);
+    border-right: 2px solid rgba(108, 71, 255, 0.2);
     width: 100%;
     max-width: 500px;
     max-height: 90vh;
@@ -57,7 +60,10 @@
 }
 
 .checkin-header h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
     font-size: 20px;
+    font-weight: 700;
     color: #1f2937;
     margin: 0 0 8px 0;
 }
@@ -80,7 +86,8 @@
     gap: 12px;
     padding: 12px;
     background: #f9fafb;
-    border-radius: 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(108, 71, 255, 0.1);
     margin-bottom: 20px;
 }
 
@@ -96,12 +103,16 @@
 }
 
 .current-day {
-    font-size: 13px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: #6C47FF;
     padding: 4px 10px;
-    background: rgba(108, 71, 255, 0.1);
-    border-radius: 12px;
+    background: rgba(108, 71, 255, 0.08);
+    border-radius: 4px;
+    border: 1px solid rgba(108, 71, 255, 0.2);
 }
 
 .checkin-options {
@@ -117,21 +128,30 @@
     gap: 12px;
     padding: 14px 16px;
     border: 2px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 4px;
     background: white;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
+    min-height: auto;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .checkin-option:hover {
-    border-color: #d1d5db;
-    background: #f9fafb;
+    border-color: #6C47FF;
+    background: rgba(108, 71, 255, 0.04);
+    transform: none;
+    box-shadow: none;
+    color: inherit;
 }
 
 .checkin-option.selected {
     border-color: #6C47FF;
-    background: rgba(108, 71, 255, 0.05);
+    background: rgba(108, 71, 255, 0.06);
 }
 
 .option-icon {
@@ -146,8 +166,11 @@
 }
 
 .option-label {
-    font-size: 15px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: #1f2937;
 }
 
@@ -159,7 +182,8 @@
 .checkin-emotion-select {
     padding: 16px;
     background: #f9fafb;
-    border-radius: 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(108, 71, 255, 0.1);
     margin-bottom: 20px;
 }
 
@@ -178,16 +202,18 @@
     width: 100%;
     min-height: 80px;
     padding: 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 4px;
     font-size: 14px;
     resize: none;
     font-family: inherit;
+    transition: border-color 0.2s ease;
 }
 
 .checkin-note textarea:focus {
     outline: none;
     border-color: #6C47FF;
+    box-shadow: none;
 }
 
 .checkin-actions {
@@ -198,38 +224,56 @@
 
 .checkin-submit {
     padding: 14px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%);
+    border-radius: 4px;
+    border: 2px solid #6C47FF;
+    background: #6C47FF;
     color: white;
-    font-size: 16px;
-    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: auto;
+    box-shadow: none;
 }
 
 .checkin-submit:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 71, 255, 0.3);
+    background: white;
+    color: #6C47FF;
+    transform: none;
+    box-shadow: none;
 }
 
 .checkin-submit:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
+    background: #E5E7EB;
+    border-color: #E5E7EB;
+    color: #9CA3AF;
 }
 
 .checkin-cancel {
     padding: 12px;
-    border-radius: 12px;
-    border: none;
+    border-radius: 4px;
+    border: 1.5px solid rgba(26, 26, 46, 0.1);
     background: transparent;
     color: #6b7280;
-    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
+    min-height: auto;
+    box-shadow: none;
 }
 
 .checkin-cancel:hover {
     background: #f3f4f6;
+    transform: none;
+    border-color: rgba(26, 26, 46, 0.2);
 }
 
 /* === Mobile Responsive === */

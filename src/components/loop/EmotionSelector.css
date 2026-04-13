@@ -22,11 +22,16 @@
     gap: 6px;
     padding: 12px 16px;
     border: 2px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 4px;
     background: white;
     cursor: pointer;
     transition: all 0.2s ease;
     min-width: 60px;
+    min-height: auto;
+    font-family: inherit;
+    text-transform: none;
+    letter-spacing: 0;
+    box-shadow: none;
 }
 
 .emotion-selector.medium .emotion-btn {
@@ -46,12 +51,14 @@
 .emotion-btn:hover:not(:disabled) {
     border-color: var(--emotion-color);
     background: color-mix(in srgb, var(--emotion-color) 10%, white);
+    transform: none;
+    box-shadow: none;
 }
 
 .emotion-btn.selected {
     border-color: var(--emotion-color);
-    background: color-mix(in srgb, var(--emotion-color) 20%, white);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--emotion-color) 30%, transparent);
+    background: color-mix(in srgb, var(--emotion-color) 15%, white);
+    box-shadow: none;
 }
 
 .emotion-btn:disabled {
@@ -73,8 +80,11 @@
 }
 
 .emotion-label {
-    font-size: 12px;
-    font-weight: 500;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: #4b5563;
 }
 
@@ -97,8 +107,9 @@
     align-items: center;
     gap: 4px;
     padding: 4px 10px;
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--emotion-color) 20%, white);
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, var(--emotion-color) 40%, transparent);
+    background: color-mix(in srgb, var(--emotion-color) 12%, white);
     font-size: 13px;
 }
 
@@ -107,7 +118,11 @@
 }
 
 .badge-label {
-    font-weight: 500;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: #374151;
 }
 

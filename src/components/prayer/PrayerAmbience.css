@@ -22,12 +22,12 @@
   left: 50%;
   transform: translate(-50%, -50%);
   filter: blur(100px);
-  opacity: 0.5;
+  opacity: 0.45;
   background: linear-gradient(
     135deg,
-    rgba(201, 168, 124, 0.4) 0%,
-    rgba(255, 214, 201, 0.3) 50%,
-    rgba(76, 175, 80, 0.2) 100%
+    rgba(108, 71, 255, 0.35) 0%,
+    rgba(139, 111, 255, 0.25) 50%,
+    rgba(0, 194, 203, 0.15) 100%
   );
 }
 
@@ -36,8 +36,8 @@
   height: 350px;
   background: radial-gradient(
     circle,
-    rgba(201, 168, 124, 0.5) 0%,
-    rgba(255, 228, 214, 0.3) 50%,
+    rgba(108, 71, 255, 0.4) 0%,
+    rgba(139, 111, 255, 0.25) 50%,
     transparent 70%
   );
   animation: gentleFloat 8s ease-in-out infinite;
@@ -47,11 +47,11 @@
   width: 500px;
   height: 500px;
   filter: blur(120px);
-  opacity: 0.35;
+  opacity: 0.3;
   background: radial-gradient(
     circle,
-    rgba(76, 175, 80, 0.3) 0%,
-    rgba(38, 166, 154, 0.2) 40%,
+    rgba(74, 144, 226, 0.3) 0%,
+    rgba(0, 194, 203, 0.2) 40%,
     transparent 70%
   );
   animation: gentleFloat 12s ease-in-out infinite reverse;
@@ -82,7 +82,7 @@
   top: 50%;
   left: 50%;
   filter: blur(0.5px);
-  background: var(--bronze-light, #c9a87c);
+  background: rgba(108, 71, 255, 0.6);
   animation: twinkle 3s ease-in-out infinite;
 }
 
@@ -103,12 +103,12 @@
   }
 }
 
-/* Emotion-based colors */
+/* Emotion-based colors - Palmoni Purple Palette */
 .prayer-ambience[data-emotion="gratitude"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(76, 175, 80, 0.4) 0%,
-    rgba(38, 166, 154, 0.3) 50%,
+    rgba(16, 185, 129, 0.4) 0%,
+    rgba(52, 211, 153, 0.25) 50%,
     transparent 70%
   );
 }
@@ -116,8 +116,8 @@
 .prayer-ambience[data-emotion="sadness"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(139, 94, 60, 0.4) 0%,
-    rgba(166, 124, 82, 0.3) 50%,
+    rgba(74, 144, 226, 0.4) 0%,
+    rgba(108, 71, 255, 0.25) 50%,
     transparent 70%
   );
 }
@@ -125,8 +125,8 @@
 .prayer-ambience[data-emotion="hope"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(255, 214, 201, 0.5) 0%,
-    rgba(201, 168, 124, 0.3) 50%,
+    rgba(0, 194, 203, 0.4) 0%,
+    rgba(108, 71, 255, 0.2) 50%,
     transparent 70%
   );
 }
@@ -134,8 +134,8 @@
 .prayer-ambience[data-emotion="peace"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(201, 168, 124, 0.4) 0%,
-    rgba(255, 240, 227, 0.3) 50%,
+    rgba(108, 71, 255, 0.4) 0%,
+    rgba(139, 111, 255, 0.25) 50%,
     transparent 70%
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserPrayers, deletePrayer } from '../lib/supabaseClient';
@@ -502,8 +503,8 @@ export function MyPrayers() {
         </div>
       ) : null}
 
-      {/* Prayer Detail Modal */}
-      {selectedPrayer && (
+      {/* Prayer Detail Modal - Portal로 렌더링하여 stacking context 문제 방지 */}
+      {selectedPrayer && createPortal(
         <div className="prayer-modal-overlay" onClick={() => setSelectedPrayer(null)}>
           <div className="prayer-modal" onClick={(e) => e.stopPropagation()}>
             <button
@@ -578,23 +579,26 @@ export function MyPrayers() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* 이미지 공유 모달 */}
-      {imageSharePrayer && (
+      {/* 이미지 공유 모달 - Portal로 렌더링 */}
+      {imageSharePrayer && createPortal(
         <PrayerImageShare
           prayer={imageSharePrayer}
           onClose={() => setImageSharePrayer(null)}
-        />
+        />,
+        document.body
       )}
 
-      {/* 기도 부탁하기 모달 */}
-      {askPrayerPrayer && (
+      {/* 기도 부탁하기 모달 - Portal로 렌더링 */}
+      {askPrayerPrayer && createPortal(
         <AskPrayerShare
           prayer={askPrayerPrayer}
           onClose={() => setAskPrayerPrayer(null)}
-        />
+        />,
+        document.body
       )}
     </div>
   );

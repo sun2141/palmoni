@@ -84,7 +84,7 @@ export function AskPrayerShare({ prayer, onClose }) {
 
         {/* 기도 제목 표시 */}
         <div className="prayer-topic-display">
-          <span className="topic-label">기도 제목</span>
+          <span className="ask-topic-label">기도 제목</span>
           <p className="topic-text">{prayer.topic || prayer.title}</p>
         </div>
 

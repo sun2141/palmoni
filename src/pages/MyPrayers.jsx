@@ -8,6 +8,17 @@ import { PrayerImageShare } from '../components/share/PrayerImageShare';
 import { AskPrayerShare } from '../components/share/AskPrayerShare';
 import './MyPrayers.css';
 
+// ESC 키로 모달 닫기 훅
+function useEscapeKey(callback) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') callback();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [callback]);
+}
+
 export function MyPrayers() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -261,6 +272,17 @@ export function MyPrayers() {
     }
   };
 
+  // ESC 키로 팝업 닫기 - 가장 위에 열린 모달부터 닫기
+  useEscapeKey(useCallback(() => {
+    if (imageSharePrayer) {
+      setImageSharePrayer(null);
+    } else if (askPrayerPrayer) {
+      setAskPrayerPrayer(null);
+    } else if (selectedPrayer) {
+      setSelectedPrayer(null);
+    }
+  }, [imageSharePrayer, askPrayerPrayer, selectedPrayer]));
+
   if (!user) {
     return null;
   }
@@ -411,7 +433,7 @@ export function MyPrayers() {
                 {prayer.content.length > 150 && (
                   <button
                     className="view-full-btn"
-                    onClick={() => setSelectedPrayer(prayer)}
+                    onClick={() => { setImageSharePrayer(null); setAskPrayerPrayer(null); setSelectedPrayer(prayer); }}
                   >
                     전체보기
                   </button>
@@ -435,14 +457,14 @@ export function MyPrayers() {
                 <div className="prayer-actions">
                   <button
                     className="action-button"
-                    onClick={() => setImageSharePrayer(prayer)}
+                    onClick={() => { setAskPrayerPrayer(null); setSelectedPrayer(null); setImageSharePrayer(prayer); }}
                     title="이미지로 나누기"
                   >
                     <span>🖼️</span> 이미지
                   </button>
                   <button
                     className="action-button"
-                    onClick={() => setAskPrayerPrayer(prayer)}
+                    onClick={() => { setImageSharePrayer(null); setSelectedPrayer(null); setAskPrayerPrayer(prayer); }}
                     title="기도 부탁하기"
                   >
                     <span>🙏</span> 부탁
@@ -531,6 +553,7 @@ export function MyPrayers() {
                 className="action-button"
                 onClick={() => {
                   setImageSharePrayer(selectedPrayer);
+                  setSelectedPrayer(null);
                 }}
               >
                 <span>🖼️</span> 이미지
@@ -539,6 +562,7 @@ export function MyPrayers() {
                 className="action-button"
                 onClick={() => {
                   setAskPrayerPrayer(selectedPrayer);
+                  setSelectedPrayer(null);
                 }}
               >
                 <span>🙏</span> 기도 부탁

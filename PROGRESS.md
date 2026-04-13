@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
 c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
@@ -223,10 +224,7 @@ d484e23 Fix: Session loading, state transitions, and prayer error handling
 90b7302 Fix: Use KST midnight for daily prayer limit reset and loop date tracking
 5e2a0e6 Merge: fix duplicate loop conversion from MyPrayers
 50abf6a Fix: Hide convert-to-loop button after prayer is converted
-fc88a3e Merge: fix prayer loading and allow deleting active loops
 ```
-
-> 마지막 커밋 동기화: 2026-04-13
 
 
 ---

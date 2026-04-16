@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { saveTodaysPrayerSession, getTodaysPrayerSession } from '../lib/supabaseClient';
+import { logger } from '../lib/logger';
+import { getTodayKST } from '../lib/dateUtils';
 
 /**
  * 오늘의 기도 시스템 훅 (단순화 버전)
@@ -39,13 +41,13 @@ export function useTodaysPrayer() {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
-            console.warn('localStorage save failed:', e);
+            logger.warn('localStorage save failed:', e);
         }
 
         // 로그인 사용자: Supabase 백업
         if (user) {
             saveTodaysPrayerSession(user.id, data).catch(e => {
-                console.error('Supabase backup failed:', e);
+                logger.error('Supabase backup failed:', e);
             });
         }
     }, [user]);
@@ -95,7 +97,7 @@ export function useTodaysPrayer() {
                             const isOldFormat = data.prayers.some(p => p.times || p.status || p.currentIndex !== undefined);
                             if (isOldFormat) {
                                 // 이전 형식은 무시하고 새로 시작
-                                console.log('Supabase 이전 형식 데이터 감지, 초기화합니다.');
+                                logger.log('Supabase 이전 형식 데이터 감지, 초기화합니다.');
                                 setTodaysPrayers([]);
                             } else {
                                 // 새 형식: prayedAt이 있는 것만 사용
@@ -106,7 +108,7 @@ export function useTodaysPrayer() {
                         }
                     }
                 } catch (e) {
-                    console.error('Failed to load from Supabase:', e);
+                    logger.error('Failed to load from Supabase:', e);
                 }
             }
 
@@ -116,15 +118,15 @@ export function useTodaysPrayer() {
                 if (saved) {
                     try {
                         const data = JSON.parse(saved);
-                        const savedDate = new Date(data.date).toDateString();
-                        const today = new Date().toDateString();
+                        const savedDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date(data.date));
+                        const today = getTodayKST();
 
                         // 이전 형식 데이터 감지 (times, status 등이 있으면 이전 형식)
                         const isOldFormat = data.prayers?.some(p => p.times || p.status || p.currentIndex !== undefined);
 
                         if (isOldFormat) {
                             // 이전 형식 데이터는 삭제하고 새로 시작
-                            console.log('이전 형식 데이터 감지, 초기화합니다.');
+                            logger.log('이전 형식 데이터 감지, 초기화합니다.');
                             localStorage.removeItem(STORAGE_KEY);
                         } else if (savedDate === today) {
                             if (data.prayers && Array.isArray(data.prayers)) {
@@ -140,7 +142,7 @@ export function useTodaysPrayer() {
                             localStorage.removeItem(STORAGE_KEY);
                         }
                     } catch (e) {
-                        console.error('Failed to parse saved prayer:', e);
+                        logger.error('Failed to parse saved prayer:', e);
                         localStorage.removeItem(STORAGE_KEY);
                     }
                 }

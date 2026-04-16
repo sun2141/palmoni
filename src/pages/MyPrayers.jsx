@@ -7,6 +7,8 @@ import { useToast } from '../components/common/Toast';
 import { useLoop } from '../hooks/useLoop';
 import { PrayerImageShare } from '../components/share/PrayerImageShare';
 import { AskPrayerShare } from '../components/share/AskPrayerShare';
+import { logger } from '../lib/logger';
+import { isToday } from '../lib/dateUtils';
 import './MyPrayers.css';
 
 // ESC 키로 모달 닫기 훅
@@ -26,8 +28,6 @@ export function MyPrayers() {
   const toast = useToast();
   const { canCreateLoop, createLoopFromPrayer, loading: loopLoading, activeLoopCount, maxLoops, prayerIdsInLoop } = useLoop();
 
-  // Debug: 활성 루프 상태 확인
-  console.log('[MyPrayers] canCreateLoop:', canCreateLoop, 'loopLoading:', loopLoading, 'activeLoopCount:', activeLoopCount);
   const [prayers, setPrayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [convertingPrayerId, setConvertingPrayerId] = useState(null);
@@ -79,7 +79,7 @@ export function MyPrayers() {
       });
 
       if (error) {
-        console.error('Error loading prayers:', error);
+        logger.error('Error loading prayers:', error);
         setLoadError(true);
         setLoading(false);
         setLoadingMore(false);
@@ -98,7 +98,7 @@ export function MyPrayers() {
       offsetRef.current = newOffset;
       setHasMore((data?.length || 0) === LIMIT && newOffset < count);
     } catch (err) {
-      console.error('Error:', err);
+      logger.error('Error loading prayers:', err);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -187,8 +187,7 @@ export function MyPrayers() {
           text: shareText
         });
       } catch (err) {
-        // User cancelled or error
-        console.log('Share cancelled');
+        if (err.name !== 'AbortError') logger.warn('Share failed:', err);
       }
     } else {
       // Fallback: copy to clipboard
@@ -228,14 +227,8 @@ export function MyPrayers() {
     return emotions.find(e => e.value === emotion) || emotions[0];
   };
 
-  // Check if prayer was created today
-  const isCreatedToday = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const result = date.toDateString() === now.toDateString();
-    console.log('[MyPrayers] isCreatedToday:', dateString, '→', date.toDateString(), 'vs', now.toDateString(), '=', result);
-    return result;
-  };
+  // Check if prayer was created today (KST 기준)
+  const isCreatedToday = (dateString) => isToday(dateString);
 
   // Handle convert to daily prayer (Loop)
   const handleConvertToLoop = async (prayer) => {
@@ -266,7 +259,7 @@ export function MyPrayers() {
       // Navigate to loop detail page
       navigate(`/loop/${data.loop.id}`);
     } catch (err) {
-      console.error('Failed to convert to loop:', err);
+      logger.error('Failed to convert to loop:', err);
       toast.error('매일 기도 전환 중 오류가 발생했습니다.');
     } finally {
       setConvertingPrayerId(null);
@@ -309,12 +302,14 @@ export function MyPrayers() {
           <input
             type="text"
             placeholder="기도문 검색..."
+            aria-label="기도문 검색"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           {searchQuery && (
             <button
               className="clear-search"
+              aria-label="검색어 지우기"
               onClick={() => setSearchQuery('')}
             >
               ×
@@ -458,29 +453,29 @@ export function MyPrayers() {
                 <div className="prayer-actions">
                   <button
                     className="action-button"
+                    aria-label="이미지로 나누기"
                     onClick={() => { setAskPrayerPrayer(null); setSelectedPrayer(null); setImageSharePrayer(prayer); }}
-                    title="이미지로 나누기"
                   >
                     <span>🖼️</span> 이미지
                   </button>
                   <button
                     className="action-button"
+                    aria-label="기도 부탁하기"
                     onClick={() => { setImageSharePrayer(null); setSelectedPrayer(null); setAskPrayerPrayer(prayer); }}
-                    title="기도 부탁하기"
                   >
                     <span>🙏</span> 부탁
                   </button>
                   <button
                     className="action-button"
+                    aria-label="기도문 공유하기"
                     onClick={() => handleShare(prayer)}
-                    title="공유하기"
                   >
                     <span>📤</span> 공유
                   </button>
                   <button
                     className="action-button delete"
+                    aria-label="기도문 삭제"
                     onClick={() => handleDelete(prayer.id)}
-                    title="삭제하기"
                   >
                     <span>🗑️</span> 삭제
                   </button>
@@ -505,10 +500,17 @@ export function MyPrayers() {
 
       {/* Prayer Detail Modal - Portal로 렌더링하여 stacking context 문제 방지 */}
       {selectedPrayer && createPortal(
-        <div className="prayer-modal-overlay" onClick={() => setSelectedPrayer(null)}>
+        <div
+          className="prayer-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="기도문 상세보기"
+          onClick={() => setSelectedPrayer(null)}
+        >
           <div className="prayer-modal" onClick={(e) => e.stopPropagation()}>
             <button
               className="prayer-modal-close"
+              aria-label="모달 닫기"
               onClick={() => setSelectedPrayer(null)}
             >
               ✕

@@ -5,6 +5,8 @@ import {
     getLastCheckin,
     getCheckinHistory,
 } from '../lib/supabaseClient';
+import { logger } from '../lib/logger';
+import { getTodayKST } from '../lib/dateUtils';
 
 /**
  * 체크인 관리 훅
@@ -23,12 +25,12 @@ export function useCheckin(loopId, sessionId = null) {
             try {
                 const { data, error: fetchError } = await getLastCheckin(loopId);
                 if (fetchError) {
-                    console.error('Failed to load last checkin:', fetchError);
+                    logger.error('Failed to load last checkin:', fetchError);
                 } else {
                     setLastCheckin(data);
                 }
             } catch (e) {
-                console.error('Failed to load last checkin:', e);
+                logger.error('Failed to load last checkin:', e);
             }
         };
 
@@ -50,9 +52,8 @@ export function useCheckin(loopId, sessionId = null) {
     const hasCheckedInToday = useMemo(() => {
         if (!lastCheckin) return false;
 
-        const checkinDate = new Date(lastCheckin.created_at).toDateString();
-        const today = new Date().toDateString();
-        return checkinDate === today;
+        const checkinDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date(lastCheckin.created_at));
+        return checkinDate === getTodayKST();
     }, [lastCheckin]);
 
     /**
@@ -89,7 +90,7 @@ export function useCheckin(loopId, sessionId = null) {
             setLastCheckin(data);
             return { data, error: null };
         } catch (e) {
-            console.error('Failed to submit checkin:', e);
+            logger.error('Failed to submit checkin:', e);
             setError(e.message);
             return { data: null, error: e.message };
         } finally {

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logger } from '../lib/logger';
 
 const AuthContext = createContext({});
 
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
         initializedViaEvent = true;
         setIsInitialized(true);
         if (initTimeout) clearTimeout(initTimeout);
-        console.log(`[Auth] Initialization completed via ${source}`);
+        logger.log(`[Auth] Initialization completed via ${source}`);
       }
     };
 
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       async (event, newSession) => {
         if (!mounted) return;
 
-        console.log('[Auth] Auth state changed:', event, newSession ? 'with session' : 'no session');
+        logger.log('[Auth] Auth state changed:', event, newSession ? 'with session' : 'no session');
 
         setSession(newSession);
         setUser(newSession?.user ?? null);
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 
           // 프로필 로드는 비동기로 진행 (초기화 블로킹 안 함)
           loadUserProfile(newSession.user.id).catch(err => {
-            console.warn('[Auth] Profile load failed in event handler:', err);
+            logger.warn('[Auth] Profile load failed in event handler:', err);
             setLoading(false);
           });
 
@@ -83,13 +84,13 @@ export const AuthProvider = ({ children }) => {
     );
 
     const initializeAuth = async () => {
-      console.log('[Auth] Starting initialization...');
+      logger.log('[Auth] Starting initialization...');
       const startTime = Date.now();
 
       // 타임아웃 설정 (5초 - onAuthStateChange가 보통 더 빨리 응답함)
       initTimeout = setTimeout(() => {
         if (mounted && !isInitialized && !initializedViaEvent) {
-          console.warn('[Auth] Initialization timeout after 5s - forcing completion');
+          logger.warn('[Auth] Initialization timeout after 5s - forcing completion');
           setLoading(false);
           completeInitialization('timeout');
         }
@@ -97,17 +98,17 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // 저장된 세션 복원 시도 (onAuthStateChange와 병렬로 진행)
-        console.log('[Auth] Calling getSession...');
+        logger.log('[Auth] Calling getSession...');
         const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
-        console.log('[Auth] getSession completed in', Date.now() - startTime, 'ms');
+        logger.log('[Auth] getSession completed in', Date.now() - startTime, 'ms');
 
         if (error) {
-          console.error('[Auth] Session restore error:', error);
+          logger.error('[Auth] Session restore error:', error);
         }
 
         // onAuthStateChange가 이미 처리했으면 스킵
         if (initializedViaEvent) {
-          console.log('[Auth] Already initialized via event, skipping getSession result');
+          logger.log('[Auth] Already initialized via event, skipping getSession result');
           return;
         }
 
@@ -116,21 +117,21 @@ export const AuthProvider = ({ children }) => {
             setSession(restoredSession);
             setUser(restoredSession.user);
             try {
-              console.log('[Auth] Loading profile...');
+              logger.log('[Auth] Loading profile...');
               await loadUserProfile(restoredSession.user.id);
-              console.log('[Auth] Profile loaded in', Date.now() - startTime, 'ms total');
+              logger.log('[Auth] Profile loaded in', Date.now() - startTime, 'ms total');
             } catch (profileErr) {
-              console.warn('[Auth] Profile load failed:', profileErr);
+              logger.warn('[Auth] Profile load failed:', profileErr);
               setLoading(false);
             }
           } else {
-            console.log('[Auth] No session found');
+            logger.log('[Auth] No session found');
             setLoading(false);
           }
           completeInitialization('getSession');
         }
       } catch (err) {
-        console.error('[Auth] Initialization error:', err);
+        logger.error('[Auth] Initialization error:', err);
         if (mounted && !initializedViaEvent) {
           setLoading(false);
           completeInitialization('error');
@@ -162,11 +163,11 @@ export const AuthProvider = ({ children }) => {
 
           // 세션 에러 발생 시 (토큰 만료 등)
           if (error) {
-            console.warn('Session check error:', error.message);
+            logger.warn('Session check error:', error.message);
             // 세션 갱신 시도
             const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
             if (refreshError) {
-              console.warn('Session refresh failed:', refreshError.message);
+              logger.warn('Session refresh failed:', refreshError.message);
               isCheckingSession.current = false;
               return;
             }
@@ -190,7 +191,7 @@ export const AuthProvider = ({ children }) => {
             }
           }
         } catch (err) {
-          console.error('Visibility change session check error:', err);
+          logger.error('Visibility change session check error:', err);
         } finally {
           isCheckingSession.current = false;
         }
@@ -205,7 +206,7 @@ export const AuthProvider = ({ children }) => {
     // iOS Safari bfcache 복원 시 - 단순히 stateVersion만 증가시켜 리렌더링 유도
     const handlePageShow = (event) => {
       if (event.persisted && mounted) {
-        console.log('App restored from bfcache');
+        logger.log('App restored from bfcache');
         setStateVersion(v => v + 1);
       }
     };
@@ -220,7 +221,7 @@ export const AuthProvider = ({ children }) => {
             setSession(refreshData.session);
           }
         } catch (err) {
-          console.warn('Online session refresh error:', err);
+          logger.warn('Online session refresh error:', err);
         }
       }
     };
@@ -245,12 +246,12 @@ export const AuthProvider = ({ children }) => {
         .single();
 
       if (error) {
-        console.error('Error loading profile:', error);
+        logger.error('Error loading profile:', error);
       } else {
         setProfile(data);
       }
     } catch (err) {
-      console.error('Error loading profile:', err);
+      logger.error('Error loading profile:', err);
     } finally {
       setLoading(false);
     }
@@ -269,7 +270,7 @@ export const AuthProvider = ({ children }) => {
           setProfile(data);
         }
       } catch (err) {
-        console.error('Error refreshing profile:', err);
+        logger.error('Error refreshing profile:', err);
       }
     }
   };
@@ -286,7 +287,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Error signing in with Google:', error);
+      logger.error('Error signing in with Google:', error);
       return { data: null, error: error.message };
     }
   };
@@ -303,7 +304,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Error signing in with Kakao:', error);
+      logger.error('Error signing in with Kakao:', error);
       return { data: null, error: error.message };
     }
   };
@@ -320,7 +321,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Error signing in with Apple:', error);
+      logger.error('Error signing in with Apple:', error);
       return { data: null, error: error.message };
     }
   };
@@ -335,7 +336,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Error signing in with email:', error);
+      logger.error('Error signing in with email:', error);
       return { data: null, error: error.message };
     }
   };
@@ -351,7 +352,7 @@ export const AuthProvider = ({ children }) => {
         .maybeSingle();
 
       if (checkError) {
-        console.error('Error checking duplicate:', checkError);
+        logger.error('Error checking duplicate:', checkError);
       }
 
       if (existing) {
@@ -374,7 +375,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
-      console.error('Error signing up:', error);
+      logger.error('Error signing up:', error);
       return { data: null, error: error.message };
     }
   };
@@ -395,7 +396,7 @@ export const AuthProvider = ({ children }) => {
 
       return { error: null };
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('Error signing out:', error);
       return { error: error.message };
     }
   };
@@ -412,7 +413,7 @@ export const AuthProvider = ({ children }) => {
         await loadUserProfile(session.user.id);
         setStateVersion(v => v + 1);
       } catch (err) {
-        console.error('Force refresh error:', err);
+        logger.error('Force refresh error:', err);
       }
     } else {
       setStateVersion(v => v + 1);

@@ -5,6 +5,7 @@ import { useLoop } from '../../hooks/useLoop';
 import { deleteLoop, updateLoopInfo } from '../../lib/supabaseClient';
 import { LoopCard } from '../../components/loop/LoopCard';
 import { LoopEditModal } from '../../components/loop/LoopEditModal';
+import { logger } from '../../lib/logger';
 import './LoopHistory.css';
 
 const FILTER_OPTIONS = [
@@ -13,6 +14,34 @@ const FILTER_OPTIONS = [
     { value: 'completed', label: '완료', statuses: ['completed'] },
     { value: 'all', label: '전체', statuses: null },
 ];
+
+// 탭별 빈 상태 메시지
+const EMPTY_STATE_MESSAGES = {
+    active: {
+        icon: '🙏',
+        title: '진행 중인 매일 기도가 없어요',
+        desc: '새로운 매일 기도를 시작해보세요!',
+        showNewBtn: true,
+    },
+    snoozed: {
+        icon: '⏸️',
+        title: '일시중지된 기도가 없어요',
+        desc: '진행 중인 기도를 일시중지하면 여기에 표시됩니다.',
+        showNewBtn: false,
+    },
+    completed: {
+        icon: '🏆',
+        title: '완료된 기도가 아직 없어요',
+        desc: '7일 기도 여정을 완료하면 여기에 기록됩니다.',
+        showNewBtn: false,
+    },
+    all: {
+        icon: '📚',
+        title: '아직 매일 기도가 없어요',
+        desc: '새로운 매일 기도를 시작해보세요!',
+        showNewBtn: true,
+    },
+};
 
 // 상태 우선순위 (낮을수록 위에 표시)
 const STATUS_PRIORITY = {
@@ -59,7 +88,7 @@ export default function LoopHistory() {
         });
 
         if (error) {
-            console.error('Failed to load history:', error);
+            logger.error('Failed to load history:', error);
             setLoadError(true);
             setLoading(false);
             return;
@@ -174,10 +203,12 @@ export default function LoopHistory() {
                 </button>
             </header>
 
-            <div className="filter-tabs">
+            <div className="filter-tabs" role="tablist" aria-label="매일 기도 필터">
                 {FILTER_OPTIONS.map(option => (
                     <button
                         key={option.value}
+                        role="tab"
+                        aria-selected={filter === option.value}
                         className={`filter-tab ${filter === option.value ? 'active' : ''}`}
                         onClick={() => handleFilterChange(option.value)}
                     >
@@ -214,12 +245,14 @@ export default function LoopHistory() {
                     </div>
                 ) : loops.length === 0 && !loading ? (
                     <div className="empty-state">
-                        <span className="empty-icon">📚</span>
-                        <h3>아직 매일 기도가 없어요</h3>
-                        <p>새로운 매일 기도를 시작해보세요!</p>
-                        <button onClick={() => navigate('/loop/new')}>
-                            매일 기도 시작하기
-                        </button>
+                        <span className="empty-icon">{(EMPTY_STATE_MESSAGES[filter] || EMPTY_STATE_MESSAGES.all).icon}</span>
+                        <h3>{(EMPTY_STATE_MESSAGES[filter] || EMPTY_STATE_MESSAGES.all).title}</h3>
+                        <p>{(EMPTY_STATE_MESSAGES[filter] || EMPTY_STATE_MESSAGES.all).desc}</p>
+                        {(EMPTY_STATE_MESSAGES[filter] || EMPTY_STATE_MESSAGES.all).showNewBtn && (
+                            <button onClick={() => navigate('/loop/new')}>
+                                매일 기도 시작하기
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <>

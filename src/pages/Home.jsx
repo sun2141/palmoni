@@ -1,39 +1,31 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { usePrayerGeneration } from '../hooks/usePrayerGeneration';
 import { useTodaysPrayer } from '../hooks/useTodaysPrayer';
-import { PrayerProgress } from '../components/prayer/PrayerProgress';
+import { useActiveUsers } from '../hooks/useActiveUsers';
+import { useActivityNotification } from '../hooks/useActivityNotification';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { useHomeActions } from '../hooks/useHomeActions';
 import { PrayerAmbience } from '../components/prayer/PrayerAmbience';
+import { QuickPrayerForm } from '../components/prayer/QuickPrayerForm';
+import { PrayerResultCard } from '../components/prayer/PrayerResultCard';
 import { LoginModal } from '../components/auth/LoginModal';
 import { useAuth } from '../contexts/AuthContext';
-import { checkRateLimit, logUsage, savePrayer, deletePrayer, getActiveUsersCount } from '../lib/supabaseClient';
-import { savePendingPrayer, getPendingPrayer, clearPendingPrayer, getOrCreateAnonymousId } from '../lib/localStorage';
 import { StreakDisplay } from '../components/streak/StreakDisplay';
 import { EmergencyPrayerButton } from '../components/emergency/EmergencyPrayerButton';
 import { HomeBottomAd } from '../components/ads/AdBanner';
 import { useToast } from '../components/common/Toast';
 import { PrayTogetherModal } from '../components/prayer/PrayTogetherModal';
+import { SignupPrompt, YesterdayBanner } from '../components/home/SignupPrompt';
+import { BottomNav } from '../components/home/BottomNav';
+import { logger } from '../lib/logger';
 import './Home.css';
 
 export function Home() {
-    const navigate = useNavigate();
-    const [topic, setTopic] = useState('');
-    const [notification, setNotification] = useState(null);
-    const [emotion, setEmotion] = useState('peace');
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [rateLimitInfo, setRateLimitInfo] = useState(null);
-    const [currentPrayerId, setCurrentPrayerId] = useState(null);
-    const [activeUsers, setActiveUsers] = useState(127);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [pullDistance, setPullDistance] = useState(0);
-    const [showPrayTogether, setShowPrayTogether] = useState(false);
-    const containerRef = useRef(null);
-    const touchStartY = useRef(0);
-    const isPulling = useRef(false);
 
-    const { user, profile, loading: authLoading, signOut, refreshProfile, isInitialized, stateVersion } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const toast = useToast();
-    const pendingPrayerProcessed = useRef(false);
 
     const {
         title,
@@ -56,6 +48,31 @@ export function Home() {
         dismissYesterdayMessage,
     } = useTodaysPrayer();
 
+    const activeUsers = useActiveUsers();
+    const notification = useActivityNotification();
+
+    const {
+        topic,
+        setTopic,
+        emotion,
+        rateLimitInfo,
+        currentPrayerId,
+        showPrayTogether,
+        setShowPrayTogether,
+        checkUserRateLimit,
+        handleGenerate,
+        handleRegenerate,
+        handleReset,
+        handleLogout,
+        handleShare,
+    } = useHomeActions({
+        generatePrayer,
+        reset,
+        setPrayer,
+        addPrayer,
+        toast,
+    });
+
     // 기도문 생성 중 애니메이션 시작/종료
     useEffect(() => {
         if (isGenerating) {
@@ -65,301 +82,26 @@ export function Home() {
         }
     }, [isGenerating, startPrayingAnimation, stopPrayingAnimation]);
 
+    // 오류 발생 시 Toast로 표시
     useEffect(() => {
-        if (!authLoading && isInitialized) {
-            checkUserRateLimit();
+        if (error) {
+            toast.error(error, { duration: 5000 });
         }
-    }, [user, authLoading, isInitialized, stateVersion]);
+    }, [error]);
 
-    // 로그인 후 미리보기 기도문 복원 및 저장
-    useEffect(() => {
-        if (user && isInitialized && !pendingPrayerProcessed.current) {
-            const pendingPrayer = getPendingPrayer();
-            if (pendingPrayer && pendingPrayer.title && pendingPrayer.content) {
-                pendingPrayerProcessed.current = true;
-
-                // 기존 기도문 표시
-                setTopic(pendingPrayer.topic || '');
-                setEmotion(pendingPrayer.emotion || 'peace');
-                setPrayer(pendingPrayer.title, pendingPrayer.content);
-
-                // 자동 저장
-                (async () => {
-                    const saveResult = await savePrayer({
-                        userId: user.id,
-                        title: pendingPrayer.title,
-                        content: pendingPrayer.content,
-                        topic: pendingPrayer.topic,
-                        emotion: pendingPrayer.emotion,
-                        isPublic: false
-                    });
-
-                    if (saveResult.data) {
-                        setCurrentPrayerId(saveResult.data.id);
-                        toast.success('미리보기 기도문이 저장되었습니다!');
-
-                        // 로그 사용량 기록 및 스트릭 업데이트
-                        await logUsage(user.id, null, 'prayer_generation');
-                        await refreshProfile();
-                    }
-
-                    // 임시 저장 삭제
-                    clearPendingPrayer();
-                })();
-            }
-        }
-    }, [user, isInitialized, setPrayer, toast, refreshProfile]);
-
-    // 실시간 사용자 수
-    const [useRealCount, setUseRealCount] = useState(false);
-
-    useEffect(() => {
-        const checkRealUsers = async () => {
-            const realCount = await getActiveUsersCount();
-            if (realCount !== null) {
-                setActiveUsers(realCount);
-                setUseRealCount(true);
-            }
-        };
-        checkRealUsers();
-
-        const interval = setInterval(async () => {
-            if (useRealCount) {
-                const realCount = await getActiveUsersCount();
-                if (realCount !== null) {
-                    setActiveUsers(realCount);
-                } else {
-                    setUseRealCount(false);
-                    setActiveUsers(Math.floor(Math.random() * 50) + 100);
-                }
-            } else {
-                setActiveUsers(prev => {
-                    const change = Math.floor(Math.random() * 11) - 5;
-                    return Math.max(80, Math.min(199, prev + change));
-                });
-            }
-        }, 8000);
-
-        return () => clearInterval(interval);
-    }, [useRealCount]);
-
-    useEffect(() => {
-        const fetchActivity = async () => {
-            try {
-                const response = await fetch('/api/background-activities');
-                if (response.ok) {
-                    const data = await response.json();
-                    setNotification(data.message);
-                    setTimeout(() => setNotification(null), 6000);
-                }
-            } catch (error) {
-                console.error('Error fetching activity:', error);
-            }
-        };
-
-        const timer = setInterval(() => {
-            if (Math.random() > 0.6) {
-                fetchActivity();
-            }
-        }, 12000);
-
-        return () => clearInterval(timer);
-    }, []);
-
-    useEffect(() => {
-        if (!topic) return;
-
-        const lowerTopic = topic.toLowerCase();
-        if (lowerTopic.includes('감사') || lowerTopic.includes('기쁨')) {
-            setEmotion('gratitude');
-        } else if (lowerTopic.includes('슬픔') || lowerTopic.includes('아픔') || lowerTopic.includes('힘들')) {
-            setEmotion('sadness');
-        } else if (lowerTopic.includes('소망') || lowerTopic.includes('희망')) {
-            setEmotion('hope');
-        } else {
-            setEmotion('peace');
-        }
-    }, [topic]);
-
-    // Pull-to-Refresh 핸들러
-    const handleRefresh = useCallback(async () => {
-        setIsRefreshing(true);
+    const { containerRef, pullDistance, isRefreshing, handlers: pullHandlers } = usePullToRefresh(async () => {
         try {
-            await refreshProfile();
             await checkUserRateLimit();
         } catch (err) {
-            console.error('Refresh error:', err);
-        } finally {
-            setIsRefreshing(false);
-            setPullDistance(0);
+            logger.error('Refresh error:', err);
         }
-    }, [refreshProfile]);
-
-    const handleTouchStart = useCallback((e) => {
-        if (containerRef.current?.scrollTop === 0) {
-            touchStartY.current = e.touches[0].clientY;
-            isPulling.current = true;
-        }
-    }, []);
-
-    const handleTouchMove = useCallback((e) => {
-        if (!isPulling.current) return;
-
-        const currentY = e.touches[0].clientY;
-        const diff = currentY - touchStartY.current;
-
-        if (diff > 0 && containerRef.current?.scrollTop === 0) {
-            setPullDistance(Math.min(diff * 0.5, 80));
-        }
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        if (pullDistance > 60) {
-            handleRefresh();
-        } else {
-            setPullDistance(0);
-        }
-        isPulling.current = false;
-    }, [pullDistance, handleRefresh]);
-
-    const checkUserRateLimit = async () => {
-        const userId = user?.id || null;
-        const anonymousId = !userId ? getAnonymousId() : null;
-
-        const limitInfo = await checkRateLimit(userId, anonymousId);
-        setRateLimitInfo(limitInfo);
-    };
-
-    const getAnonymousId = () => {
-        return getOrCreateAnonymousId();
-    };
-
-    const handleGenerate = async () => {
-        if (!topic.trim()) return;
-
-        // 중복 호출 방지
-        if (isGenerating) return;
-
-        // 앱 초기화 대기 - 토스트 없이 조용히 진행
-        if (!isInitialized) {
-            console.warn('App not initialized yet, proceeding anyway...');
-        }
-
-        const userId = user?.id || null;
-        const anonymousId = !userId ? getAnonymousId() : null;
-
-        let limitCheck;
-        try {
-            limitCheck = await checkRateLimit(userId, anonymousId);
-        } catch (err) {
-            console.error('Rate limit check failed:', err);
-            // 에러 시에도 진행 허용 (서버에서 다시 체크함)
-            limitCheck = { allowed: true };
-        }
-
-        if (!limitCheck.allowed) {
-            toast.warning(limitCheck.message);
-            if (!user) {
-                setTimeout(() => setShowLoginModal(true), 500);
-            }
-            return;
-        }
-
-        const result = await generatePrayer(topic);
-
-        // 오류 발생 시 usage 차감하지 않음
-        if (!result || !result.title || !result.content) {
-            return;
-        }
-
-        await logUsage(userId, anonymousId, 'prayer_generation');
-
-        // 짧은 딜레이 후 rate limit 다시 체크
-        setTimeout(async () => {
-            await checkUserRateLimit();
-        }, 500);
-
-        // 프로필(스트릭) 새로고침
-        if (userId) {
-            await refreshProfile();
-        }
-
-        // 로그인 사용자: 자동 저장
-        if (userId && result && result.title && result.content) {
-            const saveResult = await savePrayer({
-                userId,
-                title: result.title,
-                content: result.content,
-                topic,
-                emotion,
-                isPublic: false
-            });
-
-            if (saveResult.data) {
-                setCurrentPrayerId(saveResult.data.id);
-            }
-
-            // 기도 기록 추가
-            addPrayer({ topic, title: result.title });
-
-            // 함께 기도하기 모달 표시
-            setTimeout(() => {
-                setShowPrayTogether(true);
-            }, 500);
-
-        } else if (!userId && result && result.title && result.content) {
-            // 비로그인 사용자: 미리보기만 + 임시 저장
-            setCurrentPrayerId(null);
-
-            savePendingPrayer({
-                title: result.title,
-                content: result.content,
-                topic,
-                emotion
-            });
-
-            // 함께 기도하기 모달 표시
-            setTimeout(() => {
-                setShowPrayTogether(true);
-            }, 500);
-        }
-    };
-
-    // 기도문 다시 생성
-    const handleRegenerate = async () => {
-        if (!topic.trim()) return;
-
-        if (currentPrayerId && user) {
-            await deletePrayer(currentPrayerId, user.id);
-        }
-
-        await handleGenerate();
-    };
-
-    const handleReset = () => {
-        setTopic('');
-        reset();
-        setCurrentPrayerId(null);
-    };
-
-    const handleLogout = async () => {
-        if (!isInitialized) {
-            toast.warning('앱이 초기화 중입니다. 잠시 후 다시 시도해주세요.');
-            return;
-        }
-        await signOut();
-        setRateLimitInfo(null);
-        handleReset();
-    };
-
+    });
 
     return (
         <div
             className="home-container"
             ref={containerRef}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            {...pullHandlers}
         >
             {/* Pull-to-Refresh 인디케이터 */}
             {(pullDistance > 0 || isRefreshing) && (
@@ -392,31 +134,16 @@ export function Home() {
                     <>
                         <button
                             className="top-share-btn"
-                            onClick={async () => {
-                                const shareData = {
-                                    title: 'Palmoni - 기도 앱',
-                                    text: '누군가 당신과 함께 기도합니다. Palmoni에서 기도해보세요!',
-                                    url: 'https://palmoni.vercel.app'
-                                };
-                                if (navigator.share) {
-                                    try {
-                                        await navigator.share(shareData);
-                                    } catch (err) {
-                                        if (err.name !== 'AbortError') {
-                                            await navigator.clipboard.writeText(shareData.url);
-                                            toast.success('링크가 복사되었습니다!');
-                                        }
-                                    }
-                                } else {
-                                    await navigator.clipboard.writeText(shareData.url);
-                                    toast.success('링크가 복사되었습니다!');
-                                }
-                            }}
-                            title="앱 공유"
+                            aria-label="앱 공유하기"
+                            onClick={handleShare}
                         >
                             📤
                         </button>
-                        <button className="start-free-btn" onClick={() => setShowLoginModal(true)}>
+                        <button
+                            className="start-free-btn"
+                            aria-label="로그인 화면 열기"
+                            onClick={() => setShowLoginModal(true)}
+                        >
                             🌱 로그인하기
                         </button>
                     </>
@@ -442,47 +169,18 @@ export function Home() {
                 </p>
             </div>
 
-            {/* 기도 중 애니메이션 */}
-            {(isGenerating || showPrayingAnimation) && (
-                <div className="praying-indicator">
-                    <div className="praying-animation">
-                        <span className="praying-hands">🙏</span>
-                        <span className="praying-text">누군가 당신을 위해 기도하고 있어요...</span>
-                    </div>
-                    {progress > 0 && <PrayerProgress currentStep={progress} />}
-                </div>
-            )}
-
-            {/* Input Section */}
-            <div className="prayer-input-section">
-                <div className="input-header">
-                    <span className="input-icon">✏️</span>
-                    <span className="input-label">오늘의 기도</span>
-                    {todaysPrayerCount > 0 && (
-                        <span className="today-count">오늘 {todaysPrayerCount}번째</span>
-                    )}
-                </div>
-                <textarea
-                    className="prayer-textarea"
-                    placeholder="마음에 담긴 이야기를 나눠주세요..."
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    disabled={isGenerating}
-                    rows={3}
-                />
-                <button
-                    className="pray-cta-btn"
-                    onClick={handleGenerate}
-                    disabled={isGenerating || !topic.trim()}
-                >
-                    {isGenerating ? '🙏 기도하는 중...' : '🙏 함께 기도하기'}
-                </button>
-                {rateLimitInfo && user && (
-                    <div className="remaining-count">
-                        오늘 남은 횟수: <strong>{rateLimitInfo.remaining || 0}</strong>/{rateLimitInfo.limit || 3}회
-                    </div>
-                )}
-            </div>
+            {/* 기도 입력 폼 + 애니메이션 */}
+            <QuickPrayerForm
+                topic={topic}
+                onTopicChange={setTopic}
+                onGenerate={() => handleGenerate(setShowLoginModal)}
+                isGenerating={isGenerating}
+                showPrayingAnimation={showPrayingAnimation}
+                progress={progress}
+                rateLimitInfo={rateLimitInfo}
+                user={user}
+                todaysPrayerCount={todaysPrayerCount}
+            />
 
             {/* 실시간 사용자 수 */}
             <div className="active-users">
@@ -490,192 +188,36 @@ export function Home() {
                 지금 <strong>{activeUsers}명</strong>이 함께 기도하고 있어요
             </div>
 
-            {/* 어제 기도 완료 배너 */}
             {isYesterdayCompleted && (
-                <div className="yesterday-banner">
-                    <div className="yesterday-content">
-                        <span className="yesterday-icon">✨</span>
-                        <span className="yesterday-text">
-                            <strong>어제도 함께 기도했어요</strong>
-                            <br />
-                            오늘도 기도해볼까요?
-                        </span>
-                    </div>
-                    <button className="yesterday-dismiss" onClick={dismissYesterdayMessage}>
-                        확인
-                    </button>
-                </div>
+                <YesterdayBanner onDismiss={dismissYesterdayMessage} />
             )}
 
-            {/* 회원가입 유도 (비로그인 사용자) */}
             {!user && (
-                <div className="signup-prompt">
-                    <p>
-                        <strong>무료 회원가입</strong>하시면 기도문이 저장되고, 기도 기록이 남아요
-                    </p>
-                    <div className="signup-benefits">
-                        <span className="benefit-item">✓ 매일 함께 기도</span>
-                        <span className="benefit-item">✓ 기도문 자동 저장</span>
-                        <span className="benefit-item">✓ 연속 기도 기록</span>
-                    </div>
-                    <button
-                        className="signup-cta-btn"
-                        onClick={() => setShowLoginModal(true)}
-                    >
-                        ✨ 무료로 시작하기
-                    </button>
-                </div>
+                <SignupPrompt onLogin={() => setShowLoginModal(true)} />
             )}
 
-            {/* Error message */}
-            {error && (
-                <div className="error-message">
-                    {error}
-                </div>
-            )}
-
-            {/* Prayer result */}
-            {(title || content) && !isGenerating && (
-                <div className="prayer-result-card">
-                    <div className="result-header">
-                        <span className="result-icon">✨</span>
-                        <span className="result-label">오늘의 기도</span>
-                    </div>
-
-                    {title && <h2 className="result-title">{title}</h2>}
-
-                    {content && (
-                        <div className="result-content">
-                            {content}
-                        </div>
-                    )}
-
-                    <div className="result-actions">
-                        {user && currentPrayerId && (
-                            <button
-                                className="action-btn"
-                                onClick={handleRegenerate}
-                                disabled={isGenerating}
-                            >
-                                <span className="action-icon">🔄</span>
-                                <span className="action-text">다시 생성</span>
-                            </button>
-                        )}
-                        <button
-                            className="action-btn"
-                            onClick={async () => {
-                                const text = `${title}\n\n${content}\n\n- Palmoni와 함께 기도했습니다`;
-                                await navigator.clipboard.writeText(text);
-                                toast.success('기도문이 복사되었습니다!');
-                            }}
-                        >
-                            <span className="action-icon">📋</span>
-                            <span className="action-text">복사</span>
-                        </button>
-                        <button
-                            className="action-btn"
-                            onClick={async () => {
-                                const shareText = `${title}\n\n${content}`;
-                                if (navigator.share) {
-                                    try {
-                                        await navigator.share({ title, text: shareText });
-                                    } catch (err) {
-                                        console.log('Share cancelled');
-                                    }
-                                } else {
-                                    await navigator.clipboard.writeText(shareText);
-                                    toast.success('기도문이 복사되었습니다!');
-                                }
-                            }}
-                        >
-                            <span className="action-icon">📤</span>
-                            <span className="action-text">공유</span>
-                        </button>
-                        <button className="action-btn" onClick={handleReset}>
-                            <span className="action-icon">🙏</span>
-                            <span className="action-text">새 기도</span>
-                        </button>
-                    </div>
-
-                    {/* 기도 여정 유도 배너 */}
-                    {user && (
-                        <div className="journey-prompt">
-                            <div className="journey-prompt-content">
-                                <span className="journey-prompt-icon">🌱</span>
-                                <div className="journey-prompt-text">
-                                    <strong>이 기도를 매일 이어가볼까요?</strong>
-                                    <span>7일간 함께 기도하며 깊어지는 여정</span>
-                                </div>
-                            </div>
-                            <button
-                                className="journey-prompt-btn"
-                                onClick={() => navigate('/loop/history')}
-                            >
-                                시작하기
-                            </button>
-                        </div>
-                    )}
-                </div>
-            )}
+            {/* 기도문 결과 카드 */}
+            <PrayerResultCard
+                title={title}
+                content={content}
+                user={user}
+                currentPrayerId={currentPrayerId}
+                isGenerating={isGenerating}
+                onRegenerate={() => handleRegenerate(title, content, setShowLoginModal)}
+                onReset={handleReset}
+            />
 
             {/* 긴급 기도 버튼 */}
             <EmergencyPrayerButton
                 onPrayerGenerated={(prayer) => {
                     setPrayer(prayer.title, prayer.content);
                     setTopic('긴급 기도');
-                    setCurrentPrayerId(null);
                     toast.success('기도가 준비되었습니다');
                 }}
             />
 
-            {/* 하단 네비게이션 (로그인 시) */}
             {user && (
-                <div className="bottom-nav">
-                    <button
-                        className="bottom-nav-btn"
-                        onClick={() => navigate('/my-prayers')}
-                    >
-                        <span className="nav-icon">📖</span>
-                        <span className="nav-text">내 기도문</span>
-                    </button>
-                    <button
-                        className="bottom-nav-btn loop-journey"
-                        onClick={() => navigate('/loop/history')}
-                    >
-                        <span className="nav-icon">🌱</span>
-                        <span className="nav-text">매일 기도</span>
-                    </button>
-                    <button className="bottom-nav-btn logout" onClick={handleLogout}>
-                        <span className="nav-icon">🚪</span>
-                        <span className="nav-text">로그아웃</span>
-                    </button>
-                    <button
-                        className="bottom-nav-btn share icon-only"
-                        onClick={async () => {
-                            const shareData = {
-                                title: 'Palmoni - 기도 앱',
-                                text: '누군가 당신과 함께 기도합니다. Palmoni에서 기도해보세요!',
-                                url: 'https://palmoni.vercel.app'
-                            };
-                            if (navigator.share) {
-                                try {
-                                    await navigator.share(shareData);
-                                } catch (err) {
-                                    if (err.name !== 'AbortError') {
-                                        await navigator.clipboard.writeText(shareData.url);
-                                        toast.success('링크가 복사되었습니다!');
-                                    }
-                                }
-                            } else {
-                                await navigator.clipboard.writeText(shareData.url);
-                                toast.success('링크가 복사되었습니다!');
-                            }
-                        }}
-                        title="앱 공유"
-                    >
-                        <span className="nav-icon">📤</span>
-                    </button>
-                </div>
+                <BottomNav onLogout={handleLogout} onShare={handleShare} />
             )}
 
             {/* 광고 배너 */}

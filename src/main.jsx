@@ -5,15 +5,18 @@ import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './components/common/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
+import { logger } from './lib/logger'
 import './index.css'
 
-// 전역 에러 핸들러 (디버그용)
+const CACHE_VERSION = 'palmoni-v8';
+
+// 전역 에러 핸들러
 window.onerror = function(message, source, lineno, colno, error) {
-    console.error('Global error:', message, source, lineno, colno, error);
+    logger.error('Global error:', message, source, lineno, colno, error);
     return false;
 };
 window.onunhandledrejection = function(event) {
-    console.error('Unhandled promise rejection:', event.reason);
+    logger.error('Unhandled promise rejection:', event.reason);
 };
 
 // Register service worker for PWA
@@ -25,20 +28,20 @@ if ('serviceWorker' in navigator) {
         const cacheNames = await caches.keys();
         await Promise.all(
           cacheNames
-            .filter(name => name !== 'palmoni-v7')
+            .filter(name => name !== CACHE_VERSION)
             .map(name => caches.delete(name))
         );
       }
 
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('SW registered:', registration.scope);
+      logger.log('SW registered:', registration.scope);
 
       // 새 서비스 워커가 대기 중이면 즉시 활성화
       if (registration.waiting) {
         registration.waiting.postMessage('skipWaiting');
       }
     } catch (error) {
-      console.log('SW registration failed:', error);
+      logger.warn('SW registration failed:', error);
     }
   });
 }

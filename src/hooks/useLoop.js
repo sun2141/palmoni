@@ -10,6 +10,8 @@ import {
     createSession,
     getTodaysLoopSession,
 } from '../lib/supabaseClient';
+import { logger } from '../lib/logger';
+import { getTodayKST } from '../lib/dateUtils';
 
 /**
  * 최대 활성 루프 개수
@@ -61,29 +63,29 @@ export function useLoop() {
 
     // 활성 루프 로드
     useEffect(() => {
-        console.log('[useLoop] effect triggered, user?.id:', user?.id, 'initialLoadDone:', initialLoadDone.current);
+        logger.log('[useLoop] effect triggered, user?.id:', user?.id, 'initialLoadDone:', initialLoadDone.current);
 
         // user가 없으면 loading을 false로 설정하고 종료
         if (!user?.id) {
-            console.log('[useLoop] No user, setting loading to false');
+            logger.log('[useLoop] No user, setting loading to false');
             setLoading(false);
             return;
         }
 
         // 이미 로드했으면 loading만 false로 설정하고 스킵
         if (initialLoadDone.current) {
-            console.log('[useLoop] Already loaded, setting loading to false');
+            logger.log('[useLoop] Already loaded, setting loading to false');
             setLoading(false);
             return;
         }
 
         const loadActiveLoops = async () => {
-            console.log('[useLoop] Starting to load active loops for user:', user.id);
+            logger.log('[useLoop] Starting to load active loops for user:', user.id);
             setLoading(true);
 
             // 타임아웃 설정 (5초 후 강제 완료)
             const timeout = setTimeout(() => {
-                console.warn('[useLoop] API call timeout, forcing completion');
+                logger.warn('[useLoop] API call timeout, forcing completion');
                 setLoading(false);
                 initialLoadDone.current = true;
             }, 5000);
@@ -91,7 +93,7 @@ export function useLoop() {
             try {
                 const { data, error: fetchError } = await getActiveLoops(user.id);
                 clearTimeout(timeout);
-                console.log('[useLoop] getActiveLoops result:', { data, error: fetchError });
+                logger.log('[useLoop] getActiveLoops result:', { data, error: fetchError });
                 if (fetchError) {
                     setError(fetchError);
                 } else {
@@ -99,10 +101,10 @@ export function useLoop() {
                 }
             } catch (e) {
                 clearTimeout(timeout);
-                console.error('[useLoop] Failed to load active loops:', e);
+                logger.error('[useLoop] Failed to load active loops:', e);
                 setError(e.message);
             } finally {
-                console.log('[useLoop] Load complete, setting loading to false');
+                logger.log('[useLoop] Load complete, setting loading to false');
                 setLoading(false);
                 initialLoadDone.current = true;
             }
@@ -149,13 +151,13 @@ export function useLoop() {
             );
 
             if (sessionError) {
-                console.error('Failed to create first session:', sessionError);
+                logger.error('Failed to create first session:', sessionError);
             }
 
             setActiveLoops(prev => [loop, ...prev]);
             return { data: { loop, session }, error: null };
         } catch (e) {
-            console.error('Failed to create loop:', e);
+            logger.error('Failed to create loop:', e);
             setError(e.message);
             return { data: null, error: e.message };
         } finally {
@@ -174,7 +176,7 @@ export function useLoop() {
             }
             return { data, error: null };
         } catch (e) {
-            console.error('Failed to get loop:', e);
+            logger.error('Failed to get loop:', e);
             return { data: null, error: e.message };
         }
     }, []);
@@ -192,7 +194,7 @@ export function useLoop() {
         // 전이 가능 여부 확인
         const allowedTransitions = STATE_TRANSITIONS[currentLoop.status] || [];
         if (!allowedTransitions.includes(newStatus)) {
-            console.warn(`Invalid transition: ${currentLoop.status} -> ${newStatus}`);
+            logger.warn(`Invalid transition: ${currentLoop.status} -> ${newStatus}`);
             return { data: null, error: `Cannot transition from ${currentLoop.status} to ${newStatus}` };
         }
 
@@ -277,7 +279,7 @@ export function useLoop() {
             return { data: null, error: `최대 ${MAX_ACTIVE_LOOPS}개의 매일 기도만 진행할 수 있습니다.` };
         }
 
-        const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+        const today = getTodayKST();
 
         // 1. 현재 루프 정보 가져오기
         const { data: currentLoop, error: fetchError } = await getLoopById(loopId);
@@ -308,7 +310,7 @@ export function useLoop() {
         );
 
         if (sessionError) {
-            console.error('Failed to create session on resume:', sessionError);
+            logger.error('Failed to create session on resume:', sessionError);
         }
 
         // 4. 활성 루프 목록에 추가
@@ -374,13 +376,13 @@ export function useLoop() {
             );
 
             if (sessionError) {
-                console.error('Failed to create first session:', sessionError);
+                logger.error('Failed to create first session:', sessionError);
             }
 
             setActiveLoops(prev => [loop, ...prev]);
             return { data: { loop, session }, error: null };
         } catch (e) {
-            console.error('Failed to create loop from prayer:', e);
+            logger.error('Failed to create loop from prayer:', e);
             setError(e.message);
             return { data: null, error: e.message };
         } finally {

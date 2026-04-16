@@ -214,6 +214,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+669d0a4 Docs: PROGRESS.md 업데이트
 72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
 4d34655 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0504ffa Fix: ESC 키 모달 닫기 및 모달 간 충돌 방지
@@ -223,7 +224,6 @@ c90c9d5 Style: CSS 전체 개편 및 UI 개선
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
 d484e23 Fix: Session loading, state transitions, and prayer error handling
-48df109 Merge: KST timezone fix and loop source tracking
 ```
 
 

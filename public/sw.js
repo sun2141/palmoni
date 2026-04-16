@@ -1,4 +1,4 @@
-const CACHE_NAME = 'palmoni-v7';
+const CACHE_NAME = 'palmoni-v8';
 const STATIC_ASSETS = [
   '/offline.html'
 ];

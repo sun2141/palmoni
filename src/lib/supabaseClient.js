@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import { getTodayKST, getYesterdayKST } from './dateUtils';
+import { logger } from './logger';
 
 // Supabase configuration
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -12,20 +14,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true
   }
 });
-
-/**
- * 한국 시간(KST, UTC+9) 기준 오늘 날짜 반환 (YYYY-MM-DD)
- */
-function getTodayKST() {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
-}
-
-/**
- * 한국 시간(KST, UTC+9) 기준 어제 날짜 반환 (YYYY-MM-DD)
- */
-function getYesterdayKST() {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date(Date.now() - 86400000));
-}
 
 /**
  * Rate limiting helper
@@ -49,7 +37,7 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
       .gte('created_at', `${today}T00:00:00+09:00`);
 
     if (error) {
-      console.error('Error checking user usage:', error);
+      logger.error('Error checking user usage:', error);
       return { allowed: false, error: 'Failed to check rate limit' };
     }
 
@@ -80,7 +68,7 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
       .gte('created_at', `${today}T00:00:00+09:00`);
 
     if (error) {
-      console.error('Error checking anonymous usage:', error);
+      logger.error('Error checking anonymous usage:', error);
       return { allowed: false, error: 'Failed to check rate limit' };
     }
 
@@ -106,7 +94,7 @@ export async function checkRateLimit(userId = null, anonymousId = null) {
   }
 
   // Default: allow but log warning
-  console.warn('Rate limit check called without userId or anonymousId');
+  logger.warn('Rate limit check called without userId or anonymousId');
   return { allowed: true };
 }
 
@@ -123,7 +111,7 @@ export async function logUsage(userId = null, anonymousId = null, action = 'pray
     });
 
   if (error) {
-    console.error('Error logging usage:', error);
+    logger.error('Error logging usage:', error);
   }
 
   // Increment daily counter and update streak for registered users
@@ -133,7 +121,7 @@ export async function logUsage(userId = null, anonymousId = null, action = 'pray
     });
 
     if (updateError) {
-      console.error('Error incrementing prayer count:', updateError);
+      logger.error('Error incrementing prayer count:', updateError);
     }
 
     // 스트릭 업데이트
@@ -157,7 +145,7 @@ export async function updateStreak(userId) {
     .single();
 
   if (profileError) {
-    console.error('Error fetching profile for streak:', profileError);
+    logger.error('Error fetching profile for streak:', profileError);
     return { error: profileError.message };
   }
 
@@ -203,7 +191,7 @@ export async function updateStreak(userId) {
     .single();
 
   if (error) {
-    console.error('Error updating streak:', error);
+    logger.error('Error updating streak:', error);
     return { error: error.message };
   }
 
@@ -234,7 +222,7 @@ export async function savePrayer(prayerData) {
     .single();
 
   if (error) {
-    console.error('Error saving prayer:', error);
+    logger.error('Error saving prayer:', error);
     return { error: error.message };
   }
 
@@ -259,7 +247,7 @@ export async function getUserPrayers(userId, { limit = 20, offset = 0, emotion =
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching prayers:', error);
+    logger.error('Error fetching prayers:', error);
     return { data: [], error: error.message, count: 0 };
   }
 
@@ -277,7 +265,7 @@ export async function deletePrayer(prayerId, userId) {
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error deleting prayer:', error);
+    logger.error('Error deleting prayer:', error);
     return { error: error.message };
   }
 
@@ -295,7 +283,7 @@ export async function getUserProfile(userId) {
     .single();
 
   if (error) {
-    console.error('Error fetching profile:', error);
+    logger.error('Error fetching profile:', error);
     return { data: null, error: error.message };
   }
 
@@ -317,7 +305,7 @@ export async function getPrayerSchedule(userId) {
     .single();
 
   if (error && error.code !== 'PGRST116') { // PGRST116: no rows found
-    console.error('Error fetching schedule:', error);
+    logger.error('Error fetching schedule:', error);
     return { data: null, error: error.message };
   }
 
@@ -343,7 +331,7 @@ export async function savePrayerSchedule(userId, scheduleData) {
       .single();
 
     if (error) {
-      console.error('Error updating schedule:', error);
+      logger.error('Error updating schedule:', error);
       return { data: null, error: error.message };
     }
     return { data, error: null };
@@ -359,7 +347,7 @@ export async function savePrayerSchedule(userId, scheduleData) {
       .single();
 
     if (error) {
-      console.error('Error creating schedule:', error);
+      logger.error('Error creating schedule:', error);
       return { data: null, error: error.message };
     }
     return { data, error: null };
@@ -389,7 +377,7 @@ export async function getTodayPrayerSlots(userId) {
     .order('scheduled_time', { ascending: true });
 
   if (error) {
-    console.error('Error fetching today slots:', error);
+    logger.error('Error fetching today slots:', error);
     return { data: [], error: error.message };
   }
 
@@ -409,7 +397,7 @@ export async function getRecentPrayerExecutions(userId, limit = 10) {
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching executions:', error);
+    logger.error('Error fetching executions:', error);
     return { data: [], error: error.message };
   }
 
@@ -429,7 +417,7 @@ export async function getUnviewedPrayers(userId) {
     .order('executed_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching unviewed prayers:', error);
+    logger.error('Error fetching unviewed prayers:', error);
     return { data: [], error: error.message };
   }
 
@@ -445,7 +433,7 @@ export async function markPrayerAsViewed(executionId) {
   });
 
   if (error) {
-    console.error('Error marking prayer as viewed:', error);
+    logger.error('Error marking prayer as viewed:', error);
     return { error: error.message };
   }
 
@@ -523,7 +511,7 @@ export async function saveTodaysPrayerSession(userId, sessionData) {
       .single();
 
     if (error) {
-      console.error('Error updating prayer session:', error);
+      logger.error('Error updating prayer session:', error);
       return { data: null, error: error.message };
     }
     return { data, error: null };
@@ -536,7 +524,7 @@ export async function saveTodaysPrayerSession(userId, sessionData) {
       .single();
 
     if (error) {
-      console.error('Error creating prayer session:', error);
+      logger.error('Error creating prayer session:', error);
       return { data: null, error: error.message };
     }
     return { data, error: null };
@@ -560,7 +548,7 @@ export async function getTodaysPrayerSession(userId) {
     .single();
 
   if (todayError && todayError.code !== 'PGRST116') {
-    console.error('Error fetching today session:', todayError);
+    logger.error('Error fetching today session:', todayError);
   }
 
   if (todaySession) {
@@ -570,7 +558,7 @@ export async function getTodaysPrayerSession(userId) {
       try {
         prayers = JSON.parse(todaySession.prayers_data);
       } catch (e) {
-        console.error('Failed to parse prayers_data:', e);
+        logger.error('Failed to parse prayers_data:', e);
       }
     }
 
@@ -616,7 +604,7 @@ export async function getTodaysPrayerSession(userId) {
     .limit(1);
 
   if (oldError) {
-    console.error('Error fetching old session:', oldError);
+    logger.error('Error fetching old session:', oldError);
   }
 
   const oldSession = oldSessions?.[0];
@@ -628,10 +616,10 @@ export async function getTodaysPrayerSession(userId) {
       .delete()
       .eq('id', oldSession.id)
       .then(() => {
-        console.log('Old prayer session cleaned up');
+        logger.log('Old prayer session cleaned up');
       })
       .catch((e) => {
-        console.warn('Failed to delete old session:', e);
+        logger.warn('Failed to delete old session:', e);
       });
 
     // 여러 기도 데이터가 있으면 파싱
@@ -640,7 +628,7 @@ export async function getTodaysPrayerSession(userId) {
       try {
         prayers = JSON.parse(oldSession.prayers_data);
       } catch (e) {
-        console.error('Failed to parse prayers_data:', e);
+        logger.error('Failed to parse prayers_data:', e);
       }
     }
 
@@ -694,14 +682,14 @@ export async function getActiveUsersCount() {
       .eq('session_date', today);
 
     if (error) {
-      console.error('Error fetching active users count:', error);
+      logger.error('Error fetching active users count:', error);
       return null;
     }
 
     // 200명 이상이면 실제 수 반환, 미만이면 null
     return count >= 200 ? count : null;
   } catch (e) {
-    console.error('Failed to get active users count:', e);
+    logger.error('Failed to get active users count:', e);
     return null;
   }
 }
@@ -742,7 +730,7 @@ export async function createLoop(userId, { title, topic, emotion, continuePrayer
     .single();
 
   if (error) {
-    console.error('Error creating loop:', error);
+    logger.error('Error creating loop:', error);
     return { data: null, error: error.message };
   }
 
@@ -765,7 +753,7 @@ export async function getActiveLoop(userId) {
     .maybeSingle();
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching active loop:', error);
+    logger.error('Error fetching active loop:', error);
     return { data: null, error: error.message };
   }
 
@@ -778,13 +766,13 @@ export async function getActiveLoop(userId) {
 export async function getActiveLoops(userId) {
   if (!userId) return { data: [], error: 'User not logged in' };
 
-  console.log('[getActiveLoops] Starting query for user:', userId);
+  logger.log('[getActiveLoops] Starting query for user:', userId);
   const startTime = Date.now();
 
   // AbortController로 타임아웃 구현
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
-    console.warn('[getActiveLoops] Aborting after 4s timeout');
+    logger.warn('[getActiveLoops] Aborting after 4s timeout');
     controller.abort();
   }, 4000);
 
@@ -799,10 +787,10 @@ export async function getActiveLoops(userId) {
       .abortSignal(controller.signal);
 
     clearTimeout(timeoutId);
-    console.log('[getActiveLoops] Query completed in', Date.now() - startTime, 'ms, results:', data?.length || 0);
+    logger.log('[getActiveLoops] Query completed in', Date.now() - startTime, 'ms, results:', data?.length || 0);
 
     if (error) {
-      console.error('[getActiveLoops] Error:', error);
+      logger.error('[getActiveLoops] Error:', error);
       return { data: [], error: error.message };
     }
 
@@ -810,10 +798,10 @@ export async function getActiveLoops(userId) {
   } catch (err) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError') {
-      console.warn('[getActiveLoops] Request aborted due to timeout');
+      logger.warn('[getActiveLoops] Request aborted due to timeout');
       return { data: [], error: null }; // 타임아웃 시 빈 배열 반환 (에러 아님)
     }
-    console.error('[getActiveLoops] Exception:', err);
+    logger.error('[getActiveLoops] Exception:', err);
     return { data: [], error: err.message };
   }
 }
@@ -839,7 +827,7 @@ export async function getLoopById(loopId) {
     .single();
 
   if (error) {
-    console.error('Error fetching loop:', error);
+    logger.error('Error fetching loop:', error);
     return { data: null, error: error.message };
   }
 
@@ -879,7 +867,7 @@ export async function updateLoopInfo(loopId, { title, topic, emotion } = {}) {
     .single();
 
   if (error) {
-    console.error('Error updating loop info:', error);
+    logger.error('Error updating loop info:', error);
     return { data: null, error: error.message };
   }
 
@@ -908,7 +896,7 @@ export async function updateLoopStatus(loopId, status, additionalData = {}) {
     .single();
 
   if (error) {
-    console.error('Error updating loop status:', error);
+    logger.error('Error updating loop status:', error);
     return { data: null, error: error.message };
   }
 
@@ -930,7 +918,7 @@ export async function updateLoopEmotion(loopId, emotion) {
     .single();
 
   if (error) {
-    console.error('Error updating loop emotion:', error);
+    logger.error('Error updating loop emotion:', error);
     return { data: null, error: error.message };
   }
 
@@ -960,7 +948,7 @@ export async function deleteLoop(loopId) {
     .eq('id', loopId);
 
   if (error) {
-    console.error('Error deleting loop:', error);
+    logger.error('Error deleting loop:', error);
     return { error: error.message };
   }
 
@@ -991,7 +979,7 @@ export async function getLoopHistory(userId, { limit = 20, offset = 0, status = 
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching loop history:', error);
+    logger.error('Error fetching loop history:', error);
     return { data: [], error: error.message, count: 0 };
   }
 
@@ -1013,7 +1001,7 @@ export async function createSession(loopId, userId, { dayNumber, emotion, prayer
     .maybeSingle();
 
   if (existing) {
-    console.log('[createSession] Session already exists for today, skipping creation');
+    logger.log('[createSession] Session already exists for today, skipping creation');
     // 기존 세션 반환
     const { data: existingSession } = await supabase
       .from('prayer_sessions')
@@ -1043,7 +1031,7 @@ export async function createSession(loopId, userId, { dayNumber, emotion, prayer
     .single();
 
   if (error) {
-    console.error('Error creating session:', error);
+    logger.error('Error creating session:', error);
     return { data: null, error: error.message };
   }
 
@@ -1064,7 +1052,7 @@ export async function getTodaysLoopSession(loopId) {
     .single();
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching today session:', error);
+    logger.error('Error fetching today session:', error);
     return { data: null, error: error.message };
   }
 
@@ -1086,7 +1074,7 @@ export async function updateSession(sessionId, updateData) {
     .single();
 
   if (error) {
-    console.error('Error updating session:', error);
+    logger.error('Error updating session:', error);
     return { data: null, error: error.message };
   }
 
@@ -1113,7 +1101,7 @@ export async function saveSessionPrayer(sessionId, { title, content }) {
     .single();
 
   if (error) {
-    console.error('Error saving session prayer:', error);
+    logger.error('Error saving session prayer:', error);
     return { data: null, error: error.message };
   }
 
@@ -1132,7 +1120,7 @@ export async function getSessionHistory(loopId, { limit = 30 } = {}) {
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching session history:', error);
+    logger.error('Error fetching session history:', error);
     return { data: [], error: error.message };
   }
 
@@ -1157,7 +1145,7 @@ export async function createCheckin(loopId, sessionId, userId, { responseType, n
     .single();
 
   if (error) {
-    console.error('Error creating checkin:', error);
+    logger.error('Error creating checkin:', error);
     return { data: null, error: error.message };
   }
 
@@ -1177,7 +1165,7 @@ export async function getLastCheckin(loopId) {
     .single();
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching last checkin:', error);
+    logger.error('Error fetching last checkin:', error);
     return { data: null, error: error.message };
   }
 
@@ -1195,7 +1183,7 @@ export async function getCheckinHistory(loopId) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching checkin history:', error);
+    logger.error('Error fetching checkin history:', error);
     return { data: [], error: error.message };
   }
 

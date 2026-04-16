@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { logger } from '../lib/logger';
 
 /**
  * Custom hook for streaming text from Server-Sent Events (SSE)
@@ -46,14 +47,14 @@ export function useStreamingText() {
       };
 
       eventSource.onerror = (err) => {
-        console.error('SSE error:', err);
+        logger.error('SSE error:', err);
         setError('스트리밍 연결 오류가 발생했습니다.');
         eventSource.close();
         setIsStreaming(false);
       };
 
     } catch (err) {
-      console.error('Streaming error:', err);
+      logger.error('Streaming error:', err);
       setError('기도문 스트리밍 중 오류가 발생했습니다.');
       setIsStreaming(false);
     }

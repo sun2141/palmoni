@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { logger } from './lib/logger';
 
 // Lazy load non-critical pages
 const MyPrayers = lazy(() => import('./pages/MyPrayers').then(m => ({ default: m.MyPrayers })));
@@ -32,7 +33,7 @@ function App() {
                 if (registration) {
                     // 업데이트 확인
                     registration.update().catch(err => {
-                        console.warn('SW update check failed:', err);
+                        logger.warn('SW update check failed:', err);
                     });
 
                     // 새 서비스 워커가 대기 중이면 활성화

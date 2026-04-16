@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { logger } from '../lib/logger';
 
 /**
  * Custom hook for prayer generation with streaming support
@@ -28,16 +29,32 @@ export function usePrayerGeneration() {
       // Simulate progress steps for better UX
       setTimeout(() => setProgress(2), 500); // Step 2: Delivering
 
-      const response = await fetch('/api/generate-prayer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ topic }),
-      });
+      let response;
+      try {
+        response = await fetch('/api/generate-prayer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ topic }),
+        });
+      } catch (networkErr) {
+        // fetch 자체가 실패 = 네트워크 오류
+        setError('인터넷 연결을 확인해주세요.');
+        setProgress(0);
+        return null;
+      }
+
+      if (response.status === 429) {
+        setError('오늘의 기도 생성 한도를 초과했습니다. 내일 다시 시도해주세요.');
+        setProgress(0);
+        return null;
+      }
 
       if (!response.ok) {
-        throw new Error('API request failed');
+        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        setProgress(0);
+        return null;
       }
 
       const data = await response.json();
@@ -52,7 +69,7 @@ export function usePrayerGeneration() {
 
       return { title: data.title, content: data.content };
     } catch (err) {
-      console.error('Error generating prayer:', err);
+      logger.error('Error generating prayer:', err);
       setError('기도문을 생성하는 중 오류가 발생했습니다.');
       setProgress(0);
       return null;

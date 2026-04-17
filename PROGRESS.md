@@ -66,6 +66,18 @@ snoozed ──(다시 시작)──> active
 
 ### 완료된 작업
 
+#### 배포 캐시 문제 진단 및 해결
+- **문제**: CSS 디자인 변경이 배포 후 palmoni.vercel.app에서 보이지 않음
+- **원인 1**: `index.html` 인라인 캐시 정리 스크립트가 `palmoni-v6`을 유지하도록 하드코딩 → 실제 sw.js는 `palmoni-v8`이어서 구 버전 캐시가 계속 남음
+- **원인 2**: Vercel에서 `sw.js`, `manifest.json`, HTML에 HTTP 캐시 헤더 미설정 → CDN/브라우저가 구버전 서비스 워커를 캐시
+- **해결**:
+  - `sw.js`: `CACHE_NAME` `palmoni-v8` → `palmoni-v9` (버전 올려 강제 재설치)
+  - `index.html`: 인라인 캐시 정리 조건 `palmoni-v6` → `palmoni-v9`로 동기화
+  - `vercel.json`: HTTP 캐시 헤더 추가
+    - `sw.js`, `manifest.json`, HTML: `no-cache, no-store, must-revalidate`
+    - `/assets/*` (Vite 해시 파일): `public, max-age=31536000, immutable`
+- **파일**: `public/sw.js`, `index.html`, `vercel.json`
+
 #### CSS 디자인 시스템 개선
 - **index.css 디자인 토큰 추가**:
   - `--color-primary-hover: #5a3de8` (버튼 hover 색상)
@@ -232,6 +244,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+8ed37fb feat: CSS 개선 작업 커밋 및 마무리 (task=task_1776409286949_18333a, round=3)
 70de616 Docs: PROGRESS.md 업데이트
 03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
@@ -241,7 +254,6 @@ palmoni/
 0504ffa Fix: ESC 키 모달 닫기 및 모달 간 충돌 방지
 6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
 c90c9d5 Style: CSS 전체 개편 및 UI 개선
-4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 ```
 
 

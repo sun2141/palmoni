@@ -71,11 +71,11 @@
             });
           });
         }
-        // 캐시 정리
+        // 캐시 정리 (현재 서비스 워커 버전과 동기화)
         if ('caches' in window) {
           caches.keys().then(function(names) {
             names.forEach(function(name) {
-              if (name !== 'palmoni-v6') {
+              if (name !== 'palmoni-v9') {
                 caches.delete(name);
               }
             });

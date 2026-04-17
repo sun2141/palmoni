@@ -8,16 +8,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Design System: "Soft Intelligence" - N+ Store AI Agent ===== */
-/* Philosophy: 따뜻하고 친근한 AI 경험, 라벤더 배경, 대담한 타이포 */
+/* ===== Design System: "Soft Intelligence" - Palmoni ===== */
+/* Philosophy: 따뜻하고 친근한 기도 경험, 라벤더 배경, 세련된 타이포 */
 
 @layer base {
   :root {
     /* === Brand Colors (Purple-Blue-Cyan Spectrum) === */
     --color-primary: #6C47FF;
+    --color-primary-hover: #5a3de8;
+    --color-primary-light: rgba(108, 71, 255, 0.08);
+    --color-primary-border: rgba(108, 71, 255, 0.2);
     --color-secondary: #4A90E2;
     --color-accent: #00C2CB;
     --color-dark: #1A1A2E;
+    --color-dark-hover: #2a2a4e;
     --color-bg: #EEEEFF;
     --color-bg-mid: #F0F4FF;
     --color-bg-end: #E8F8FF;
@@ -62,8 +66,10 @@
 
     /* === Surface === */
     --surface-white: rgba(255, 255, 255, 0.95);
-    --surface-glass: rgba(255, 255, 255, 0.8);
+    --surface-glass: rgba(255, 255, 255, 0.85);
     --border-soft: rgba(108, 71, 255, 0.1);
+    --border-medium: rgba(108, 71, 255, 0.18);
+    --border-strong: rgba(108, 71, 255, 0.3);
 
     /* === Semantic Colors === */
     --success: 160 84% 40%;
@@ -79,16 +85,20 @@
     --gradient-orb: radial-gradient(ellipse at center, rgba(108, 71, 255, 0.4) 0%, rgba(74, 144, 226, 0.3) 40%, rgba(0, 194, 203, 0.2) 70%, transparent 100%);
     --gradient-card: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,255,1) 100%);
     --gradient-glow: linear-gradient(135deg, rgba(108, 71, 255, 0.1) 0%, rgba(0, 194, 203, 0.08) 100%);
+    --gradient-primary: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%);
 
     /* === Shadows === */
     --shadow-xs: 0 1px 2px rgba(26, 26, 46, 0.04);
     --shadow-sm: 0 2px 8px rgba(26, 26, 46, 0.06);
     --shadow-md: 0 4px 16px rgba(26, 26, 46, 0.08);
     --shadow-lg: 0 8px 32px rgba(26, 26, 46, 0.1);
-    --shadow-xl: 0 16px 48px rgba(26, 26, 46, 0.12);
+    --shadow-xl: 0 16px 48px rgba(26, 26, 46, 0.14);
     --shadow-glow: 0 0 40px rgba(108, 71, 255, 0.25);
     --shadow-button: 0 4px 20px rgba(26, 26, 46, 0.2);
     --shadow-orb: 0 20px 60px rgba(108, 71, 255, 0.3);
+    --shadow-card: 0 2px 12px rgba(26, 26, 46, 0.07), 0 1px 3px rgba(26, 26, 46, 0.04);
+    --shadow-card-hover: 0 8px 24px rgba(26, 26, 46, 0.11), 0 2px 6px rgba(26, 26, 46, 0.06);
+    --shadow-modal: 0 24px 64px rgba(26, 26, 46, 0.18), 0 8px 24px rgba(26, 26, 46, 0.1);
 
     /* === Spacing & Radius === */
     --radius-xs: 6px;
@@ -96,6 +106,7 @@
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 20px;
+    --radius-2xl: 24px;
     --radius-pill: 9999px;
     --radius-full: 9999px;
 
@@ -108,8 +119,8 @@
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --duration-fast: 150ms;
-    --duration-base: 300ms;
-    --duration-slow: 500ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
   }
 }
 
@@ -596,11 +607,11 @@ button:disabled {
   margin-top: 2rem;
   padding: 1.5rem;
   background: white;
-  border: 1.5px solid rgba(108, 71, 255, 0.12);
+  border: 1.5px solid rgba(108, 71, 255, 0.15);
   border-radius: var(--radius-md);
-  animation: fadeUp 0.6s var(--ease-out);
+  animation: fadeUp 0.5s var(--ease-out);
   position: relative;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-card);
 }
 
 .prayer-result h2 {
@@ -1017,7 +1028,7 @@ textarea:focus-visible {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* ===== Interactive Feedback ===== */
@@ -1032,4 +1043,89 @@ textarea:focus-visible {
 
 .interactive:active {
   transform: scale(0.97);
+}
+
+/* ===== Unified Card Style ===== */
+.card {
+  background: white;
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-base) var(--ease-smooth);
+}
+
+.card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* ===== Divider ===== */
+.divider-line {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(108, 71, 255, 0.12) 20%,
+    rgba(108, 71, 255, 0.12) 80%,
+    transparent 100%
+  );
+  border: none;
+  margin: 1.5rem 0;
+}
+
+/* ===== Section Label ===== */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* ===== Chip / Tag ===== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.625rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-border);
+}
+
+/* ===== Toast Enhancement ===== */
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes toastExit {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.96);
+  }
 }

@@ -1,43 +1,43 @@
 .loop-card {
     background: white;
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-md, 12px);
     padding: 16px;
-    box-shadow: none;
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
     cursor: pointer;
-    transition: all var(--duration-fast, 150ms) var(--ease-smooth);
-    border: 1.5px solid rgba(108, 71, 255, 0.15);
+    transition: all var(--duration-base, 250ms) var(--ease-smooth);
+    border: 1.5px solid rgba(108, 71, 255, 0.1);
     animation: fadeUp 0.4s var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .loop-card:hover {
-    background: rgba(108, 71, 255, 0.02);
-    border-color: rgba(108, 71, 255, 0.35);
+    background: white;
+    border-color: rgba(108, 71, 255, 0.28);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+    box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
 }
 
 .loop-card:active {
     transform: translateY(0) scale(0.99);
-    box-shadow: none;
+    box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .loop-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 8px;
 }
 
 .loop-title {
     font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
-    font-size: 16px;
+    font-size: 15.5px;
     font-weight: 700;
     color: var(--text-primary, #1A1A2E);
     margin: 0;
@@ -46,7 +46,7 @@
 }
 
 .loop-topic {
-    font-size: 13.5px;
+    font-size: 13px;
     color: var(--text-secondary, #4B5563);
     margin: 0 0 12px 0;
     line-height: 1.6;
@@ -61,42 +61,43 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .loop-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
 .loop-duration {
     font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-primary, #6C47FF);
-    background: rgba(108, 71, 255, 0.08);
-    padding: 3px 8px;
+    background: var(--color-primary-light, rgba(108, 71, 255, 0.08));
+    padding: 3px 7px;
     border-radius: var(--radius-xs, 6px);
+    border: 1px solid var(--color-primary-border, rgba(108, 71, 255, 0.15));
 }
 
 .loop-date {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-light, #9CA3AF);
     font-family: 'Space Mono', monospace;
 }
 
 .loop-continue-btn {
-    padding: 6px 13px;
+    padding: 5px 12px;
     border-radius: var(--radius-xs, 6px);
     border: 1.5px solid var(--color-primary, #6C47FF);
     background: var(--color-primary, #6C47FF);
     color: white;
     font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.575rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -115,13 +116,13 @@
 }
 
 .loop-resume-btn {
-    padding: 6px 13px;
+    padding: 5px 12px;
     border-radius: var(--radius-xs, 6px);
     border: 1.5px solid hsl(var(--success, 160 84% 40%));
     background: hsl(var(--success, 160 84% 40%));
     color: white;
     font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.575rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -140,41 +141,44 @@
 }
 
 .loop-resume-btn:disabled {
-    opacity: 0.45;
+    opacity: 0.42;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .loop-edit-btn {
-    padding: 5px 10px;
+    padding: 4px 9px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid rgba(108, 71, 255, 0.2);
+    border: 1.5px solid rgba(108, 71, 255, 0.16);
     background: white;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
+    color: var(--text-muted, #6B7280);
 }
 
 .loop-edit-btn:hover {
-    background: rgba(108, 71, 255, 0.08);
+    background: var(--color-primary-light, rgba(108, 71, 255, 0.08));
     border-color: var(--color-primary, #6C47FF);
+    color: var(--color-primary, #6C47FF);
     transform: translateY(-1px);
     box-shadow: none;
 }
 
 .loop-delete-btn {
-    padding: 5px 10px;
+    padding: 4px 9px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid hsl(var(--destructive, 0 84% 60%) / 0.2);
+    border: 1.5px solid hsl(var(--destructive, 0 84% 60%) / 0.18);
     background: white;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
+    color: var(--text-muted, #6B7280);
 }
 
 .loop-delete-btn:hover {
@@ -188,21 +192,21 @@
 /* === Mobile Responsive === */
 @media (max-width: 480px) {
     .loop-card {
-        padding: 14px;
+        padding: 13px;
     }
 
     .loop-title {
-        font-size: 15px;
+        font-size: 14.5px;
     }
 
     .loop-topic {
-        font-size: 13px;
+        font-size: 12.5px;
     }
 
     .loop-continue-btn,
     .loop-resume-btn {
-        padding: 5px 10px;
-        font-size: 0.6rem;
+        padding: 4px 9px;
+        font-size: 0.55rem;
     }
 
     .loop-date {

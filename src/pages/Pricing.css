@@ -56,23 +56,23 @@
 
 .pricing-card {
   background: white;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-md, 12px);
   padding: 2rem;
-  box-shadow: none;
+  box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
   transition: all 0.2s ease;
   position: relative;
-  border: 2px solid rgba(108, 71, 255, 0.15);
+  border: 1.5px solid rgba(108, 71, 255, 0.12);
 }
 
 .pricing-card:hover {
-  border-color: var(--color-primary, #6C47FF);
+  border-color: rgba(108, 71, 255, 0.32);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 46, 0.1));
+  box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
 }
 
 .pricing-card.popular {
   border: 2px solid var(--color-primary, #6C47FF);
-  box-shadow: none;
+  box-shadow: 0 4px 24px rgba(108, 71, 255, 0.15);
 }
 
 .popular-badge {

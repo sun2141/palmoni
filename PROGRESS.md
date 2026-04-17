@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-04-13
+> 마지막 업데이트: 2026-04-17
 
 ## 프로젝트 개요
 
@@ -59,6 +59,24 @@ snoozed ──(다시 시작)──> active
 - PWA 지원 (오프라인, 홈 화면 추가)
 - 구글 로그인 (Supabase Auth)
 - Open Graph 메타 태그
+
+---
+
+## 최근 작업 내역 (2026-04-17)
+
+### 완료된 작업
+
+#### CSS 디자인 시스템 개선
+- **index.css 디자인 토큰 추가**:
+  - `--color-primary-hover: #5a3de8` (버튼 hover 색상)
+  - `--border-medium: rgba(108, 71, 255, 0.18)`, `--border-strong: rgba(108, 71, 255, 0.3)` (테두리 강도)
+  - `--shadow-card`, `--shadow-card-hover`, `--shadow-modal` (컴포넌트별 그림자)
+  - `--radius-2xl: 24px` (모달용 큰 반경)
+  - `--gradient-primary: linear-gradient(135deg, #6C47FF 0%, #8B6FFF 100%)` (프라이머리 그라디언트)
+- **애니메이션 타이밍 최적화**: `--duration-base` 300ms → 250ms
+- **컴포넌트 CSS 일관성 통일**: 모든 컴포넌트에서 `var(--shadow-card)`, `var(--border-soft)`, `var(--border-medium)` 등 디자인 토큰 사용
+- **모달 개선**: `box-shadow: var(--shadow-modal)` 적용 (LoginModal, PrayTogetherModal, MyPrayers)
+- **파일**: `src/index.css`, `src/components/auth/LoginModal.css`, `src/components/loop/CheckinBottomSheet.css`, `src/components/loop/LoopCard.css`, `src/components/loop/LoopEditModal.css`, `src/components/prayer/PrayTogetherModal.css`, `src/pages/Home.css`, `src/pages/MyPrayers.css`, `src/pages/Pricing.css`, `src/pages/loop/LoopCreate.css`, `src/pages/loop/LoopDetail.css`, `src/pages/loop/LoopHistory.css`
 
 ---
 
@@ -214,6 +232,8 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+(pending) Style: CSS 디자인 시스템 개선 - 디자인 토큰 추가 및 컴포넌트 일관성 통일
+624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
 669d0a4 Docs: PROGRESS.md 업데이트
 72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
 4d34655 Docs: PROGRESS.md 커밋 히스토리 업데이트
@@ -223,7 +243,6 @@ c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
-d484e23 Fix: Session loading, state transitions, and prayer error handling
 ```
 
 

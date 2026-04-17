@@ -4,11 +4,11 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    animation: pageEnter var(--duration-base, 300ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
+    animation: pageEnter var(--duration-base, 250ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
 }
 
 @keyframes pageEnter {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -16,11 +16,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(108, 71, 255, 0.1);
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(108, 71, 255, 0.09);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -28,20 +28,19 @@
 
 .back-button {
     background: white;
-    border: 1.5px solid rgba(108, 71, 255, 0.2);
+    border: 1.5px solid var(--color-primary-border, rgba(108, 71, 255, 0.2));
     border-radius: var(--radius-sm, 8px);
-    font-size: 13px;
     color: var(--color-primary, #6C47FF);
     cursor: pointer;
-    padding: 7px 14px;
+    padding: 6px 13px;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
     min-height: auto;
-    box-shadow: none;
+    box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
     font-family: 'Space Mono', monospace;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: 0.7rem;
+    font-size: 0.675rem;
 }
 
 .back-button:hover {
@@ -53,10 +52,10 @@
 }
 
 .loop-content {
-    padding: 24px 20px;
+    padding: 22px 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
     max-width: 640px;
     margin: 0 auto;
     width: 100%;
@@ -73,7 +72,7 @@
 .loop-title-section h1 {
     font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 700;
     color: var(--text-primary, #1A1A2E);
     margin: 0;
@@ -82,15 +81,15 @@
 }
 
 .loop-topic {
-    padding: 16px;
+    padding: 14px 16px;
     background: white;
     border-radius: var(--radius-md, 12px);
-    border: 1px solid rgba(108, 71, 255, 0.12);
-    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+    border: 1px solid rgba(108, 71, 255, 0.1);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
 }
 
 .loop-topic p {
-    font-size: 15px;
+    font-size: 14.5px;
     color: var(--text-secondary, #4B5563);
     line-height: 1.7;
     margin: 0;
@@ -98,7 +97,7 @@
 
 .loop-stats {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .stat {
@@ -107,22 +106,22 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding: 16px 12px;
+    padding: 14px 10px;
     background: white;
     border-radius: var(--radius-md, 12px);
-    border: 1px solid rgba(108, 71, 255, 0.12);
-    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+    border: 1px solid rgba(108, 71, 255, 0.1);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
 }
 
 .stat:hover {
-    border-color: rgba(108, 71, 255, 0.25);
+    border-color: rgba(108, 71, 255, 0.22);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+    box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
 }
 
 .stat-value {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--color-primary, #6C47FF);
     line-height: 1;
@@ -130,60 +129,61 @@
 
 .stat-label {
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-muted, #6B7280);
+    text-align: center;
 }
 
 /* Prayer Card */
 .prayer-card {
     background: white;
     border-radius: var(--radius-md, 12px);
-    padding: 20px;
-    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
-    border: 1px solid rgba(108, 71, 255, 0.1);
-    transition: all var(--duration-base, 300ms) var(--ease-smooth);
+    padding: 18px;
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
+    border: 1px solid rgba(108, 71, 255, 0.09);
+    transition: all var(--duration-base, 250ms) var(--ease-smooth);
 }
 
 .prayer-card:hover {
-    box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 46, 0.1));
-    border-color: rgba(108, 71, 255, 0.2);
+    box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
+    border-color: rgba(108, 71, 255, 0.18);
 }
 
 .prayer-card h3 {
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--color-primary, #6C47FF);
-    margin: 0 0 16px 0;
+    margin: 0 0 14px 0;
 }
 
 .prayer-content {
-    font-size: 15px;
+    font-size: 14.5px;
     color: var(--text-secondary, #4B5563);
     line-height: 1.85;
     white-space: pre-wrap;
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
-    padding-right: 8px;
+    padding-right: 6px;
     word-break: keep-all;
     letter-spacing: -0.01em;
 }
 
 .pray-again-btn {
-    margin-top: 16px;
+    margin-top: 14px;
     width: 100%;
-    padding: 12px 16px;
+    padding: 11px 14px;
     border-radius: var(--radius-sm, 8px);
-    border: 2px solid rgba(108, 71, 255, 0.2);
-    background: rgba(108, 71, 255, 0.04);
+    border: 1.5px solid var(--color-primary-border, rgba(108, 71, 255, 0.2));
+    background: var(--color-primary-light, rgba(108, 71, 255, 0.05));
     color: var(--color-primary, #6C47FF);
     font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -203,23 +203,23 @@
 
 /* Generate Section */
 .generate-section {
-    padding: 16px 0;
+    padding: 14px 0;
 }
 
 .generate-btn {
     width: 100%;
-    padding: 18px;
+    padding: 16px;
     border-radius: var(--radius-md, 12px);
     border: 2px solid var(--color-primary, #6C47FF);
     background: var(--color-primary, #6C47FF);
     color: white;
     font-family: 'Space Mono', monospace;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
-    transition: all var(--duration-base, 300ms) var(--ease-smooth);
+    transition: all var(--duration-base, 250ms) var(--ease-smooth);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -241,7 +241,7 @@
 }
 
 .generate-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -249,7 +249,7 @@
 
 .pray-icon,
 .generating-icon {
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .generating-icon {
@@ -264,13 +264,13 @@
 /* Checkin Trigger */
 .checkin-trigger-btn {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     border-radius: var(--radius-md, 12px);
-    border: 2px dashed rgba(249, 115, 22, 0.5);
-    background: rgba(249, 115, 22, 0.05);
+    border: 2px dashed rgba(249, 115, 22, 0.45);
+    background: rgba(249, 115, 22, 0.04);
     color: #f97316;
     font-family: 'Space Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -282,19 +282,19 @@
 }
 
 @keyframes checkinPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.15); }
     50% { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); }
 }
 
 .checkin-trigger-btn:hover {
-    background: rgba(249, 115, 22, 0.12);
-    border-color: rgba(249, 115, 22, 0.7);
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.65);
     transform: translateY(-1px);
 }
 
 /* Footer */
 .loop-footer {
-    padding: 20px;
+    padding: 18px 20px;
     text-align: center;
 }
 
@@ -303,12 +303,13 @@
     border: none;
     color: var(--text-muted, #6B7280);
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     cursor: pointer;
     text-decoration: underline;
+    text-underline-offset: 3px;
     min-height: auto;
     box-shadow: none;
     transition: color var(--duration-fast, 150ms);
@@ -334,34 +335,34 @@
 }
 
 .loading-icon {
-    font-size: 48px;
+    font-size: 44px;
     animation: float 2s ease-in-out infinite;
 }
 
 .error-icon {
-    font-size: 48px;
+    font-size: 44px;
 }
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-8px); }
 }
 
 .loading-state p,
 .error-state p {
-    font-size: 15px;
+    font-size: 14.5px;
     color: var(--text-muted, #6B7280);
     margin: 0;
 }
 
 .error-state button {
-    padding: 12px 28px;
+    padding: 11px 26px;
     border-radius: var(--radius-sm, 8px);
     border: 2px solid var(--color-primary, #6C47FF);
     background: var(--color-primary, #6C47FF);
     color: white;
     font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -381,59 +382,59 @@
 /* === Mobile Responsive === */
 @media (max-width: 480px) {
     .loop-detail-header {
-        padding: 12px 16px;
+        padding: 11px 14px;
     }
 
     .loop-content {
-        padding: 16px;
-        gap: 14px;
+        padding: 14px;
+        gap: 13px;
     }
 
     .loop-title-section h1 {
-        font-size: 19px;
+        font-size: 18px;
     }
 
     .loop-topic {
-        padding: 14px;
+        padding: 12px 14px;
     }
 
     .loop-topic p {
-        font-size: 14px;
+        font-size: 13.5px;
     }
 
     .loop-stats {
-        gap: 10px;
+        gap: 8px;
     }
 
     .stat {
-        padding: 12px 8px;
+        padding: 11px 7px;
     }
 
     .stat-value {
-        font-size: 22px;
+        font-size: 21px;
     }
 
     .prayer-card {
-        padding: 16px;
+        padding: 14px;
     }
 
     .prayer-content {
-        font-size: 14px;
-        max-height: 250px;
+        font-size: 13.5px;
+        max-height: 240px;
     }
 
     .generate-btn {
-        padding: 16px;
-        font-size: 0.8rem;
+        padding: 14px;
+        font-size: 0.75rem;
     }
 
     .pray-icon,
     .generating-icon {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .checkin-trigger-btn {
-        padding: 14px;
-        font-size: 0.75rem;
+        padding: 12px;
+        font-size: 0.7rem;
     }
 }

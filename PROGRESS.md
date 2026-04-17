@@ -232,6 +232,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+70de616 Docs: PROGRESS.md 업데이트
 03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
 669d0a4 Docs: PROGRESS.md 업데이트
@@ -241,7 +242,6 @@ palmoni/
 6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
 c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
-f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
 ```
 
 

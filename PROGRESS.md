@@ -232,7 +232,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
-(pending) Style: CSS 디자인 시스템 개선 - 디자인 토큰 추가 및 컴포넌트 일관성 통일
+03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
 669d0a4 Docs: PROGRESS.md 업데이트
 72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
@@ -242,7 +242,6 @@ palmoni/
 c90c9d5 Style: CSS 전체 개편 및 UI 개선
 4e05b4d Docs: README.md 추가 및 PROGRESS.md 업데이트
 f1d6b37 Docs: PROGRESS.md 커밋 히스토리 업데이트
-0b776d1 Fix: 매일 기도 일수가 1일에서 증가하지 않는 버그 수정
 ```
 
 

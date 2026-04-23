@@ -283,6 +283,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+e189052 feat: 관리자 페이지 접속 문제 진단 (task=task_1776951974046_5a9a36, round=1)
 5ef7b0c feat: 관리자 페이지 접속 문제 진단 및 수정 (task=task_1776948419081_5b0d16, round=1)
 df8b723 feat: 관리자 페이지 접속 불가 문제 진단 및 수정 (task=task_1776946845632_004b59, round=1)
 cb6eb34 feat: 관리자 페이지를 만들었는데 주소가 어떻게 되지? (task=task_1776946605690_a8bd7c, round=1)
@@ -292,7 +293,6 @@ eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7
 70de616 Docs: PROGRESS.md 업데이트
 03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
-669d0a4 Docs: PROGRESS.md 업데이트
 ```
 
 

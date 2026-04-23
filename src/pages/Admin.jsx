@@ -446,7 +446,7 @@ const TABS = [
 ];
 
 export function Admin() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, isInitialized } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -455,25 +455,27 @@ export function Admin() {
 
   // Admin access check
   useEffect(() => {
-    if (authLoading) return;
+    // 인증 초기화가 완료되지 않았으면 대기
+    if (!isInitialized || authLoading) return;
 
+    // 로그인되지 않은 경우 홈으로 이동
     if (!user) {
       navigate('/');
       return;
     }
 
-    // Check is_admin from profile
-    if (profile !== null) {
-      if (profile?.is_admin) {
-        setHasAccess(true);
-      } else {
-        logger.warn('[Admin] Non-admin user tried to access /admin');
-        navigate('/');
-        return;
-      }
+    // profile이 undefined이면 아직 로드 중 - 대기
+    if (profile === undefined) return;
+
+    // profile 로드 완료 후 is_admin 확인
+    if (profile?.is_admin === true) {
+      setHasAccess(true);
       setAccessChecked(true);
+    } else {
+      logger.warn('[Admin] Access denied for user:', user.email, '| is_admin:', profile?.is_admin);
+      navigate('/');
     }
-  }, [user, profile, authLoading, navigate]);
+  }, [user, profile, authLoading, isInitialized, navigate]);
 
   // Close sidebar when tab changes on mobile
   const handleTabChange = (tab) => {

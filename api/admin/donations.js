@@ -22,16 +22,16 @@ export default async function handler(req, res) {
   const offset = (page - 1) * limit;
 
   try {
-    const { data: donations, error: donationError, count } = await supabase
-      .from('donations')
-      .select('id, user_id, amount, stripe_payment_intent, created_at', { count: 'exact' })
+    const { data: subscriptions, error: subError, count } = await supabase
+      .from('subscriptions')
+      .select('id, user_id, stripe_customer_id, stripe_subscription_id, status, current_period_start, current_period_end, created_at', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (donationError) throw donationError;
+    if (subError) throw subError;
 
     // Fetch user info
-    const userIds = [...new Set((donations || []).map(d => d.user_id).filter(Boolean))];
+    const userIds = [...new Set((subscriptions || []).map(d => d.user_id).filter(Boolean))];
     let userMap = {};
 
     if (userIds.length > 0) {
@@ -45,11 +45,12 @@ export default async function handler(req, res) {
       });
     }
 
-    const donationsWithUser = (donations || []).map(d => ({
+    const donationsWithUser = (subscriptions || []).map(d => ({
       ...d,
+      amount: 0,
+      stripe_payment_intent: d.stripe_subscription_id,
       user: d.user_id ? (userMap[d.user_id] || null) : null,
-      // Stripe status: if payment_intent exists, consider it successful
-      stripeStatus: d.stripe_payment_intent ? 'succeeded' : 'unknown',
+      stripeStatus: d.status || 'unknown',
     }));
 
     return res.status(200).json({

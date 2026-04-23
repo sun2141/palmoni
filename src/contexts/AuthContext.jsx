@@ -14,7 +14,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState(undefined); // undefined = not yet loaded, null = loaded but no profile
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -247,11 +247,13 @@ export const AuthProvider = ({ children }) => {
 
       if (error) {
         logger.error('Error loading profile:', error);
+        setProfile(null); // null = loaded but failed/not found
       } else {
         setProfile(data);
       }
     } catch (err) {
       logger.error('Error loading profile:', err);
+      setProfile(null);
     } finally {
       setLoading(false);
     }

@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       { count: totalUsers },
       { count: totalPrayers },
       { data: todayPrayersData },
-      { data: donationData },
+      { data: subscriptionData },
       { data: recentActivity }
     ] = await Promise.all([
       // Total users
@@ -37,10 +37,11 @@ export default async function handler(req, res) {
         .select('id', { count: 'exact' })
         .gte('created_at', new Date(new Date().toISOString().slice(0, 10)).toISOString()),
 
-      // Donation stats
+      // Subscription stats (active subscriptions)
       supabase
-        .from('donations')
-        .select('amount, created_at'),
+        .from('subscriptions')
+        .select('status, created_at')
+        .eq('status', 'active'),
 
       // Recent signups (last 7 days)
       supabase
@@ -50,16 +51,16 @@ export default async function handler(req, res) {
         .order('created_at', { ascending: false })
     ]);
 
-    const totalDonations = donationData?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
     const todayPrayerCount = todayPrayersData?.length || 0;
     const newUsersThisWeek = recentActivity?.length || 0;
+    const activeSubscriptions = subscriptionData?.length || 0;
 
-    // Monthly donation breakdown (last 6 months)
+    // Monthly subscription breakdown (last 6 months)
     const monthlyDonations = {};
-    donationData?.forEach(d => {
+    subscriptionData?.forEach(d => {
       const month = d.created_at?.slice(0, 7);
       if (month) {
-        monthlyDonations[month] = (monthlyDonations[month] || 0) + (d.amount || 0);
+        monthlyDonations[month] = (monthlyDonations[month] || 0) + 1;
       }
     });
 
@@ -67,8 +68,8 @@ export default async function handler(req, res) {
       totalUsers: totalUsers || 0,
       totalPrayers: totalPrayers || 0,
       todayPrayers: todayPrayerCount,
-      totalDonations,
-      donationCount: donationData?.length || 0,
+      totalDonations: activeSubscriptions,
+      donationCount: activeSubscriptions,
       newUsersThisWeek,
       monthlyDonations,
     });

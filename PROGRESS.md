@@ -244,6 +244,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
 8ed37fb feat: CSS 개선 작업 커밋 및 마무리 (task=task_1776409286949_18333a, round=3)
 70de616 Docs: PROGRESS.md 업데이트
 03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
@@ -253,7 +254,6 @@ palmoni/
 4d34655 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0504ffa Fix: ESC 키 모달 닫기 및 모달 간 충돌 방지
 6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
-c90c9d5 Style: CSS 전체 개편 및 UI 개선
 ```
 
 

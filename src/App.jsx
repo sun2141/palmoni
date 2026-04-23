@@ -14,6 +14,9 @@ const LoopCreate = lazy(() => import('./pages/loop/LoopCreate'));
 const LoopDetail = lazy(() => import('./pages/loop/LoopDetail'));
 const LoopHistory = lazy(() => import('./pages/loop/LoopHistory'));
 
+// Admin page
+const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
+
 // Loading fallback component
 function PageLoader() {
     return (
@@ -105,6 +108,8 @@ function App() {
                 <Route path="/loop/new" element={<LoopCreate />} />
                 <Route path="/loop/history" element={<LoopHistory />} />
                 <Route path="/loop/:loopId" element={<LoopDetail />} />
+                {/* Admin */}
+                <Route path="/admin" element={<Admin />} />
             </Routes>
         </Suspense>
     );

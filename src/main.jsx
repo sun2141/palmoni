@@ -8,7 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { logger } from './lib/logger'
 import './index.css'
 
-const CACHE_VERSION = 'palmoni-v8';
+const CACHE_VERSION = 'palmoni-v10';
 
 // 전역 에러 핸들러
 window.onerror = function(message, source, lineno, colno, error) {

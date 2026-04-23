@@ -69,7 +69,7 @@ function App() {
                     if ('caches' in window) {
                         caches.keys().then(names => {
                             names.forEach(name => {
-                                if (name !== 'palmoni-v6') {
+                                if (name !== 'palmoni-v10') {
                                     caches.delete(name);
                                 }
                             });

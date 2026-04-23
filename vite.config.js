@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    open: true
+    open: true,
+    historyApiFallback: true
   },
   test: {
     environment: 'jsdom',

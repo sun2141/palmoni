@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-04-17
+> 마지막 업데이트: 2026-04-23
 
 ## 프로젝트 개요
 
@@ -244,6 +244,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7, round=2)
 4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
 8ed37fb feat: CSS 개선 작업 커밋 및 마무리 (task=task_1776409286949_18333a, round=3)
 70de616 Docs: PROGRESS.md 업데이트
@@ -253,7 +254,6 @@ palmoni/
 72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
 4d34655 Docs: PROGRESS.md 커밋 히스토리 업데이트
 0504ffa Fix: ESC 키 모달 닫기 및 모달 간 충돌 방지
-6f53c53 Style: UI 전반 CSS 개선 및 MyPrayers/LoopHistory 기능 보완
 ```
 
 

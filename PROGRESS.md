@@ -66,7 +66,24 @@ snoozed ──(다시 시작)──> active
 
 ### 완료된 작업
 
-#### 관리자 페이지 접속 불가 문제 수정
+#### 관리자 페이지 접속 불가 문제 수정 (3차)
+
+- **문제**: `/admin` 페이지 접속은 되나 API 호출 시 CORS 오류로 데이터 불러오기 실패
+- **원인 분석**:
+  - `api/lib/cors.js`의 `Access-Control-Allow-Headers`에 `Authorization` 헤더 누락
+  - admin API는 `Authorization: Bearer <token>` 헤더를 사용하는데, CORS preflight(OPTIONS)에서 이 헤더를 허용하지 않아 차단
+  - `api/admin/_auth.js`의 환경변수 미설정 에러 메시지가 불명확 → 디버깅 어려움
+- **해결**:
+  - `api/lib/cors.js`: `Access-Control-Allow-Headers`에 `Authorization` 추가
+  - `api/admin/_auth.js`: 환경변수 미설정 시 누락된 변수명 명시 (디버깅 용이)
+- **파일**: `api/lib/cors.js`, `api/admin/_auth.js`
+
+> **Vercel 배포 환경변수 확인 필수**: Vercel 대시보드에서 아래 환경변수가 설정되어 있어야 함
+> - `VITE_SUPABASE_URL` (또는 `SUPABASE_URL`)
+> - `SUPABASE_SERVICE_ROLE_KEY`
+> 미설정 시 admin API가 "Server misconfiguration" 오류 반환
+
+#### 관리자 페이지 접속 불가 문제 수정 (2차)
 
 - **문제**: `/admin` 페이지 접속 시 무한 로딩 스피너 또는 즉시 홈으로 리다이렉트
 - **원인 분석**:
@@ -266,6 +283,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+5ef7b0c feat: 관리자 페이지 접속 문제 진단 및 수정 (task=task_1776948419081_5b0d16, round=1)
 df8b723 feat: 관리자 페이지 접속 불가 문제 진단 및 수정 (task=task_1776946845632_004b59, round=1)
 cb6eb34 feat: 관리자 페이지를 만들었는데 주소가 어떻게 되지? (task=task_1776946605690_a8bd7c, round=1)
 eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7, round=2)
@@ -275,7 +293,6 @@ eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7
 03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
 669d0a4 Docs: PROGRESS.md 업데이트
-72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
 ```
 
 

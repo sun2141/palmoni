@@ -16,7 +16,9 @@ export async function verifyAdmin(req) {
   }
 
   if (!supabaseUrl || !serviceRoleKey) {
-    return { userId: null, error: 'Server misconfiguration' };
+    const missing = [!supabaseUrl && 'SUPABASE_URL', !serviceRoleKey && 'SUPABASE_SERVICE_ROLE_KEY'].filter(Boolean).join(', ');
+    console.error('[admin/_auth] Missing env vars:', missing);
+    return { userId: null, error: `Server misconfiguration: missing ${missing}` };
   }
 
   // Use service role client to verify JWT and check admin flag

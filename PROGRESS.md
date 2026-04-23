@@ -62,6 +62,28 @@ snoozed ──(다시 시작)──> active
 
 ---
 
+## 최근 작업 내역 (2026-04-23)
+
+### 완료된 작업
+
+#### 관리자 페이지 접속 불가 문제 수정
+
+- **문제**: `/admin` 페이지 접속 시 무한 로딩 스피너 또는 즉시 홈으로 리다이렉트
+- **원인 분석**:
+  - `Admin.jsx`의 로딩 게이트 조건이 `authLoading`에 의존 → `authLoading=true`인 동안 무한 스피너
+  - `authLoading`은 프로필 로딩이 완료될 때까지 `true`이지만, useEffect는 `authLoading=false`를 기다림
+  - 결국 `isInitialized=true`, `authLoading=true` 상태에서 화면은 스피너를 표시하고, useEffect는 실행을 건너뜀 → 정상 진행 불가
+  - `accessChecked` 상태 변수 불필요한 복잡성 추가
+- **해결**:
+  - `authLoading` 의존성 제거, `isInitialized`만으로 로딩 게이트 처리
+  - `accessChecked`/`hasAccess` 상태 변수 제거 → `profile.is_admin`을 직접 렌더링 조건으로 사용
+  - 로딩 조건: `!isInitialized || (user && profile === undefined)`
+  - 접근 차단: `!user || profile?.is_admin !== true` 이면 `null` 반환
+  - `PrayersTab`의 React Fragment에 key 누락 버그도 함께 수정
+- **파일**: `src/pages/Admin.jsx`
+
+---
+
 ## 최근 작업 내역 (2026-04-17)
 
 ### 완료된 작업
@@ -244,6 +266,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+df8b723 feat: 관리자 페이지 접속 불가 문제 진단 및 수정 (task=task_1776946845632_004b59, round=1)
 cb6eb34 feat: 관리자 페이지를 만들었는데 주소가 어떻게 되지? (task=task_1776946605690_a8bd7c, round=1)
 eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7, round=2)
 4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
@@ -253,7 +276,6 @@ eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7
 624271d feat: 다시 계속해줘 (task=task_1776355508750_25df4d, round=2)
 669d0a4 Docs: PROGRESS.md 업데이트
 72f5def Fix: 모달 Portal 렌더링 및 CSS 선택자 구체화
-4d34655 Docs: PROGRESS.md 커밋 히스토리 업데이트
 ```
 
 

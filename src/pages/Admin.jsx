@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -319,9 +319,8 @@ function PrayersTab() {
               ) : prayers.length === 0 ? (
                 <tr><td colSpan={5} className="admin-table-empty">기도 요청이 없습니다</td></tr>
               ) : prayers.map(p => (
-                <>
+                <React.Fragment key={p.id}>
                   <tr
-                    key={p.id}
                     className="admin-row-clickable"
                     onClick={() => setExpanded(expanded === p.id ? null : p.id)}
                   >
@@ -338,7 +337,7 @@ function PrayersTab() {
                     </td>
                   </tr>
                   {expanded === p.id && (
-                    <tr key={`${p.id}-expand`} className="admin-row-expanded">
+                    <tr className="admin-row-expanded">
                       <td colSpan={5}>
                         <div className="admin-prayer-full">
                           <strong>전체 내용</strong>
@@ -347,7 +346,7 @@ function PrayersTab() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -450,13 +449,11 @@ export function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [accessChecked, setAccessChecked] = useState(false);
-  const [hasAccess, setHasAccess] = useState(false);
 
   // Admin access check
   useEffect(() => {
     // 인증 초기화가 완료되지 않았으면 대기
-    if (!isInitialized || authLoading) return;
+    if (!isInitialized) return;
 
     // 로그인되지 않은 경우 홈으로 이동
     if (!user) {
@@ -468,14 +465,11 @@ export function Admin() {
     if (profile === undefined) return;
 
     // profile 로드 완료 후 is_admin 확인
-    if (profile?.is_admin === true) {
-      setHasAccess(true);
-      setAccessChecked(true);
-    } else {
+    if (profile?.is_admin !== true) {
       logger.warn('[Admin] Access denied for user:', user.email, '| is_admin:', profile?.is_admin);
       navigate('/');
     }
-  }, [user, profile, authLoading, isInitialized, navigate]);
+  }, [user, profile, isInitialized, navigate]);
 
   // Close sidebar when tab changes on mobile
   const handleTabChange = (tab) => {
@@ -483,7 +477,8 @@ export function Admin() {
     setSidebarOpen(false);
   };
 
-  if (authLoading || !accessChecked) {
+  // 인증 초기화 전 또는 프로필 로드 전: 로딩 스피너
+  if (!isInitialized || (user && profile === undefined)) {
     return (
       <div className="admin-gate">
         <div className="admin-gate-spinner" />
@@ -492,7 +487,8 @@ export function Admin() {
     );
   }
 
-  if (!hasAccess) return null;
+  // 로그인 안됨 또는 admin 아님: navigate가 처리하지만, 렌더링 전에 null 반환
+  if (!user || profile?.is_admin !== true) return null;
 
   return (
     <div className="admin-layout">

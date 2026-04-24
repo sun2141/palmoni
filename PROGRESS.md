@@ -1,6 +1,6 @@
 # Palmoni 프로젝트 진행 상황
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 
 ## 프로젝트 개요
 
@@ -283,6 +283,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+6508e1c feat: 관리자 페이지 접속 문제 진단 (task=task_1777007751567_47a8fe, round=1)
 3b2f013 feat: /admin 라우팅 문제 수정 (task=task_1776953384379_eb14db, round=1)
 ffe1745 feat: 그래서 관리자페이지 주소와 관리자 계정 정보를 알려줘. (task=task_1776953102393_be0557, round=1)
 e189052 feat: 관리자 페이지 접속 문제 진단 (task=task_1776951974046_5a9a36, round=1)
@@ -292,7 +293,6 @@ cb6eb34 feat: 관리자 페이지를 만들었는데 주소가 어떻게 되지?
 eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7, round=2)
 4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
 8ed37fb feat: CSS 개선 작업 커밋 및 마무리 (task=task_1776409286949_18333a, round=3)
-70de616 Docs: PROGRESS.md 업데이트
 ```
 
 

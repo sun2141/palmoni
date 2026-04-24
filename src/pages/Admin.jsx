@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { logger } from '../lib/logger';
 import './Admin.css';
@@ -23,6 +22,102 @@ async function adminFetch(path, params = {}) {
     throw new Error(err.error || 'API 요청 실패');
   }
   return res.json();
+}
+
+// ─── Admin Login Form ────────────────────────────────────────────────────────
+
+function AdminLoginForm({ onSuccess }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) throw signInError;
+
+      const user = data?.user;
+      if (!user) throw new Error('로그인에 실패했습니다');
+
+      // 관리자 여부 확인
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profileData?.is_admin) {
+        // 관리자 아닌 경우 로그아웃 후 에러 표시
+        await supabase.auth.signOut();
+        throw new Error('관리자 권한이 없습니다. 관리자 계정으로 로그인해주세요.');
+      }
+
+      onSuccess(user);
+    } catch (err) {
+      logger.error('[AdminLogin] Login error:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="admin-login-wrap">
+      <div className="admin-login-card">
+        <div className="admin-login-logo">🕊️</div>
+        <h1 className="admin-login-title">Palmoni Admin</h1>
+        <p className="admin-login-subtitle">관리자 계정으로 로그인해주세요</p>
+
+        <form className="admin-login-form" onSubmit={handleSubmit}>
+          <div className="admin-login-field">
+            <label className="admin-login-label">이메일</label>
+            <input
+              type="email"
+              className="admin-login-input"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="admin@example.com"
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div className="admin-login-field">
+            <label className="admin-login-label">비밀번호</label>
+            <input
+              type="password"
+              className="admin-login-input"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="admin-login-error">{error}</div>
+          )}
+
+          <button
+            type="submit"
+            className="admin-login-btn"
+            disabled={loading || !email || !password}
+          >
+            {loading ? (
+              <span className="admin-login-spinner" />
+            ) : '로그인'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -157,6 +252,27 @@ function DashboardTab() {
 
 // ─── Users Tab ────────────────────────────────────────────────────────────────
 
+function UserCard({ u }) {
+  return (
+    <div className="admin-list-card">
+      <div className="admin-list-card-main">
+        <span className="admin-list-card-name">{u.full_name || '-'}</span>
+        <span className="admin-list-card-email">{u.email || '-'}</span>
+      </div>
+      <div className="admin-list-card-meta">
+        <span className={`admin-badge ${u.plan === 'pro' ? 'admin-badge-pro' : 'admin-badge-free'}`}>
+          {u.plan || 'free'}
+        </span>
+        {u.is_admin && <span className="admin-badge admin-badge-admin">관리자</span>}
+        <span className="admin-list-card-count">기도 {u.prayerCount || 0}개</span>
+        <span className="admin-list-card-date">
+          {u.created_at ? new Date(u.created_at).toLocaleDateString('ko-KR') : '-'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function UsersTab() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -196,7 +312,8 @@ function UsersTab() {
 
       {error && <div className="admin-error">오류: {error}</div>}
 
-      <div className="admin-card">
+      {/* Desktop table */}
+      <div className="admin-card admin-desktop-only">
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -237,6 +354,20 @@ function UsersTab() {
         </div>
         <Pagination page={page} total={total} limit={20} onPage={setPage} />
       </div>
+
+      {/* Mobile card list */}
+      <div className="admin-mobile-only">
+        {loading ? (
+          <div className="admin-loading">불러오는 중...</div>
+        ) : users.length === 0 ? (
+          <div className="admin-empty">사용자가 없습니다</div>
+        ) : (
+          <div className="admin-list-cards">
+            {users.map(u => <UserCard key={u.id} u={u} />)}
+          </div>
+        )}
+        <Pagination page={page} total={total} limit={20} onPage={setPage} />
+      </div>
     </div>
   );
 }
@@ -250,6 +381,31 @@ const EMOTION_OPTIONS = [
   { value: 'sadness', label: '위로 💙' },
   { value: 'hope', label: '희망 🌟' },
 ];
+
+function PrayerCard({ p, expanded, onToggle }) {
+  return (
+    <div className={`admin-list-card admin-list-card-prayer ${expanded ? 'admin-list-card-expanded' : ''}`} onClick={onToggle}>
+      <div className="admin-list-card-main">
+        <span className="admin-list-card-name">{p.title || '-'}</span>
+        <span className="admin-list-card-email">{p.user?.email || '-'}</span>
+      </div>
+      <div className="admin-list-card-meta">
+        {p.emotion && (
+          <span className="admin-badge admin-badge-emotion">{p.emotion}</span>
+        )}
+        <span className="admin-list-card-date">
+          {p.created_at ? new Date(p.created_at).toLocaleDateString('ko-KR') : '-'}
+        </span>
+      </div>
+      {expanded && (
+        <div className="admin-prayer-full admin-prayer-full-mobile">
+          <strong>전체 내용</strong>
+          <p>{p.content}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function PrayersTab() {
   const [prayers, setPrayers] = useState([]);
@@ -301,7 +457,8 @@ function PrayersTab() {
 
       {error && <div className="admin-error">오류: {error}</div>}
 
-      <div className="admin-card">
+      {/* Desktop table */}
+      <div className="admin-card admin-desktop-only">
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -353,11 +510,52 @@ function PrayersTab() {
         </div>
         <Pagination page={page} total={total} limit={20} onPage={setPage} />
       </div>
+
+      {/* Mobile card list */}
+      <div className="admin-mobile-only">
+        {loading ? (
+          <div className="admin-loading">불러오는 중...</div>
+        ) : prayers.length === 0 ? (
+          <div className="admin-empty">기도 요청이 없습니다</div>
+        ) : (
+          <div className="admin-list-cards">
+            {prayers.map(p => (
+              <PrayerCard
+                key={p.id}
+                p={p}
+                expanded={expanded === p.id}
+                onToggle={() => setExpanded(expanded === p.id ? null : p.id)}
+              />
+            ))}
+          </div>
+        )}
+        <Pagination page={page} total={total} limit={20} onPage={setPage} />
+      </div>
     </div>
   );
 }
 
 // ─── Donations Tab ────────────────────────────────────────────────────────────
+
+function DonationCard({ d }) {
+  const formatKRW = (n) => `₩${(n || 0).toLocaleString('ko-KR')}`;
+  return (
+    <div className="admin-list-card">
+      <div className="admin-list-card-main">
+        <span className="admin-list-card-name">{formatKRW(d.amount)}</span>
+        <span className="admin-list-card-email">{d.user?.email || '비회원'}</span>
+      </div>
+      <div className="admin-list-card-meta">
+        <span className={`admin-badge ${d.stripeStatus === 'succeeded' ? 'admin-badge-success' : 'admin-badge-unknown'}`}>
+          {d.stripeStatus}
+        </span>
+        <span className="admin-list-card-date">
+          {d.created_at ? new Date(d.created_at).toLocaleDateString('ko-KR') : '-'}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function DonationsTab() {
   const [donations, setDonations] = useState([]);
@@ -390,7 +588,8 @@ function DonationsTab() {
 
       {error && <div className="admin-error">오류: {error}</div>}
 
-      <div className="admin-card">
+      {/* Desktop table */}
+      <div className="admin-card admin-desktop-only">
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -431,6 +630,20 @@ function DonationsTab() {
         </div>
         <Pagination page={page} total={total} limit={20} onPage={setPage} />
       </div>
+
+      {/* Mobile card list */}
+      <div className="admin-mobile-only">
+        {loading ? (
+          <div className="admin-loading">불러오는 중...</div>
+        ) : donations.length === 0 ? (
+          <div className="admin-empty">후원 내역이 없습니다</div>
+        ) : (
+          <div className="admin-list-cards">
+            {donations.map(d => <DonationCard key={d.id} d={d} />)}
+          </div>
+        )}
+        <Pagination page={page} total={total} limit={20} onPage={setPage} />
+      </div>
     </div>
   );
 }
@@ -444,51 +657,20 @@ const TABS = [
   { id: 'donations', label: '후원 내역', icon: '💝' },
 ];
 
-export function Admin() {
-  const { user, profile, loading: authLoading, isInitialized } = useAuth();
+function AdminDashboard({ adminUser, onSignOut }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Admin access check
-  useEffect(() => {
-    // 인증 초기화가 완료되지 않았으면 대기
-    if (!isInitialized) return;
-
-    // 로그인되지 않은 경우 홈으로 이동
-    if (!user) {
-      navigate('/');
-      return;
-    }
-
-    // profile이 undefined이면 아직 로드 중 - 대기
-    if (profile === undefined) return;
-
-    // profile 로드 완료 후 is_admin 확인
-    if (profile?.is_admin !== true) {
-      logger.warn('[Admin] Access denied for user:', user.email, '| is_admin:', profile?.is_admin);
-      navigate('/');
-    }
-  }, [user, profile, isInitialized, navigate]);
-
-  // Close sidebar when tab changes on mobile
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSidebarOpen(false);
   };
 
-  // 인증 초기화 전 또는 프로필 로드 전: 로딩 스피너
-  if (!isInitialized || (user && profile === undefined)) {
-    return (
-      <div className="admin-gate">
-        <div className="admin-gate-spinner" />
-        <p>접근 확인 중...</p>
-      </div>
-    );
-  }
-
-  // 로그인 안됨 또는 admin 아님: navigate가 처리하지만, 렌더링 전에 null 반환
-  if (!user || profile?.is_admin !== true) return null;
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    onSignOut();
+  };
 
   return (
     <div className="admin-layout">
@@ -500,7 +682,7 @@ export function Admin() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar (desktop + mobile drawer) */}
       <aside className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar-open' : ''}`}>
         <div className="admin-sidebar-header">
           <span className="admin-sidebar-logo">🕊️</span>
@@ -534,13 +716,13 @@ export function Admin() {
             <span className="admin-nav-icon">←</span>
             <span>앱으로 돌아가기</span>
           </button>
-          <p className="admin-sidebar-user">{user?.email}</p>
+          <p className="admin-sidebar-user">{adminUser?.email}</p>
         </div>
       </aside>
 
       {/* Main content */}
       <div className="admin-main">
-        {/* Top bar (mobile) */}
+        {/* Top bar */}
         <header className="admin-topbar">
           <button
             className="admin-hamburger"
@@ -567,9 +749,116 @@ export function Admin() {
           {activeTab === 'prayers' && <PrayersTab />}
           {activeTab === 'donations' && <DonationsTab />}
         </main>
+
+        {/* Bottom tab navigation (mobile) */}
+        <nav className="admin-bottom-nav">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              className={`admin-bottom-tab ${activeTab === tab.id ? 'admin-bottom-tab-active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="admin-bottom-tab-icon">{tab.icon}</span>
+              <span className="admin-bottom-tab-label">{tab.label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
   );
+}
+
+export function Admin() {
+  const [authState, setAuthState] = useState('checking'); // 'checking' | 'unauthenticated' | 'not-admin' | 'admin'
+  const [adminUser, setAdminUser] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (!session?.user) {
+          setAuthState('unauthenticated');
+          return;
+        }
+
+        // 관리자 여부 확인
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!mounted) return;
+
+        if (profileData?.is_admin === true) {
+          setAdminUser(session.user);
+          setAuthState('admin');
+        } else {
+          setAuthState('not-admin');
+        }
+      } catch (err) {
+        logger.error('[Admin] Auth check error:', err);
+        if (mounted) setAuthState('unauthenticated');
+      }
+    };
+
+    checkAuth();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleLoginSuccess = (user) => {
+    setAdminUser(user);
+    setAuthState('admin');
+  };
+
+  const handleSignOut = () => {
+    setAdminUser(null);
+    setAuthState('unauthenticated');
+  };
+
+  // 인증 확인 중
+  if (authState === 'checking') {
+    return (
+      <div className="admin-gate">
+        <div className="admin-gate-spinner" />
+        <p>접근 확인 중...</p>
+      </div>
+    );
+  }
+
+  // 비로그인 또는 비관리자 → 관리자 로그인 폼
+  if (authState === 'unauthenticated') {
+    return <AdminLoginForm onSuccess={handleLoginSuccess} />;
+  }
+
+  // 로그인했지만 관리자 아님 → 접근 거부
+  if (authState === 'not-admin') {
+    return (
+      <div className="admin-gate">
+        <div className="admin-access-denied">
+          <span className="admin-access-denied-icon">🚫</span>
+          <h2 className="admin-access-denied-title">접근 거부</h2>
+          <p className="admin-access-denied-msg">관리자 권한이 없습니다.</p>
+          <button
+            className="admin-access-denied-btn"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              setAuthState('unauthenticated');
+            }}
+          >
+            다른 계정으로 로그인
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 관리자 → 대시보드
+  return <AdminDashboard adminUser={adminUser} onSignOut={handleSignOut} />;
 }
 
 export default Admin;

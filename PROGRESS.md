@@ -283,6 +283,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+3b2f013 feat: /admin 라우팅 문제 수정 (task=task_1776953384379_eb14db, round=1)
 ffe1745 feat: 그래서 관리자페이지 주소와 관리자 계정 정보를 알려줘. (task=task_1776953102393_be0557, round=1)
 e189052 feat: 관리자 페이지 접속 문제 진단 (task=task_1776951974046_5a9a36, round=1)
 5ef7b0c feat: 관리자 페이지 접속 문제 진단 및 수정 (task=task_1776948419081_5b0d16, round=1)
@@ -292,7 +293,6 @@ eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7
 4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
 8ed37fb feat: CSS 개선 작업 커밋 및 마무리 (task=task_1776409286949_18333a, round=3)
 70de616 Docs: PROGRESS.md 업데이트
-03728bd Style: CSS 디자인 시스템 개선 및 모달 애니메이션 적용
 ```
 
 

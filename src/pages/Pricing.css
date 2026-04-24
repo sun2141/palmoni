@@ -1,5 +1,5 @@
 /* ========================================
-   Pricing Page - Variant Design System
+   Pricing Page - Sacred Dark Theme
    ======================================== */
 
 .pricing-page {
@@ -26,13 +26,16 @@
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--color-primary, #6C47FF);
+  background: linear-gradient(135deg, #C9A84C, #E0BE6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.01em;
 }
 
 .pricing-header .subtitle {
   font-size: 1.1rem;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-secondary, #B8B4AC);
 }
 
 .pricing-error {
@@ -40,9 +43,9 @@
   margin: 0 auto 2rem;
   padding: 1rem;
   background: rgba(239, 68, 68, 0.1);
-  border: 2px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
-  color: #dc2626;
+  color: #f87171;
   text-align: center;
 }
 
@@ -55,32 +58,47 @@
 }
 
 .pricing-card {
-  background: white;
+  background: var(--color-surface-1, #1A1D26);
   border-radius: var(--radius-md, 12px);
   padding: 2rem;
-  box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
+  box-shadow: var(--shadow-card);
   transition: all 0.2s ease;
   position: relative;
-  border: 1.5px solid rgba(108, 71, 255, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.12);
+  overflow: hidden;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.2), transparent);
 }
 
 .pricing-card:hover {
-  border-color: rgba(108, 71, 255, 0.32);
+  border-color: rgba(201, 168, 76, 0.3);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .pricing-card.popular {
-  border: 2px solid var(--color-primary, #6C47FF);
-  box-shadow: 0 4px 24px rgba(108, 71, 255, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  box-shadow: 0 4px 24px rgba(201, 168, 76, 0.15);
+}
+
+.pricing-card.popular::before {
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
 }
 
 .popular-badge {
   position: absolute;
   top: -14px;
   right: 24px;
-  background: var(--color-primary, #6C47FF);
-  color: white;
+  background: linear-gradient(135deg, #C9A84C, #E0BE6A);
+  color: #0D0F14;
   padding: 0.3rem 0.875rem;
   border-radius: var(--radius-sm, 8px);
   font-family: 'Space Mono', monospace;
@@ -88,14 +106,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  box-shadow: none;
 }
 
 .plan-header {
   text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid rgba(108, 71, 255, 0.1);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
 }
 
 .plan-header h3 {
@@ -104,7 +121,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
 }
 
 .plan-price {
@@ -118,7 +135,7 @@
   font-family: 'Space Mono', monospace;
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
 }
 
 .period {
@@ -127,7 +144,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
 }
 
 .plan-features {
@@ -143,8 +160,8 @@
   padding: 0.75rem 0;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--text-secondary, #4B5563);
-  border-bottom: 1px solid rgba(108, 71, 255, 0.06);
+  color: var(--text-secondary, #B8B4AC);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .feature-item:last-child {
@@ -152,7 +169,7 @@
 }
 
 .feature-item.limited {
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
   text-decoration: line-through;
 }
 
@@ -161,9 +178,9 @@
   width: 24px;
   height: 24px;
   border-radius: var(--radius-sm, 8px);
-  background: rgba(108, 71, 255, 0.1);
-  border: 1px solid rgba(108, 71, 255, 0.2);
-  color: var(--color-primary, #6C47FF);
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  color: var(--color-primary, #C9A84C);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,15 +189,17 @@
 }
 
 .feature-item.limited .feature-icon {
-  background: rgba(108, 71, 255, 0.05);
-  border-color: rgba(108, 71, 255, 0.1);
-  color: var(--text-muted, #6B7280);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted, #7A7670);
 }
 
 .plan-cta {
   width: 100%;
   padding: 1rem;
-  border: 2px solid var(--color-primary, #6C47FF);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  background: transparent;
+  color: var(--color-primary, #C9A84C);
   border-radius: var(--radius-sm, 8px);
   font-family: 'Space Mono', monospace;
   font-size: 0.8rem;
@@ -194,25 +213,28 @@
 }
 
 .plan-cta.primary {
-  background: var(--color-primary, #6C47FF);
-  color: white;
-  box-shadow: none;
+  background: linear-gradient(135deg, #C9A84C, #E0BE6A);
+  color: #0D0F14;
+  border-color: transparent;
 }
 
 .plan-cta.primary:hover {
-  background: white;
-  color: var(--color-primary, #6C47FF);
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
+}
+
+.plan-cta:not(.primary):hover {
+  background: rgba(201, 168, 76, 0.1);
+  transform: translateY(-1px);
 }
 
 .plan-cta.disabled,
 .plan-cta.current {
-  background: rgba(108, 71, 255, 0.06);
-  border-color: rgba(108, 71, 255, 0.15);
-  color: var(--text-muted, #6B7280);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted, #7A7670);
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .plan-cta:disabled {
@@ -225,9 +247,9 @@
   width: 100%;
   margin-top: 0.75rem;
   padding: 0.75rem;
-  border: 1.5px solid rgba(108, 71, 255, 0.15);
-  background: rgba(108, 71, 255, 0.04);
-  color: var(--text-muted, #6B7280);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted, #7A7670);
   border-radius: var(--radius-sm, 8px);
   font-family: 'Space Mono', monospace;
   font-size: 0.65rem;
@@ -241,11 +263,10 @@
 }
 
 .manage-subscription:hover {
-  background: rgba(108, 71, 255, 0.08);
-  border-color: rgba(108, 71, 255, 0.3);
-  color: var(--color-primary, #6C47FF);
+  background: rgba(201, 168, 76, 0.06);
+  border-color: rgba(201, 168, 76, 0.2);
+  color: var(--color-primary, #C9A84C);
   transform: none;
-  box-shadow: none;
 }
 
 /* Daily Prayer Explanation */
@@ -253,9 +274,21 @@
   max-width: 600px;
   margin: 0 auto 3rem;
   padding: 2rem;
-  background: white;
+  background: var(--color-surface-1, #1A1D26);
   border-radius: var(--radius-sm, 8px);
-  border: 2px solid rgba(108, 71, 255, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-prayer-explanation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
 }
 
 .daily-prayer-explanation h2 {
@@ -265,7 +298,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
 }
 
 .explanation-content {
@@ -285,8 +318,9 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm, 8px);
-  background: var(--color-primary, #6C47FF);
-  color: white;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: var(--color-primary, #C9A84C);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -302,13 +336,13 @@
 .step-text strong {
   display: block;
   font-size: 1rem;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
   margin-bottom: 0.25rem;
 }
 
 .step-text p {
   font-size: 0.9rem;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-secondary, #B8B4AC);
   margin: 0;
   line-height: 1.5;
 }
@@ -327,27 +361,26 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
 }
 
 .faq-item {
-  background: white;
+  background: var(--color-surface-1, #1A1D26);
   padding: 1.5rem;
   border-radius: var(--radius-sm, 8px);
   margin-bottom: 1rem;
-  box-shadow: none;
-  border: 2px solid rgba(108, 71, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: border-color 0.2s ease;
 }
 
 .faq-item:hover {
-  border-color: rgba(108, 71, 255, 0.25);
+  border-color: rgba(201, 168, 76, 0.2);
 }
 
 .faq-item h4 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
   font-family: 'Space Mono', monospace;
   font-weight: 700;
   text-transform: uppercase;
@@ -358,7 +391,7 @@
 .faq-item p {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-secondary, #B8B4AC);
   margin: 0;
 }
 

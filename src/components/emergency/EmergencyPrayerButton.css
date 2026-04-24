@@ -1,5 +1,5 @@
 /* ========================================
-   Emergency Prayer Button - Morning Prayer Theme
+   Emergency Prayer Button - Sacred Dark Theme
    ======================================== */
 
 /* Emergency Button */
@@ -9,52 +9,38 @@
   justify-content: center;
   gap: clamp(0.3rem, 2vw, 0.5rem);
   padding: clamp(0.5rem, 2.5vw, 0.75rem) clamp(0.875rem, 4vw, 1.5rem);
-  background: linear-gradient(135deg, var(--accent-green, #4caf50) 0%, var(--accent-teal, #26a69a) 100%);
-  color: white;
-  border: 1.5px solid transparent;
+  background: rgba(74, 222, 128, 0.08);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
   border-radius: clamp(10px, 3vw, 12px);
-  font-size: clamp(0.8rem, 3vw, 1rem);
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
   position: relative;
   overflow: hidden;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .emergency-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  transform: translateY(-1px);
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.35);
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.1);
 }
 
 .emergency-button:active {
   transform: translateY(0);
 }
 
-.emergency-button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.emergency-button:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
 .emergency-icon {
-  font-size: clamp(1.1rem, 4vw, 1.5rem);
-  animation: pulse 2s ease-in-out infinite;
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  animation: pulse 2.5s ease-in-out infinite;
   flex-shrink: 0;
 }
 
@@ -63,7 +49,7 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.15);
   }
 }
 
@@ -79,8 +65,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(26, 21, 18, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,16 +78,26 @@
 
 /* Modal */
 .emergency-modal {
-  background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
-  border-radius: clamp(16px, 5vw, 24px);
-  box-shadow: 0 20px 60px rgba(139, 94, 60, 0.2);
+  background: var(--color-surface-2, #1E2130);
+  border-radius: clamp(16px, 5vw, 20px);
+  box-shadow: var(--shadow-modal);
   max-width: min(500px, calc(100vw - 2rem));
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
   animation: slideUp 0.3s ease;
-  border: 1.5px solid rgba(201, 168, 124, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.emergency-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
 }
 
 @keyframes slideUp {
@@ -119,13 +116,13 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid rgba(201, 168, 124, 0.3);
-  background: rgba(255, 251, 245, 0.9);
-  color: var(--bronze-mid, #a67c52);
-  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted, #7A7670);
+  font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -134,32 +131,35 @@
   z-index: 10;
   padding: 0;
   box-shadow: none;
+  min-height: auto;
 }
 
 .emergency-modal-close:hover {
-  background: rgba(201, 168, 124, 0.15);
-  border-color: var(--bronze-mid, #a67c52);
-  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary, #F0EDE6);
+  transform: none;
 }
 
 /* Modal Header */
 .emergency-modal-header {
   padding: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 3vw, 1.5rem);
   text-align: center;
-  border-bottom: 1px solid rgba(201, 168, 124, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .emergency-modal-header h2 {
-  font-size: clamp(1.25rem, 5vw, 1.75rem);
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
   font-weight: 700;
-  color: var(--bronze-deep, #8b5e3c);
+  color: var(--text-primary, #F0EDE6);
   margin: 0 0 0.4rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-style: italic;
 }
 
 .emergency-modal-header p {
-  font-size: clamp(0.8rem, 3vw, 0.95rem);
-  color: var(--text-secondary, #4a3f38);
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  color: var(--text-muted, #7A7670);
   margin: 0;
 }
 
@@ -172,64 +172,65 @@
 }
 
 .emergency-option {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(38, 166, 154, 0.08) 100%);
-  border: 1.5px solid rgba(76, 175, 80, 0.2);
-  border-radius: clamp(12px, 4vw, 16px);
-  padding: clamp(0.875rem, 3.5vw, 1.5rem);
+  background: rgba(74, 222, 128, 0.04);
+  border: 1px solid rgba(74, 222, 128, 0.12);
+  border-radius: clamp(10px, 3vw, 14px);
+  padding: clamp(0.875rem, 3.5vw, 1.25rem);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.25rem, 1.5vw, 0.5rem);
-  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.1);
+  gap: clamp(0.25rem, 1.5vw, 0.4rem);
 }
 
 .emergency-option:hover:not(:disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
-  border-color: var(--accent-green, #4caf50);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(38, 166, 154, 0.12) 100%);
+  transform: translateY(-2px);
+  border-color: rgba(74, 222, 128, 0.25);
+  background: rgba(74, 222, 128, 0.08);
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.08);
 }
 
 .emergency-option:active:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(0);
 }
 
 .emergency-option:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Gratitude option - warm golden style */
+/* Gratitude option */
 .emergency-option.gratitude {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.12) 0%, rgba(255, 152, 0, 0.08) 100%);
-  border-color: rgba(255, 193, 7, 0.3);
+  background: rgba(201, 168, 76, 0.04);
+  border-color: rgba(201, 168, 76, 0.12);
 }
 
 .emergency-option.gratitude:hover:not(:disabled) {
-  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.2);
-  border-color: #ffc107;
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.18) 0%, rgba(255, 152, 0, 0.12) 100%);
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.25);
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.08);
 }
 
 .option-icon {
-  font-size: clamp(1.75rem, 6vw, 2.5rem);
+  font-size: clamp(1.5rem, 6vw, 2rem);
   line-height: 1;
 }
 
 .option-title {
-  font-size: clamp(1rem, 4vw, 1.25rem);
-  font-weight: 700;
-  color: var(--bronze-deep, #8b5e3c);
+  font-size: clamp(0.9rem, 3.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary, #F0EDE6);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .option-desc {
-  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-  color: var(--text-secondary, #4a3f38);
+  font-size: clamp(0.75rem, 2.5vw, 0.825rem);
+  color: var(--text-muted, #7A7670);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 /* Emergency Prayer Preview */
@@ -252,77 +253,63 @@
 
 /* Prayer Loader */
 .prayer-loader {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(201, 168, 124, 0.2);
-  border-top: 4px solid var(--bronze-mid, #a67c52);
+  width: 48px;
+  height: 48px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  border-top: 2px solid var(--color-primary, #C9A84C);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .generating-prayer p {
-  font-size: 1rem;
-  color: var(--bronze-deep, #8b5e3c);
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #B8B4AC);
+  font-weight: 400;
+  font-style: italic;
 }
 
 /* Prayer Ready */
 .ready-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   animation: bounceIn 0.6s ease;
 }
 
 @keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .prayer-ready p {
-  font-size: 1.1rem;
-  color: var(--accent-green, #4caf50);
-  font-weight: 700;
+  font-size: 1rem;
+  color: #4ade80;
+  font-weight: 600;
 }
 
 /* Emergency Footer */
 .emergency-footer {
-  padding: 1.5rem 2rem 2rem;
+  padding: 1.25rem 1.5rem 1.75rem;
   text-align: center;
-  border-top: 1px solid rgba(201, 168, 124, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .emergency-footer p {
-  font-size: 0.95rem;
-  color: var(--bronze-mid, #a67c52);
-  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-muted, #7A7670);
+  font-weight: 400;
   margin: 0;
+  font-style: italic;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Small phones (360px and below) */
@@ -336,9 +323,8 @@
   }
 
   .prayer-loader {
-    width: 40px;
-    height: 40px;
-    border-width: 3px;
+    width: 36px;
+    height: 36px;
   }
 
   .ready-icon {

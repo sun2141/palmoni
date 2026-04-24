@@ -32,13 +32,14 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="shortcut icon" href="/favicon.png" />
 
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#6C47FF" />
+    <!-- Theme Color (Dark Premium) -->
+    <meta name="theme-color" content="#0D0F14" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Variant Typography: Playfair Display + Space Mono -->
+    <!-- Variant Typography: Playfair Display + Space Mono + Noto Serif KR -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -125,10 +126,10 @@
   <body>
     <div id="root">
       <!-- React 로드 전 표시 -->
-      <div id="app-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
-        <div style="font-size:48px;margin-bottom:20px;">🕊️</div>
-        <div style="color:#6C47FF;font-size:24px;font-weight:bold;">PALMONI</div>
-        <div style="color:#999;margin-top:10px;">로딩 중...</div>
+      <div id="app-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0D0F14;">
+        <div style="font-size:40px;margin-bottom:20px;filter:drop-shadow(0 4px 12px rgba(201,168,76,0.3));">🕊️</div>
+        <div style="background:linear-gradient(135deg,#E8D5A3,#C9A84C,#E0BE6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:22px;font-weight:700;font-style:italic;font-family:Georgia,serif;letter-spacing:0.08em;">PALMONI</div>
+        <div style="color:#4A4640;margin-top:12px;font-size:13px;letter-spacing:0.1em;">로딩 중...</div>
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>

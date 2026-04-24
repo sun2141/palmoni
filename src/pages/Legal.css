@@ -1,25 +1,26 @@
 /* ========================================
-   Legal Pages (Privacy, Terms)
+   Legal Pages (Privacy, Terms) - Sacred Dark Theme
    ======================================== */
 
 .legal-page {
     min-height: 100vh;
     padding: 1rem;
-    background: linear-gradient(180deg, #FAFAFF 0%, #F0F0FF 100%);
+    background: var(--color-bg, #0D0F14);
 }
 
 .legal-container {
     max-width: 700px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
-    background: white;
+    background: var(--color-surface-1, #1A1D26);
     border-radius: var(--radius-xl, 24px);
-    box-shadow: var(--shadow-md, 0 4px 16px rgba(26, 26, 46, 0.08));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: var(--shadow-card);
 }
 
 .legal-back {
     display: inline-block;
-    color: var(--color-primary, #6C47FF);
+    color: var(--color-primary, #C9A84C);
     text-decoration: none;
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
@@ -32,14 +33,14 @@
 
 .legal-container h1 {
     font-size: 1.75rem;
-    color: var(--text-primary, #1A1A2E);
+    color: var(--text-primary, #F0EDE6);
     margin: 0 0 0.5rem;
     font-weight: 700;
 }
 
 .legal-date {
     font-size: 0.85rem;
-    color: var(--text-muted, #9CA3AF);
+    color: var(--text-muted, #7A7670);
     margin: 0 0 2rem;
 }
 
@@ -49,14 +50,14 @@
 
 .legal-container h2 {
     font-size: 1.1rem;
-    color: var(--text-primary, #1A1A2E);
+    color: var(--text-primary, #F0EDE6);
     margin: 0 0 0.75rem;
     font-weight: 600;
 }
 
 .legal-container p {
     font-size: 0.95rem;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
     line-height: 1.7;
     margin: 0 0 0.75rem;
 }
@@ -68,17 +69,17 @@
 
 .legal-container li {
     font-size: 0.95rem;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
     line-height: 1.7;
     margin-bottom: 0.5rem;
 }
 
 .legal-container li strong {
-    color: var(--text-primary, #1A1A2E);
+    color: var(--text-primary, #F0EDE6);
 }
 
 .legal-container a {
-    color: var(--color-primary, #6C47FF);
+    color: var(--color-primary, #C9A84C);
     text-decoration: none;
 }
 
@@ -89,7 +90,7 @@
 .legal-footer {
     margin-top: 3rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(108, 71, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
     text-align: center;
     display: flex;
     justify-content: center;
@@ -99,11 +100,11 @@
 
 .legal-footer a {
     font-size: 0.9rem;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
 }
 
 .legal-footer span {
-    color: var(--text-muted, #9CA3AF);
+    color: var(--text-muted, #7A7670);
 }
 
 /* === 반응형 === */

@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(26, 26, 46, 0.55);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     display: flex;
@@ -21,15 +21,27 @@
 }
 
 .checkin-result-modal {
-    background: white;
+    background: var(--color-surface-2, #1E2130);
     border-radius: var(--radius-md, 12px);
     padding: 2rem 1.5rem;
     max-width: 360px;
     width: 100%;
     text-align: center;
     animation: celebrationPop var(--duration-base, 300ms) var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
-    box-shadow: var(--shadow-xl, 0 16px 48px rgba(26, 26, 46, 0.12));
-    border: 1.5px solid rgba(108, 71, 255, 0.15);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.checkin-result-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
 }
 
 @keyframes celebrationPop {
@@ -61,14 +73,14 @@
     font-style: italic;
     font-size: 1.375rem;
     font-weight: 700;
-    color: var(--text-primary, #1A1A2E);
+    color: var(--text-primary, #F0EDE6);
     margin: 0 0 10px 0;
     letter-spacing: -0.01em;
 }
 
 .result-message {
     font-size: 14px;
-    color: var(--text-muted, #6B7280);
+    color: var(--text-muted, #7A7670);
     margin: 0 0 20px 0;
     line-height: 1.6;
 }
@@ -79,9 +91,9 @@
     justify-content: center;
     gap: 12px;
     padding: 14px;
-    background: rgba(108, 71, 255, 0.04);
+    background: rgba(201, 168, 76, 0.05);
     border-radius: var(--radius-sm, 8px);
-    border: 1px solid rgba(108, 71, 255, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.12);
     margin-bottom: 16px;
 }
 
@@ -91,13 +103,13 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: var(--text-light, #9CA3AF);
+    color: var(--text-muted, #7A7670);
 }
 
 .next-emotion {
     font-size: 15px;
     font-weight: 600;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
 }
 
 .result-stats {
@@ -105,9 +117,9 @@
     justify-content: center;
     gap: 20px;
     padding: 16px;
-    background: linear-gradient(135deg, rgba(108, 71, 255, 0.08) 0%, rgba(139, 111, 255, 0.06) 100%);
+    background: rgba(201, 168, 76, 0.06);
     border-radius: var(--radius-sm, 8px);
-    border: 1px solid rgba(108, 71, 255, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.1);
     margin-bottom: 16px;
 }
 
@@ -121,7 +133,7 @@
 .stat-value {
     font-size: 26px;
     font-weight: 700;
-    color: var(--color-primary, #6C47FF);
+    color: var(--color-primary, #C9A84C);
     line-height: 1;
 }
 
@@ -131,7 +143,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #6B7280);
+    color: var(--text-muted, #7A7670);
 }
 
 .result-next-info {
@@ -139,9 +151,9 @@
     flex-direction: column;
     gap: 4px;
     padding: 13px;
-    background: rgba(108, 71, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: var(--radius-sm, 8px);
-    border: 1px solid rgba(108, 71, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     margin-bottom: 20px;
     text-align: left;
 }
@@ -152,22 +164,22 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-light, #9CA3AF);
+    color: var(--text-muted, #7A7670);
 }
 
 .next-prayer-time {
     font-size: 13.5px;
     font-weight: 500;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
 }
 
 .result-close-btn {
     width: 100%;
     padding: 13px;
     border-radius: var(--radius-sm, 8px);
-    border: 2px solid var(--color-primary, #6C47FF);
-    background: var(--color-primary, #6C47FF);
-    color: white;
+    border: none;
+    background: linear-gradient(135deg, #C9A84C, #E0BE6A);
+    color: #0D0F14;
     font-family: 'Space Mono', monospace;
     font-size: 0.75rem;
     font-weight: 700;
@@ -180,10 +192,9 @@
 }
 
 .result-close-btn:hover {
-    background: white;
-    color: var(--color-primary, #6C47FF);
+    opacity: 0.9;
     transform: translateY(-1px);
-    box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
+    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
 }
 
 .result-close-btn:active {

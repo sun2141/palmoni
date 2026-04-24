@@ -4,7 +4,7 @@
     gap: 6px;
     padding: 5px 11px;
     border-radius: var(--radius-xs, 6px);
-    background: color-mix(in srgb, var(--status-color) 12%, white);
+    background: color-mix(in srgb, var(--status-color) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--status-color) 30%, transparent);
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;

@@ -1,5 +1,5 @@
 /* ========================================
-   Prayer Ambience - Morning Prayer Theme
+   Prayer Ambience - Sacred Dark Theme
    ======================================== */
 
 .prayer-ambience {
@@ -22,12 +22,12 @@
   left: 50%;
   transform: translate(-50%, -50%);
   filter: blur(100px);
-  opacity: 0.45;
+  opacity: 0.3;
   background: linear-gradient(
     135deg,
-    rgba(108, 71, 255, 0.35) 0%,
-    rgba(139, 111, 255, 0.25) 50%,
-    rgba(0, 194, 203, 0.15) 100%
+    rgba(201, 168, 76, 0.25) 0%,
+    rgba(139, 157, 195, 0.15) 50%,
+    transparent 100%
   );
 }
 
@@ -36,8 +36,8 @@
   height: 350px;
   background: radial-gradient(
     circle,
-    rgba(108, 71, 255, 0.4) 0%,
-    rgba(139, 111, 255, 0.25) 50%,
+    rgba(201, 168, 76, 0.2) 0%,
+    rgba(201, 168, 76, 0.1) 40%,
     transparent 70%
   );
   animation: gentleFloat 8s ease-in-out infinite;
@@ -47,11 +47,11 @@
   width: 500px;
   height: 500px;
   filter: blur(120px);
-  opacity: 0.3;
+  opacity: 0.15;
   background: radial-gradient(
     circle,
-    rgba(74, 144, 226, 0.3) 0%,
-    rgba(0, 194, 203, 0.2) 40%,
+    rgba(139, 157, 195, 0.2) 0%,
+    rgba(201, 168, 76, 0.1) 40%,
     transparent 70%
   );
   animation: gentleFloat 12s ease-in-out infinite reverse;
@@ -62,7 +62,7 @@
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.12);
   }
 }
 
@@ -76,13 +76,13 @@
 
 .particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   top: 50%;
   left: 50%;
   filter: blur(0.5px);
-  background: rgba(108, 71, 255, 0.6);
+  background: rgba(201, 168, 76, 0.4);
   animation: twinkle 3s ease-in-out infinite;
 }
 
@@ -94,21 +94,21 @@
 
 @keyframes twinkle {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0.2;
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.4);
   }
 }
 
-/* Emotion-based colors - Palmoni Purple Palette */
+/* Emotion-based colors */
 .prayer-ambience[data-emotion="gratitude"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(16, 185, 129, 0.4) 0%,
-    rgba(52, 211, 153, 0.25) 50%,
+    rgba(74, 222, 128, 0.2) 0%,
+    rgba(74, 222, 128, 0.1) 40%,
     transparent 70%
   );
 }
@@ -116,8 +116,8 @@
 .prayer-ambience[data-emotion="sadness"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(74, 144, 226, 0.4) 0%,
-    rgba(108, 71, 255, 0.25) 50%,
+    rgba(139, 157, 195, 0.25) 0%,
+    rgba(139, 157, 195, 0.12) 40%,
     transparent 70%
   );
 }
@@ -125,8 +125,8 @@
 .prayer-ambience[data-emotion="hope"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(0, 194, 203, 0.4) 0%,
-    rgba(108, 71, 255, 0.2) 50%,
+    rgba(251, 191, 36, 0.2) 0%,
+    rgba(201, 168, 76, 0.12) 40%,
     transparent 70%
   );
 }
@@ -134,8 +134,8 @@
 .prayer-ambience[data-emotion="peace"] .ambience-circle.primary {
   background: radial-gradient(
     circle,
-    rgba(108, 71, 255, 0.4) 0%,
-    rgba(139, 111, 255, 0.25) 50%,
+    rgba(201, 168, 76, 0.2) 0%,
+    rgba(201, 168, 76, 0.1) 40%,
     transparent 70%
   );
 }

@@ -41,6 +41,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Dark Premium Palette
+        gold: {
+          DEFAULT: "#C9A84C",
+          light: "#E0BE6A",
+          dim: "rgba(201, 168, 76, 0.12)",
+        },
+        surface: {
+          1: "#1A1D26",
+          2: "#1E2130",
+          3: "#242838",
+        },
+        navy: {
+          DEFAULT: "#0D0F14",
+          mid: "#111318",
+          light: "#141720",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -48,7 +64,28 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif'],
+        sans: ['Pretendard Variable', 'Pretendard', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Noto Serif KR', 'Georgia', 'serif'],
+        prayer: ['Noto Serif KR', 'Playfair Display', 'Georgia', 'serif'],
+        mono: ['Space Mono', 'Courier New', 'monospace'],
+      },
+      backgroundImage: {
+        'gradient-dark': 'linear-gradient(160deg, #0D0F14 0%, #111318 40%, #141720 100%)',
+        'gradient-gold': 'linear-gradient(135deg, #C9A84C 0%, #E0BE6A 100%)',
+        'gradient-card': 'linear-gradient(180deg, rgba(30, 33, 48, 1) 0%, rgba(26, 29, 38, 1) 100%)',
+        'gradient-hero': 'radial-gradient(ellipse at 50% 0%, rgba(201, 168, 76, 0.12) 0%, transparent 60%)',
+      },
+      boxShadow: {
+        'gold': '0 0 20px rgba(201, 168, 76, 0.2)',
+        'gold-lg': '0 0 40px rgba(201, 168, 76, 0.3)',
+        'card-dark': '0 2px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)',
+        'card-dark-hover': '0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3)',
+      },
+      animation: {
+        'breathe': 'breathe 4s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'gold-pulse': 'goldPulse 2s ease-in-out infinite',
+        'fade-up': 'fadeUp 0.5s ease-out both',
       },
     },
   },

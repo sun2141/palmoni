@@ -1,11 +1,11 @@
 /* ========================================
-   Prayer Progress - Morning Prayer Theme
+   Prayer Progress - Sacred Dark Theme
    ======================================== */
 
 .prayer-progress {
   width: 100%;
-  margin: 2rem 0;
-  padding: 1.5rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
 }
 
 .progress-steps {
@@ -21,7 +21,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  opacity: 0.4;
+  opacity: 0.3;
   transition: all 0.4s ease;
   flex: 0 0 auto;
 }
@@ -36,35 +36,35 @@
 }
 
 .step-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  background: rgba(201, 168, 124, 0.15);
-  backdrop-filter: blur(10px);
+  font-size: 1.25rem;
+  background: rgba(201, 168, 76, 0.08);
   transition: all 0.3s ease;
-  border: 2px solid rgba(201, 168, 124, 0.3);
+  border: 1px solid rgba(201, 168, 76, 0.15);
 }
 
 .progress-step.active .step-icon {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(38, 166, 154, 0.15));
-  border-color: var(--accent-green, #4caf50);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.2);
 }
 
 .step-label {
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   font-weight: 500;
-  color: var(--bronze-mid, #a67c52);
+  color: var(--text-muted, #7A7670);
+  letter-spacing: -0.01em;
 }
 
 .progress-line {
   flex: 1;
-  height: 2px;
-  background: rgba(201, 168, 124, 0.25);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
   margin: 0 0.5rem;
   transition: all 0.4s ease;
   position: relative;
@@ -73,20 +73,16 @@
 }
 
 .progress-line.active {
-  background: linear-gradient(
-    to right,
-    var(--accent-green, #4caf50),
-    var(--accent-teal, #26a69a)
-  );
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(to right, rgba(74, 222, 128, 0.5), rgba(74, 222, 128, 0.2));
+  box-shadow: 0 0 4px rgba(74, 222, 128, 0.2);
 }
 
 @keyframes prayerPulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 16px rgba(201, 168, 76, 0.2);
   }
   50% {
-    box-shadow: 0 0 35px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 28px rgba(201, 168, 76, 0.4);
   }
 }
 
@@ -96,13 +92,13 @@
   }
 
   .step-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
   }
 
   .step-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .progress-line {

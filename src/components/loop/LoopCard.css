@@ -1,12 +1,23 @@
 .loop-card {
-    background: white;
+    background: var(--color-surface-1, #1A1D26);
     border-radius: var(--radius-md, 12px);
     padding: 16px;
-    box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
     cursor: pointer;
     transition: all var(--duration-base, 250ms) var(--ease-smooth);
-    border: 1.5px solid rgba(108, 71, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     animation: fadeUp 0.4s var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
+    position: relative;
+    overflow: hidden;
+}
+
+.loop-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.15), transparent);
 }
 
 @keyframes fadeUp {
@@ -15,15 +26,14 @@
 }
 
 .loop-card:hover {
-    background: white;
-    border-color: rgba(108, 71, 255, 0.28);
+    border-color: rgba(201, 168, 76, 0.2);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .loop-card:active {
     transform: translateY(0) scale(0.99);
-    box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
+    box-shadow: none;
 }
 
 .loop-card-header {
@@ -39,7 +49,7 @@
     font-style: italic;
     font-size: 15.5px;
     font-weight: 700;
-    color: var(--text-primary, #1A1A2E);
+    color: var(--text-primary, #F0EDE6);
     margin: 0;
     flex: 1;
     line-height: 1.35;
@@ -47,7 +57,7 @@
 
 .loop-topic {
     font-size: 13px;
-    color: var(--text-secondary, #4B5563);
+    color: var(--text-secondary, #B8B4AC);
     margin: 0 0 12px 0;
     line-height: 1.6;
     display: -webkit-box;
@@ -77,25 +87,25 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--color-primary, #6C47FF);
-    background: var(--color-primary-light, rgba(108, 71, 255, 0.08));
+    color: var(--color-primary, #C9A84C);
+    background: rgba(201, 168, 76, 0.1);
     padding: 3px 7px;
     border-radius: var(--radius-xs, 6px);
-    border: 1px solid var(--color-primary-border, rgba(108, 71, 255, 0.15));
+    border: 1px solid rgba(201, 168, 76, 0.2);
 }
 
 .loop-date {
     font-size: 10.5px;
-    color: var(--text-light, #9CA3AF);
+    color: var(--text-muted, #7A7670);
     font-family: 'Space Mono', monospace;
 }
 
 .loop-continue-btn {
     padding: 5px 12px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid var(--color-primary, #6C47FF);
-    background: var(--color-primary, #6C47FF);
-    color: white;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--color-primary, #C9A84C);
     font-family: 'Space Mono', monospace;
     font-size: 0.575rem;
     font-weight: 700;
@@ -109,18 +119,17 @@
 }
 
 .loop-continue-btn:hover {
-    background: white;
-    color: var(--color-primary, #6C47FF);
+    background: rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.5);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .loop-resume-btn {
     padding: 5px 12px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid hsl(var(--success, 160 84% 40%));
-    background: hsl(var(--success, 160 84% 40%));
-    color: white;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    background: rgba(74, 222, 128, 0.08);
+    color: #4ade80;
     font-family: 'Space Mono', monospace;
     font-size: 0.575rem;
     font-weight: 700;
@@ -134,59 +143,55 @@
 }
 
 .loop-resume-btn:hover {
-    background: white;
-    color: hsl(var(--success, 160 84% 40%));
+    background: rgba(74, 222, 128, 0.15);
+    border-color: rgba(74, 222, 128, 0.5);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .loop-resume-btn:disabled {
     opacity: 0.42;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
 }
 
 .loop-edit-btn {
     padding: 4px 9px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid rgba(108, 71, 255, 0.16);
-    background: white;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
     font-size: 12.5px;
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
-    color: var(--text-muted, #6B7280);
+    color: var(--text-muted, #7A7670);
 }
 
 .loop-edit-btn:hover {
-    background: var(--color-primary-light, rgba(108, 71, 255, 0.08));
-    border-color: var(--color-primary, #6C47FF);
-    color: var(--color-primary, #6C47FF);
+    background: rgba(201, 168, 76, 0.08);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: var(--color-primary, #C9A84C);
     transform: translateY(-1px);
-    box-shadow: none;
 }
 
 .loop-delete-btn {
     padding: 4px 9px;
     border-radius: var(--radius-xs, 6px);
-    border: 1.5px solid hsl(var(--destructive, 0 84% 60%) / 0.18);
-    background: white;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    background: rgba(255, 255, 255, 0.04);
     font-size: 12.5px;
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
-    color: var(--text-muted, #6B7280);
+    color: var(--text-muted, #7A7670);
 }
 
 .loop-delete-btn:hover {
-    background: hsl(var(--destructive, 0 84% 60%));
-    border-color: hsl(var(--destructive, 0 84% 60%));
-    color: white;
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
     transform: translateY(-1px);
-    box-shadow: none;
 }
 
 /* === Mobile Responsive === */

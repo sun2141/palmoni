@@ -1,5 +1,5 @@
 /* ========================================
-   My Prayers Page - Soft Intelligence Theme
+   My Prayers Page - Sacred Dark Theme
    ======================================== */
 
 .my-prayers-page {
@@ -27,26 +27,26 @@
 .back-button {
   align-self: flex-start;
   padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.75rem, 3vw, 1rem);
-  background: white;
-  border: 1.5px solid var(--color-primary-border, rgba(108, 71, 255, 0.2));
-  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: var(--radius-pill, 9999px);
   font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   cursor: pointer;
   transition: all var(--duration-fast, 150ms) var(--ease-smooth);
-  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
+  min-height: auto;
+  box-shadow: none;
 }
 
 .back-button:hover {
-  background: var(--color-primary, #6C47FF);
-  border-color: var(--color-primary, #6C47FF);
-  color: white;
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.4);
+  color: var(--color-primary-hover, #E0BE6A);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .prayers-header h1 {
@@ -55,7 +55,10 @@
   font-family: 'Playfair Display', Georgia, serif;
   font-style: italic;
   font-weight: 700;
-  color: var(--text-primary, #1A1A2E);
+  background: linear-gradient(135deg, #E8D5A3 0%, #C9A84C 40%, #E0BE6A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-align: center;
   letter-spacing: -0.01em;
 }
@@ -65,28 +68,27 @@
   gap: clamp(0.75rem, 3vw, 1.5rem);
   justify-content: center;
   font-size: clamp(0.8rem, 3vw, 0.875rem);
-  color: var(--text-muted, #6B7280);
-  background: white;
-  border: 1px solid var(--border-soft, rgba(108, 71, 255, 0.1));
+  color: var(--text-muted, #7A7670);
+  background: var(--color-surface-1, #1A1D26);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-lg, 16px);
   padding: 0.625rem 1.25rem;
-  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .prayer-stats .stat strong {
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
   font-size: clamp(0.95rem, 3.5vw, 1.1rem);
   font-weight: 700;
 }
 
 /* Controls */
 .prayers-controls {
-  background: white;
-  border: 1.5px solid rgba(108, 71, 255, 0.1);
+  background: var(--color-surface-1, #1A1D26);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-md, 12px);
   padding: 1.25rem;
   margin-bottom: 1.75rem;
-  box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
+  box-shadow: var(--shadow-card);
 }
 
 .search-box {
@@ -96,25 +98,26 @@
 
 .search-box input {
   width: 100%;
-  padding: 0.8125rem 1rem;
-  border: 1.5px solid rgba(108, 71, 255, 0.14);
-  border-radius: var(--radius-sm, 8px);
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md, 12px);
   font-size: 0.9375rem;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  background: rgba(248, 250, 255, 0.7);
+  background: rgba(255, 255, 255, 0.03);
   transition: all 0.2s ease;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
+  caret-color: var(--color-primary, #C9A84C);
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: var(--color-primary, #6C47FF);
-  background: white;
-  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.08);
+  border-color: rgba(201, 168, 76, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
 }
 
 .search-box input::placeholder {
-  color: var(--text-light, #9CA3AF);
+  color: rgba(255, 255, 255, 0.2);
 }
 
 .clear-search {
@@ -125,10 +128,10 @@
   width: 26px;
   height: 26px;
   border: none;
-  background: rgba(108, 71, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 50%;
-  font-size: 1.125rem;
-  color: var(--color-primary, #6C47FF);
+  font-size: 1rem;
+  color: var(--text-muted, #7A7670);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -141,7 +144,8 @@
 }
 
 .clear-search:hover {
-  background: rgba(108, 71, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #F0EDE6);
   transform: translateY(-50%) scale(1.08);
 }
 
@@ -154,8 +158,8 @@
 
 .emotion-filter {
   padding: 0.4rem 0.75rem;
-  border: 1.5px solid rgba(108, 71, 255, 0.14);
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
   border-radius: var(--radius-sm, 8px);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -168,31 +172,30 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   box-shadow: none;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-muted, #7A7670);
   min-height: auto;
 }
 
 .emotion-filter:hover {
-  border-color: var(--color-primary, #6C47FF);
-  color: var(--color-primary, #6C47FF);
-  background: var(--color-primary-light, rgba(108, 71, 255, 0.05));
+  border-color: rgba(201, 168, 76, 0.25);
+  color: var(--color-primary, #C9A84C);
+  background: rgba(201, 168, 76, 0.05);
   transform: none;
   box-shadow: none;
 }
 
 .emotion-filter.active {
   border-color: var(--emotion-color);
-  background: color-mix(in srgb, var(--emotion-color) 10%, white);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--emotion-color) 15%, transparent);
-  font-weight: 700;
+  background: color-mix(in srgb, var(--emotion-color) 10%, transparent);
+  color: var(--emotion-color);
 }
 
 .emotion-icon {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .emotion-label {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* Loading state */
@@ -202,10 +205,10 @@
 }
 
 .loader {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(108, 71, 255, 0.12);
-  border-top-color: var(--color-primary, #6C47FF);
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  border-top-color: var(--color-primary, #C9A84C);
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
   margin: 0 auto 1rem;
@@ -216,7 +219,7 @@
 }
 
 .loading-state p {
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
   font-size: 0.875rem;
 }
 
@@ -224,10 +227,10 @@
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--color-surface-1, #1A1D26);
   border-radius: var(--radius-md, 12px);
   margin: 1.5rem 0;
-  border: 2px dashed rgba(108, 71, 255, 0.18);
+  border: 1px dashed rgba(201, 168, 76, 0.15);
   box-shadow: none;
   animation: fadeUp 0.4s var(--ease-out) both;
 }
@@ -238,10 +241,11 @@
 }
 
 .empty-icon {
-  font-size: 3.5rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
   display: block;
   animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(201, 168, 76, 0.2));
 }
 
 @keyframes float {
@@ -252,40 +256,41 @@
 .empty-state h3 {
   font-family: 'Playfair Display', Georgia, serif;
   font-style: italic;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   margin-bottom: 0.5rem;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
   font-weight: 700;
 }
 
 .empty-state p {
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
   margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.875rem;
+  line-height: 1.65;
 }
 
 .primary-button {
   padding: 0.8125rem 1.75rem;
-  background: var(--color-primary, #6C47FF);
-  color: white;
-  border: 2px solid var(--color-primary, #6C47FF);
-  border-radius: var(--radius-sm, 8px);
+  background: rgba(201, 168, 76, 0.08);
+  color: var(--color-primary, #C9A84C);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: var(--radius-pill, 9999px);
   font-family: 'Space Mono', monospace;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: none;
+  min-height: auto;
 }
 
 .primary-button:hover {
-  background: white;
-  color: var(--color-primary, #6C47FF);
+  background: rgba(201, 168, 76, 0.14);
+  border-color: rgba(201, 168, 76, 0.45);
+  color: var(--color-primary-hover, #E0BE6A);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 /* Prayers grid */
@@ -297,21 +302,33 @@
 }
 
 .prayer-card {
-  background: white;
-  border: 1.5px solid rgba(108, 71, 255, 0.1);
+  background: var(--color-surface-1, #1A1D26);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-md, 12px);
   padding: 1.375rem;
-  box-shadow: var(--shadow-card, 0 2px 12px rgba(26, 26, 46, 0.07));
+  box-shadow: var(--shadow-card);
   transition: all var(--duration-fast, 150ms) var(--ease-smooth);
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
   animation: fadeUp 0.4s var(--ease-out) both;
+  position: relative;
+  overflow: hidden;
+}
+
+.prayer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.15), transparent);
 }
 
 .prayer-card:hover {
-  border-color: rgba(108, 71, 255, 0.25);
-  box-shadow: var(--shadow-card-hover, 0 8px 24px rgba(26, 26, 46, 0.11));
+  border-color: rgba(201, 168, 76, 0.15);
+  box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
 }
 
@@ -322,22 +339,23 @@
 }
 
 .emotion-badge {
-  padding: 0.25rem 0.625rem;
+  padding: 0.2rem 0.5rem;
   border-radius: var(--radius-xs, 6px);
   color: white;
   font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.575rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  opacity: 0.85;
 }
 
 .prayer-date {
-  font-size: 0.775rem;
-  color: var(--text-light, #9CA3AF);
+  font-size: 0.7rem;
+  color: var(--text-light, #4A4640);
   font-family: 'Space Mono', monospace;
 }
 
@@ -346,7 +364,7 @@
   font-style: italic;
   font-size: 1.0625rem;
   font-weight: 700;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
   margin: 0;
   line-height: 1.4;
   letter-spacing: 0;
@@ -354,44 +372,46 @@
 
 .prayer-topic {
   font-size: 0.8375rem;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-secondary, #B8B4AC);
   padding: 0.5rem 0.75rem;
-  background: rgba(108, 71, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: var(--radius-xs, 6px);
-  border-left: 2px solid var(--color-primary, #6C47FF);
+  border-left: 2px solid rgba(201, 168, 76, 0.3);
+  letter-spacing: -0.01em;
 }
 
 .topic-label {
   font-weight: 600;
-  color: var(--color-primary, #6C47FF);
+  color: var(--color-primary, #C9A84C);
 }
 
 .prayer-preview {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   line-height: 1.8;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-secondary, #B8B4AC);
   margin: 0;
   flex: 1;
   word-break: keep-all;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   text-align: left;
+  font-family: 'Noto Serif KR', 'Pretendard Variable', serif;
 }
 
 .prayer-actions {
   display: flex;
   gap: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(108, 71, 255, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .action-button {
   flex: 1;
-  padding: 0.5rem 0.625rem;
-  border: 1.5px solid rgba(108, 71, 255, 0.18);
-  background: white;
+  padding: 0.5rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
   border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.575rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -402,36 +422,35 @@
   justify-content: center;
   gap: 0.3rem;
   box-shadow: none;
-  color: var(--text-secondary, #4B5563);
+  color: var(--text-muted, #7A7670);
   min-height: auto;
 }
 
 .action-button:hover {
-  background: var(--color-primary, #6C47FF);
-  border-color: var(--color-primary, #6C47FF);
-  color: white;
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.2);
+  color: var(--color-primary, #C9A84C);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-xs, 0 1px 2px rgba(26, 26, 46, 0.04));
 }
 
 .action-button.delete:hover {
-  background: hsl(var(--destructive, 0 84% 60%));
-  border-color: hsl(var(--destructive, 0 84% 60%));
-  color: white;
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: #F87171;
 }
 
 /* View Full Button */
 .view-full-btn {
-  padding: 0.375rem 0.75rem;
-  background: white;
-  border: 1.5px solid var(--color-primary-border, rgba(108, 71, 255, 0.2));
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.15);
   border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.575rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-primary, #6C47FF);
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #7A7670);
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-start;
@@ -440,9 +459,9 @@
 }
 
 .view-full-btn:hover {
-  background: var(--color-primary, #6C47FF);
-  border-color: var(--color-primary, #6C47FF);
-  color: white;
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.3);
+  color: var(--color-primary, #C9A84C);
   transform: translateY(-1px);
 }
 
@@ -450,15 +469,15 @@
 .convert-to-loop-btn {
   width: 100%;
   padding: 0.6875rem 1rem;
-  background: var(--color-primary, #6C47FF);
-  border: 2px solid var(--color-primary, #6C47FF);
-  border-radius: var(--radius-sm, 8px);
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.15);
+  border-radius: var(--radius-md, 12px);
   font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: white;
+  letter-spacing: 0.08em;
+  color: #4ade80;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -470,14 +489,13 @@
 }
 
 .convert-to-loop-btn:hover:not(:disabled) {
-  background: white;
-  color: var(--color-primary, #6C47FF);
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 .convert-to-loop-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
@@ -489,9 +507,9 @@
 .prayer-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26, 26, 46, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -501,30 +519,40 @@
 }
 
 .prayer-modal {
-  background: white;
-  border-radius: var(--radius-lg, 16px);
+  background: var(--color-surface-2, #1E2130);
+  border-radius: var(--radius-xl, 20px);
   padding: 2rem;
   max-width: 560px;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-modal, 0 24px 64px rgba(26, 26, 46, 0.18));
-  border: 1.5px solid rgba(108, 71, 255, 0.12);
+  box-shadow: var(--shadow-modal);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   animation: slideUp 0.3s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   position: relative;
+}
+
+.prayer-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
 }
 
 .prayer-modal-close {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(108, 71, 255, 0.05);
-  border: 1.5px solid rgba(108, 71, 255, 0.15);
-  font-size: 0.95rem;
-  color: var(--text-muted, #6B7280);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9rem;
+  color: var(--text-muted, #7A7670);
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -536,13 +564,13 @@
   font-family: inherit;
   text-transform: none;
   letter-spacing: 0;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .prayer-modal-close:hover {
-  background: var(--color-primary, #6C47FF);
-  border-color: var(--color-primary, #6C47FF);
-  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary, #F0EDE6);
   transform: none;
 }
 
@@ -556,7 +584,7 @@
 .prayer-modal-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary, #1A1A2E);
+  color: var(--text-primary, #F0EDE6);
   margin: 0 0 0.875rem;
   line-height: 1.4;
   font-family: 'Playfair Display', Georgia, serif;
@@ -566,26 +594,26 @@
 
 .prayer-modal-content {
   font-size: 0.9375rem;
-  line-height: 1.85;
-  color: var(--text-secondary, #4B5563);
+  line-height: 2;
+  color: var(--text-secondary, #B8B4AC);
   white-space: pre-wrap;
   margin: 0.875rem 0 1.375rem;
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-family: 'Noto Serif KR', 'Pretendard Variable', serif;
   text-align: left;
   word-break: keep-all;
-  letter-spacing: -0.01em;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(108, 71, 255, 0.04) 0%, rgba(0, 194, 203, 0.03) 100%);
-  border-radius: var(--radius-sm, 8px);
-  border: 1px solid rgba(108, 71, 255, 0.08);
-  border-left: 3px solid var(--color-primary, #6C47FF);
+  letter-spacing: 0.01em;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-left: 2px solid rgba(201, 168, 76, 0.3);
 }
 
 .prayer-modal-actions {
   display: flex;
   gap: 0.75rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(108, 71, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .prayer-modal-actions .action-button {
@@ -612,15 +640,15 @@
 .error-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--color-surface-1, #1A1D26);
   border-radius: var(--radius-md, 12px);
   margin: 1.5rem 0;
-  border: 1.5px solid hsl(var(--destructive, 0 84% 60%) / 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.15);
   animation: fadeUp 0.4s var(--ease-smooth) both;
 }
 
 .error-icon {
-  font-size: 2.75rem;
+  font-size: 2.5rem;
   display: block;
   margin-bottom: 1rem;
   animation: errorShake 0.5s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
@@ -636,24 +664,24 @@
 }
 
 .error-state h3 {
-  font-size: 1.1875rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  color: hsl(var(--destructive, 0 84% 60%));
+  color: #F87171;
   margin-bottom: 0.5rem;
 }
 
 .error-state p {
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
 }
 
 .retry-button {
   padding: 0.6875rem 1.75rem;
-  background: white;
-  color: hsl(var(--destructive, 0 84% 60%));
-  border: 1.5px solid hsl(var(--destructive, 0 84% 60%));
-  border-radius: var(--radius-sm, 8px);
+  background: rgba(220, 38, 38, 0.08);
+  color: #F87171;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-pill, 9999px);
   font-family: 'Space Mono', monospace;
   font-size: 0.7rem;
   font-weight: 700;
@@ -661,13 +689,13 @@
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+  min-height: auto;
 }
 
 .retry-button:hover {
-  background: hsl(var(--destructive, 0 84% 60%));
-  color: white;
+  background: rgba(220, 38, 38, 0.14);
+  border-color: rgba(220, 38, 38, 0.35);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26, 26, 46, 0.06));
 }
 
 /* Load more */
@@ -682,15 +710,15 @@
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #7A7670);
   font-size: 0.875rem;
 }
 
 .loader-small {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(108, 71, 255, 0.12);
-  border-top-color: var(--color-primary, #6C47FF);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  border-top-color: var(--color-primary, #C9A84C);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -733,7 +761,7 @@
 
   .back-button {
     padding: 0.375rem 0.75rem;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
   }
 
   .prayer-card {
@@ -745,16 +773,16 @@
   }
 
   .action-button {
-    padding: 0.4rem 0.5rem;
-    font-size: 0.575rem;
+    padding: 0.4rem 0.375rem;
+    font-size: 0.55rem;
   }
 
   .emotion-filter {
     padding: 0.375rem 0.5rem;
-    font-size: 0.575rem;
+    font-size: 0.55rem;
   }
 
   .emotion-icon {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
   }
 }

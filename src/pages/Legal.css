@@ -40,7 +40,7 @@
 
 .legal-date {
     font-size: 0.85rem;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     margin: 0 0 2rem;
 }
 
@@ -57,7 +57,7 @@
 
 .legal-container p {
     font-size: 0.95rem;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     line-height: 1.7;
     margin: 0 0 0.75rem;
 }
@@ -69,7 +69,7 @@
 
 .legal-container li {
     font-size: 0.95rem;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     line-height: 1.7;
     margin-bottom: 0.5rem;
 }
@@ -100,11 +100,11 @@
 
 .legal-footer a {
     font-size: 0.9rem;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
 }
 
 .legal-footer span {
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
 }
 
 /* === 반응형 === */

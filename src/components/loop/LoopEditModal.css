@@ -65,7 +65,7 @@
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 1rem;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     cursor: pointer;
     padding: 5px 10px;
     border-radius: var(--radius-xs, 6px);
@@ -126,7 +126,7 @@
 
 .edit-input::placeholder,
 .edit-textarea::placeholder {
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
 }
 
 .edit-input:focus,
@@ -141,7 +141,7 @@
     font-family: 'Space Mono', monospace;
     font-size: 0.6rem;
     font-weight: 700;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     text-align: right;
     letter-spacing: 0.04em;
 }
@@ -170,7 +170,7 @@
 
 .edit-cancel-btn {
     background: rgba(255, 255, 255, 0.04);
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

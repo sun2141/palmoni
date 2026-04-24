@@ -81,7 +81,7 @@
 
 .pray-together-header p {
   font-size: 0.875rem;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   margin: 0;
   line-height: 1.5;
 }
@@ -110,7 +110,7 @@
 
 .pray-together-preview .preview-content {
   font-size: 0.875rem;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   line-height: 1.6;
   margin: 0;
 }
@@ -148,7 +148,7 @@
 
 .pray-btn.secondary {
   background: rgba(201, 168, 76, 0.06);
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   border-color: rgba(201, 168, 76, 0.2);
 }
 
@@ -160,7 +160,7 @@
 
 .pray-btn.skip {
   background: transparent;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   border-color: transparent;
   margin-top: 4px;
   font-size: 0.75rem;
@@ -190,7 +190,7 @@
 .prayer-text {
   font-size: 0.9375rem;
   line-height: 1.85;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   background: rgba(201, 168, 76, 0.04);
   border-radius: var(--radius-sm, 8px);
   border: 1px solid rgba(201, 168, 76, 0.1);
@@ -219,7 +219,7 @@
 .pray-hint {
   text-align: center;
   font-size: 0.75rem;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   margin: 0;
   letter-spacing: 0.04em;
 }

@@ -35,7 +35,7 @@
 
 .pricing-header .subtitle {
   font-size: 1.1rem;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
 }
 
 .pricing-error {
@@ -144,7 +144,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
 }
 
 .plan-features {
@@ -160,7 +160,7 @@
   padding: 0.75rem 0;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -169,7 +169,7 @@
 }
 
 .feature-item.limited {
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   text-decoration: line-through;
 }
 
@@ -191,7 +191,7 @@
 .feature-item.limited .feature-icon {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
 }
 
 .plan-cta {
@@ -233,7 +233,7 @@
 .plan-cta.current {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   cursor: not-allowed;
 }
 
@@ -249,7 +249,7 @@
   padding: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   border-radius: var(--radius-sm, 8px);
   font-family: 'Space Mono', monospace;
   font-size: 0.65rem;
@@ -342,7 +342,7 @@
 
 .step-text p {
   font-size: 0.9rem;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   margin: 0;
   line-height: 1.5;
 }
@@ -391,7 +391,7 @@
 .faq-item p {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   margin: 0;
 }
 

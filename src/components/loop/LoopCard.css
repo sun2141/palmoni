@@ -57,7 +57,7 @@
 
 .loop-topic {
     font-size: 13px;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     margin: 0 0 12px 0;
     line-height: 1.6;
     display: -webkit-box;
@@ -96,7 +96,7 @@
 
 .loop-date {
     font-size: 10.5px;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     font-family: 'Space Mono', monospace;
 }
 
@@ -114,7 +114,7 @@
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     white-space: nowrap;
-    min-height: auto;
+    min-height: 44px;
     box-shadow: none;
 }
 
@@ -138,7 +138,7 @@
     cursor: pointer;
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     white-space: nowrap;
-    min-height: auto;
+    min-height: 44px;
     box-shadow: none;
 }
 
@@ -164,7 +164,7 @@
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
 }
 
 .loop-edit-btn:hover {
@@ -184,7 +184,7 @@
     transition: all var(--duration-fast, 150ms) var(--ease-smooth);
     min-height: auto;
     box-shadow: none;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
 }
 
 .loop-delete-btn:hover {

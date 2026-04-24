@@ -283,6 +283,7 @@ palmoni/
 ## 커밋 히스토리 (최근)
 
 ```
+e3634ad feat: title":"Palmoni 앱 디자인 리뉴얼","summary":"혁신적이고 심플한 미니멀리즘 디자인으로 Palmoni 앱 전면 개편","features":["다크 모드 기반 프 (task=task_1777040650101_a299dd, round=1)
 22e4ddb feat: 관리자 페이지 접근 방식 변경 및 모바일 최적화 (task=task_1777008892056_f270d4, round=1)
 6508e1c feat: 관리자 페이지 접속 문제 진단 (task=task_1777007751567_47a8fe, round=1)
 3b2f013 feat: /admin 라우팅 문제 수정 (task=task_1776953384379_eb14db, round=1)
@@ -292,7 +293,6 @@ e189052 feat: 관리자 페이지 접속 문제 진단 (task=task_1776951974046_
 df8b723 feat: 관리자 페이지 접속 불가 문제 진단 및 수정 (task=task_1776946845632_004b59, round=1)
 cb6eb34 feat: 관리자 페이지를 만들었는데 주소가 어떻게 되지? (task=task_1776946605690_a8bd7c, round=1)
 eb3231e feat: Palmoni 관리자 페이지 구현 (task=task_1776921733440_52fab7, round=2)
-4f94314 feat: 배포 상태 및 캐시 문제 진단 (task=task_1776410461401_8185df, round=1)
 ```
 
 

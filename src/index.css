@@ -32,11 +32,11 @@
     --color-surface-3: #242838;     /* 카드/표면 레이어 3 */
 
     /* === Text Colors (Dark Mode) === */
-    --text-primary: #F0EDE6;        /* 따뜻한 화이트 */
-    --text-secondary: #B8B4AC;      /* 미디엄 그레이-웜 */
-    --text-muted: #7A7670;          /* 뮤트 텍스트 */
-    --text-light: #4A4640;          /* 라이트 텍스트 */
-    --text-gold: #C9A84C;           /* 골드 텍스트 */
+    --text-primary: #F5F2EC;        /* 밝은 따뜻한 화이트 (WCAG AA+) */
+    --text-secondary: #C8C4BB;      /* 밝아진 미디엄 그레이-웜 (대비율 ~8:1) */
+    --text-muted: #9E9A92;          /* 밝아진 뮤트 텍스트 (대비율 ~4.7:1 WCAG AA) */
+    --text-light: #9A958D;          /* 서브 텍스트 (대비율 ~4.6:1, WCAG AA) */
+    --text-gold: #D4AF55;           /* 밝아진 골드 텍스트 */
 
     /* === Tailwind HSL Variables === */
     --primary: 42 58% 54%;          /* 골드 */
@@ -52,10 +52,10 @@
     --popover-foreground: 36 20% 90%;
 
     --secondary: 230 15% 18%;
-    --secondary-foreground: 36 10% 70%;
+    --secondary-foreground: 36 10% 75%;
 
     --muted: 230 15% 18%;
-    --muted-foreground: 36 8% 55%;
+    --muted-foreground: 36 8% 62%;
 
     --accent: 42 58% 54%;
     --accent-foreground: 30 20% 8%;
@@ -310,7 +310,7 @@ h2 {
 
 .subtitle {
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 1rem;
   font-weight: 400;
   text-align: center;
@@ -555,8 +555,8 @@ textarea:focus {
 button {
   padding: 1rem 1.5rem;
   border-radius: var(--radius-pill);
-  border: 1.5px solid rgba(201, 168, 76, 0.3);
-  background: transparent;
+  border: 1.5px solid rgba(201, 168, 76, 0.4);
+  background: rgba(201, 168, 76, 0.06);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.875rem;
@@ -576,9 +576,9 @@ button {
 }
 
 button:hover {
-  background: rgba(201, 168, 76, 0.08);
+  background: rgba(201, 168, 76, 0.14);
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: #E8C86A;
   transform: translateY(-1px);
 }
 
@@ -588,9 +588,9 @@ button:active {
 }
 
 button:disabled {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-light);
-  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  border-color: rgba(255, 255, 255, 0.08);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -615,14 +615,14 @@ button:disabled {
 
 /* Secondary Button */
 .secondary-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-secondary);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
 }
 
 .secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.28);
   color: var(--text-primary);
 }
 
@@ -653,7 +653,7 @@ button:disabled {
   font-family: var(--font-prayer);
   line-height: 2;
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   white-space: pre-wrap;
   text-align: left;
   padding: 1.25rem;
@@ -1077,15 +1077,15 @@ textarea:focus-visible {
 
 /* ===== Unified Card Style ===== */
 .card {
-  background: var(--color-surface-1);
-  border: 1px solid var(--border-card);
+  background: linear-gradient(180deg, #1E2130 0%, #1A1D26 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   transition: all var(--duration-base) var(--ease-smooth);
 }
 
 .card:hover {
-  border-color: rgba(201, 168, 76, 0.15);
+  border-color: rgba(201, 168, 76, 0.2);
   box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
 }

@@ -68,7 +68,7 @@
   gap: clamp(0.75rem, 3vw, 1.5rem);
   justify-content: center;
   font-size: clamp(0.8rem, 3vw, 0.875rem);
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   background: var(--color-surface-1, #1A1D26);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-lg, 16px);
@@ -83,8 +83,8 @@
 
 /* Controls */
 .prayers-controls {
-  background: var(--color-surface-1, #1A1D26);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #1E2130 0%, #1A1D26 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md, 12px);
   padding: 1.25rem;
   margin-bottom: 1.75rem;
@@ -131,7 +131,7 @@
   background: rgba(255, 255, 255, 0.06);
   border-radius: 50%;
   font-size: 1rem;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -157,9 +157,9 @@
 }
 
 .emotion-filter {
-  padding: 0.4rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: transparent;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-sm, 8px);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -172,14 +172,14 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   box-shadow: none;
-  color: var(--text-muted, #7A7670);
-  min-height: auto;
+  color: var(--text-muted, #9E9A92);
+  min-height: 44px;
 }
 
 .emotion-filter:hover {
-  border-color: rgba(201, 168, 76, 0.25);
-  color: var(--color-primary, #C9A84C);
-  background: rgba(201, 168, 76, 0.05);
+  border-color: rgba(201, 168, 76, 0.3);
+  color: var(--color-primary, #D4AF55);
+  background: rgba(201, 168, 76, 0.08);
   transform: none;
   box-shadow: none;
 }
@@ -219,7 +219,7 @@
 }
 
 .loading-state p {
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   font-size: 0.875rem;
 }
 
@@ -263,17 +263,17 @@
 }
 
 .empty-state p {
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   line-height: 1.65;
 }
 
 .primary-button {
-  padding: 0.8125rem 1.75rem;
-  background: rgba(201, 168, 76, 0.08);
-  color: var(--color-primary, #C9A84C);
-  border: 1px solid rgba(201, 168, 76, 0.25);
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #C9A84C 0%, #E0BE6A 100%);
+  color: #0D0F14;
+  border: none;
   border-radius: var(--radius-pill, 9999px);
   font-family: 'Space Mono', monospace;
   font-size: 0.7rem;
@@ -282,15 +282,15 @@
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: none;
-  min-height: auto;
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.25);
+  min-height: 44px;
 }
 
 .primary-button:hover {
-  background: rgba(201, 168, 76, 0.14);
-  border-color: rgba(201, 168, 76, 0.45);
-  color: var(--color-primary-hover, #E0BE6A);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #E0BE6A 0%, #C9A84C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.35);
+  color: #0D0F14;
 }
 
 /* Prayers grid */
@@ -302,8 +302,8 @@
 }
 
 .prayer-card {
-  background: var(--color-surface-1, #1A1D26);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #1E2130 0%, #1A1D26 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md, 12px);
   padding: 1.375rem;
   box-shadow: var(--shadow-card);
@@ -327,7 +327,7 @@
 }
 
 .prayer-card:hover {
-  border-color: rgba(201, 168, 76, 0.15);
+  border-color: rgba(201, 168, 76, 0.25);
   box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
 }
@@ -355,7 +355,7 @@
 
 .prayer-date {
   font-size: 0.7rem;
-  color: var(--text-light, #4A4640);
+  color: var(--text-muted, #9E9A92);
   font-family: 'Space Mono', monospace;
 }
 
@@ -372,11 +372,11 @@
 
 .prayer-topic {
   font-size: 0.8375rem;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-xs, 6px);
-  border-left: 2px solid rgba(201, 168, 76, 0.3);
+  border-left: 2px solid rgba(201, 168, 76, 0.4);
   letter-spacing: -0.01em;
 }
 
@@ -388,7 +388,7 @@
 .prayer-preview {
   font-size: 0.875rem;
   line-height: 1.8;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   margin: 0;
   flex: 1;
   word-break: keep-all;
@@ -406,9 +406,9 @@
 
 .action-button {
   flex: 1;
-  padding: 0.5rem 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: transparent;
+  padding: 0.625rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-xs, 6px);
   font-family: 'Space Mono', monospace;
   font-size: 0.575rem;
@@ -422,14 +422,14 @@
   justify-content: center;
   gap: 0.3rem;
   box-shadow: none;
-  color: var(--text-muted, #7A7670);
-  min-height: auto;
+  color: var(--text-muted, #9E9A92);
+  min-height: 44px;
 }
 
 .action-button:hover {
-  background: rgba(201, 168, 76, 0.08);
-  border-color: rgba(201, 168, 76, 0.2);
-  color: var(--color-primary, #C9A84C);
+  background: rgba(201, 168, 76, 0.1);
+  border-color: rgba(201, 168, 76, 0.28);
+  color: var(--color-primary, #D4AF55);
   transform: translateY(-1px);
 }
 
@@ -450,7 +450,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-start;
@@ -549,7 +549,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.9rem;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   cursor: pointer;
   width: 30px;
   height: 30px;
@@ -595,7 +595,7 @@
 .prayer-modal-content {
   font-size: 0.9375rem;
   line-height: 2;
-  color: var(--text-secondary, #B8B4AC);
+  color: var(--text-secondary, #C8C4BB);
   white-space: pre-wrap;
   margin: 0.875rem 0 1.375rem;
   font-family: 'Noto Serif KR', 'Pretendard Variable', serif;
@@ -671,7 +671,7 @@
 }
 
 .error-state p {
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
 }
@@ -710,7 +710,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  color: var(--text-muted, #7A7670);
+  color: var(--text-muted, #9E9A92);
   font-size: 0.875rem;
 }
 
@@ -775,11 +775,13 @@
   .action-button {
     padding: 0.4rem 0.375rem;
     font-size: 0.55rem;
+    min-height: 44px;
   }
 
   .emotion-filter {
     padding: 0.375rem 0.5rem;
     font-size: 0.55rem;
+    min-height: 44px;
   }
 
   .emotion-icon {

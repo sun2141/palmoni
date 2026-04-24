@@ -85,7 +85,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
 }
 
 .emotion-selector.small .emotion-label {
@@ -123,7 +123,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
 }
 
 /* === Mobile Responsive === */

@@ -87,7 +87,7 @@
 
 .loop-topic p {
     font-size: 14.5px;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     line-height: 1.7;
     margin: 0;
 }
@@ -128,7 +128,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     text-align: center;
 }
 
@@ -170,7 +170,7 @@
 .prayer-content {
     font-family: var(--font-prayer, 'Noto Serif KR', 'Playfair Display', Georgia, serif);
     font-size: 14.5px;
-    color: var(--text-secondary, #B8B4AC);
+    color: var(--text-secondary, #C8C4BB);
     line-height: 2;
     white-space: pre-wrap;
     max-height: 280px;
@@ -306,7 +306,7 @@
 .history-link {
     background: none;
     border: none;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
     font-weight: 700;
@@ -355,7 +355,7 @@
 .loading-state p,
 .error-state p {
     font-size: 14.5px;
-    color: var(--text-muted, #7A7670);
+    color: var(--text-muted, #9E9A92);
     margin: 0;
 }
 

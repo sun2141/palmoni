@@ -1,149 +1,141 @@
 # Palmoni - Agent Instructions
 
-> 이 파일은 Palmoni 기도앱 프로젝트 전용 Agent 지침입니다.
+> 이름 없는 존재가 당신을 위해 기도합니다 — Palmoni 기도앱 프로젝트 전용 Agent 지침
 
-## Project Overview
+## 프로젝트 개요
 
-**Palmoni** - "이름 없는 존재가 당신을 위해 기도합니다"
+**Palmoni** - 매일 AI가 개인 맞춤 기도문을 생성하고 음성으로 전달하는 기도앱
 
-- **Tech Stack**: React 18 + Vite, Tailwind CSS, Framer Motion
-- **Backend**: Vercel Serverless Functions
-- **Database**: Supabase (Auth + PostgreSQL)
-- **APIs**: Google Gemini (기도문 생성), Google TTS, Stripe (결제)
-- **Deployment**: Vercel (palmoni.vercel.app)
+| 항목 | 내용 |
+|------|------|
+| 프론트엔드 | React 18 + Vite 5, Tailwind CSS 4 |
+| 백엔드 | Vercel Serverless Functions |
+| 데이터베이스 | Supabase (Auth + PostgreSQL) |
+| AI | Google Generative AI (`@google/generative-ai`) |
+| 라우팅 | react-router-dom v6 |
+| 스타일 유틸 | tailwind-merge, clsx, class-variance-authority |
+| 로컬 서버 | Express 5 (`server.js`, API 테스트용) |
+| 배포 | Vercel (palmoni.vercel.app) |
+| 테스트 | Vitest + @testing-library/react |
 
-## Project Structure
+> **주의**: Framer Motion과 Stripe는 현재 `package.json`에 없습니다. 결제/애니메이션 기능 추가 시 별도 설치 필요.
+
+---
+
+## 디렉토리 구조
 
 ```
 palmoni/
 ├── src/
-│   ├── components/     # React 컴포넌트
-│   │   ├── auth/       # 로그인/인증
-│   │   ├── donation/   # 후원 기능
-│   │   ├── prayer/     # 기도 관련 UI
-│   │   ├── schedule/   # 예약 기도
-│   │   ├── tts/        # 음성 출력
-│   │   └── ui/         # 공통 UI 컴포넌트
-│   ├── contexts/       # React Context (Auth 등)
-│   ├── hooks/          # Custom Hooks
-│   ├── lib/            # 유틸리티 (Supabase 클라이언트)
-│   └── pages/          # 페이지 컴포넌트
-├── api/                # Vercel Serverless Functions
-│   ├── stripe/         # 결제 API
-│   ├── tts/            # 음성 생성 API
-│   └── cron/           # 스케줄 작업
-├── supabase/           # DB 마이그레이션
-└── lib/                # Python 스크립트 (기도문 생성)
+│   ├── components/
+│   │   ├── ads/            # 광고 컴포넌트
+│   │   ├── auth/           # 로그인/인증
+│   │   ├── common/         # 공통 컴포넌트
+│   │   ├── emergency/      # 긴급 기도 기능
+│   │   ├── home/           # 홈 화면 컴포넌트
+│   │   ├── loop/           # 반복 기도 기능
+│   │   ├── prayer/         # 기도문 관련 UI
+│   │   ├── share/          # 공유 기능
+│   │   ├── streak/         # 연속 기도 기록
+│   │   ├── ui/             # 공통 UI 요소 (버튼, 카드 등)
+│   │   └── voice/          # 음성 출력 UI
+│   ├── contexts/
+│   │   └── AuthContext.jsx # 인증 상태 관리
+│   ├── hooks/              # Custom Hooks (use*.js, 9개)
+│   │   └── __tests__/      # Hook 단위 테스트
+│   ├── lib/                # 유틸리티 모듈
+│   │   ├── dateUtils.js
+│   │   ├── localStorage.js
+│   │   ├── logger.js
+│   │   ├── supabaseClient.js
+│   │   └── utils.js
+│   ├── pages/              # 페이지 컴포넌트
+│   │   ├── Home.jsx
+│   │   ├── MyPrayers.jsx
+│   │   ├── Admin.jsx
+│   │   ├── Pricing.jsx
+│   │   ├── Privacy.jsx
+│   │   └── Terms.jsx
+│   └── test/               # 통합 테스트
+├── api/                    # Vercel Serverless Functions
+│   ├── generate-prayer*.js # 기도문 생성 API
+│   ├── background-activities.js
+│   ├── admin/              # 관리자 API
+│   └── lib/                # API 공통 유틸
+├── public/                 # 정적 파일
+│   ├── manifest.json       # PWA 매니페스트
+│   ├── sw.js               # 서비스 워커
+│   └── offline.html        # 오프라인 페이지
+├── supabase/
+│   └── migrations/         # DB 마이그레이션 SQL 파일
+├── lib/                    # 기타 스크립트
+├── server.js               # 로컬 Express 서버
+└── vercel.json             # Vercel 배포 설정
 ```
 
-## Development Commands
+---
+
+## 개발 명령어
 
 ```bash
-npm run dev        # 개발 서버 (Vite)
-npm run build      # 프로덕션 빌드
-npm run test       # 테스트 실행
-npm run server     # Express 서버 (로컬 API 테스트용)
+npm run dev           # 개발 서버 시작 (Vite, localhost:5173)
+npm run server        # Express 로컬 서버 시작 (API 테스트용)
+npm run build         # 프로덕션 빌드
+npm run lint          # ESLint 검사 (--max-warnings 0, 경고 0개 유지)
+npm run preview       # 빌드 결과물 미리보기
+npm run test          # Vitest 테스트 단일 실행
+npm run test:watch    # Vitest 워치 모드
+npm run test:coverage # Vitest 커버리지 측정
 ```
 
-## Environment Variables
+---
+
+## 환경 변수
 
 `.env.local` 필수 변수:
-- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-- `VITE_STRIPE_PUBLISHABLE_KEY`
-- `GEMINI_API_KEY`
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
 
-## Agent Guidelines
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+GEMINI_API_KEY=
+```
 
-### 이 프로젝트에서 작업 시
+> `.env` 파일은 절대 커밋하지 않습니다. `.gitignore`에 포함되어야 합니다.
 
-1. **앱 개발에 집중** - UI/UX, 기능 구현, 버그 수정
-2. **Vercel 배포 고려** - Serverless 함수 제약 (10초 타임아웃 등)
-3. **Supabase 스키마 변경 시** - `supabase/migrations/`에 SQL 파일 추가
-4. **테스트 작성** - `src/**/__tests__/` 에 위치
+---
+
+## 코딩 컨벤션
+
+- **파일 확장자**: 컴포넌트는 `.jsx`, 유틸/훅은 `.js`
+- **ESLint**: `--max-warnings 0` — 경고 0개 유지, 빌드 전 반드시 통과
+- **테스트**: Vitest 기반, `src/hooks/__tests__/` 및 `src/test/` 위치
+- **커밋 메시지**: 한국어 사용, Conventional Commits 형식 (feat:, fix:, refactor: 등)
+- **주석**: 한국어 사용
+- **로깅**: `console.log` 대신 `src/lib/logger.js` 사용
+
+---
+
+## 주의사항
+
+### Vercel Serverless 제약
+- `vercel.json` 기준 `maxDuration: 30초`, `memory: 1024MB`
+- API 함수는 30초 이내 응답해야 함
+- 스트리밍 응답 또는 분할 처리로 긴 작업 대응
+
+### Supabase 스키마 변경
+- DDL 변경은 반드시 `supabase/migrations/` 에 SQL 파일로 추가
+- 직접 DB 수정 금지, 마이그레이션 파일 통해 적용
 
 ### 금지 사항
-
-- 이 프로젝트에서 자동화/인프라 작업 하지 말 것
-- `directives/`, `execution/` 폴더 건드리지 말 것 (해당 없음)
-
----
-
-## Central Hub Connection
-
-이 프로젝트는 **agent-hub** (`/Users/sun/agent-hub/`)와 연결됩니다.
-
-**연결 방식**:
-- agent-hub가 이 프로젝트를 모니터링
-- 오류 발생 시 자동 감지 및 알림
-- Hetzner VPS의 `~/workspace/prayer-app/`과 동기화
-
-**참조 문서**:
-- 전체 인프라: `/Users/sun/agent-hub/CLAUDE.md`
-- 자동화 레지스트리: `/Users/sun/agent-hub/directives/automation_registry.md`
+- `.env` 파일 커밋 금지
+- 하드코딩된 API 키/시크릿 금지
+- 기존 테스트 삭제 또는 스킵 금지
+- `node_modules/`, `dist/` 커밋 금지
 
 ---
 
-## Git Info
+## Git 정보
 
 - **Repository**: sun2141/palmoni
-- **Branch Strategy**: main (production)
-
----
-
-## Recent Session Log (2026-03-18)
-
-### 완료된 작업
-
-#### 1. PWA 설정
-- vite-plugin-pwa 대신 수동 PWA 설정 (빌드 오류로 인해)
-- `public/manifest.json` 생성
-- `public/sw.js` 서비스 워커 생성 (v2 - 스마트 캐싱)
-- `public/offline.html` 오프라인 페이지 생성
-
-#### 2. 앱 안정성 개선 (백그라운드 복귀 시)
-- `useTodaysPrayer.js`: 5분 이상 백그라운드 후 상태 새로고침
-- `MyPrayers.jsx`: visibilitychange 핸들러 추가
-- `AuthContext.jsx`: 세션 유효성 검사 추가
-- `sw.js`: Supabase/외부 API는 절대 캐시하지 않음
-
-#### 3. 공유 기능 추가
-- 로그인 전: 상단 바 왼쪽에 공유 버튼 (원형 아이콘)
-- 로그인 후: 하단 네비게이션에 공유 버튼 (아이콘만)
-- Web Share API 사용, 미지원 시 클립보드 복사
-
-#### 4. Open Graph 메타 태그
-- `og:image`, `og:title`, `og:description` 추가
-- Twitter Card 메타 태그 추가
-- `public/og-image.png` 추가 (icon-512 복사본, 추후 교체 권장)
-
-#### 5. iOS Safari 공유 시트 아이콘
-- `apple-touch-icon` 링크 다양하게 추가
-- `apple-touch-icon-precomposed` 추가
-- 캐시 문제로 테스트 시 Safari 캐시 초기화 필요
-
-#### 6. UI 텍스트 변경
-- "무료로 시작하기" → "로그인하기"
-- "하루 종일" → "하루 동안"
-- 회원가입 문구 한 줄로 변경
-- 3가지 혜택 포인트 가로 정렬
-
-### 남은 작업 / 확인 필요
-
-1. **iOS 공유 시트 아이콘**: Safari 캐시 초기화 후 재테스트 필요
-2. **OG 이미지**: 현재 512x512 아이콘 사용 중, 1200x630 이미지로 교체 권장
-
-### 최근 커밋
-
-```
-09cbf90 Remove temporary PDF file
-2a5a3bc Fix: Improve iOS Safari share sheet icon detection
-f0459bc Feature: Add Open Graph meta tags for social sharing
-ce841c6 Feature: Add share button to top bar for non-logged-in users
-d6241dc UI: Update button text and signup prompt wording
-7cada58 UI: Improve signup prompt layout and benefit alignment
-b8c625c UI: Make share button icon-only for compact bottom nav
-8f02bcb Feature: Add app share button to bottom navigation
-e7c55a1 Fix: Improve app stability when resuming from background
-a1fd938 Refactor: Use manual PWA setup instead of vite-plugin-pwa
-```
+- **Branch**: master (production)
+- **커밋 형식**: `feat: 한국어 설명` (Conventional Commits)

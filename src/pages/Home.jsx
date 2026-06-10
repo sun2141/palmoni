@@ -87,6 +87,7 @@ export function Home() {
         if (error) {
             toast.error(error, { duration: 5000 });
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [error]);
 
     const { containerRef, pullDistance, isRefreshing, handlers: pullHandlers } = usePullToRefresh(async () => {

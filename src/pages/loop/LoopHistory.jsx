@@ -109,6 +109,7 @@ export default function LoopHistory() {
     // 초기 로드
     useEffect(() => {
         loadLoops(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter, user]);
 
     // 더 불러오기

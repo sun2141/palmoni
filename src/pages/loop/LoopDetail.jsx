@@ -76,6 +76,7 @@ export default function LoopDetail() {
         };
 
         loadLoop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loopId, user, getLoop]);
 
     // 세션에 기도문이 있으면 설정

@@ -235,6 +235,7 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener('pageshow', handlePageShow);
       window.removeEventListener('online', handleOnline);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUserProfile = async (userId) => {

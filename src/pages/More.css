@@ -1,0 +1,199 @@
+/* ========================================
+   More Page - Sacred Dark Theme
+   ======================================== */
+
+.more-page {
+  min-height: 100vh;
+  padding: 1.5rem 1rem calc(6.5rem + env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: min(560px, 100%);
+  margin: 0 auto;
+  box-sizing: border-box;
+  animation: pageEnter var(--duration-base, 250ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)) both;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.more-header {
+  margin-bottom: 1.75rem;
+}
+
+.more-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 0.375rem;
+  background: linear-gradient(135deg, #E8D5A3 0%, #C9A84C 40%, #E0BE6A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.more-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted, #9E9A92);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.more-account {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  background: linear-gradient(180deg, #1E2130 0%, #1A1D26 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.more-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(201, 168, 76, 0.12);
+  color: var(--color-primary, #C9A84C);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  flex-shrink: 0;
+}
+
+.more-account-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.more-account-name {
+  font-size: 0.95rem;
+  color: var(--text-primary, #F0EDE6);
+  font-weight: 600;
+  margin: 0 0 0.125rem;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more-account-email {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9E9A92);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more-section {
+  margin-bottom: 1.25rem;
+}
+
+.more-section-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted, #9E9A92);
+  margin: 0 0 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.more-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(180deg, #1E2130 0%, #1A1D26 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.more-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.9375rem 1.125rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #F0EDE6);
+  text-decoration: none;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background var(--duration-fast, 150ms) ease;
+  min-height: 52px;
+  text-align: left;
+}
+
+.more-item + .more-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.more-item:hover {
+  background: rgba(201, 168, 76, 0.06);
+}
+
+.more-item:active {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.more-item-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary, #C9A84C);
+  flex-shrink: 0;
+}
+
+.more-item-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.more-item-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.more-item-chevron {
+  color: var(--text-muted, #9E9A92);
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.more-item.danger {
+  color: #F87171;
+}
+
+.more-item.danger .more-item-icon {
+  color: #F87171;
+}
+
+.more-item.danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.more-footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--text-muted, #9E9A92);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}

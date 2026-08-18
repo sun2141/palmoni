@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { TabBar } from './components/common/TabBar';
 import { logger } from './lib/logger';
 
 // Lazy load non-critical pages
@@ -8,6 +9,7 @@ const MyPrayers = lazy(() => import('./pages/MyPrayers').then(m => ({ default: m
 const Pricing = lazy(() => import('./pages/Pricing').then(m => ({ default: m.Pricing })));
 const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
 const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
+const More = lazy(() => import('./pages/More'));
 
 // Loop pages
 const LoopCreate = lazy(() => import('./pages/loop/LoopCreate'));
@@ -16,6 +18,9 @@ const LoopHistory = lazy(() => import('./pages/loop/LoopHistory'));
 
 // Admin page
 const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
+
+// 탭 바 노출 대상 경로 (whitelist)
+const TAB_BAR_ROUTES = ['/', '/my-prayers', '/more'];
 
 // Loading fallback component
 function PageLoader() {
@@ -28,6 +33,9 @@ function PageLoader() {
 }
 
 function App() {
+    const location = useLocation();
+    const showTabBar = TAB_BAR_ROUTES.includes(location.pathname);
+
     // 서비스 워커 업데이트 감지 및 처리
     useEffect(() => {
         if ('serviceWorker' in navigator) {
@@ -97,21 +105,25 @@ function App() {
     }, []);
 
     return (
-        <Suspense fallback={<PageLoader />}>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/my-prayers" element={<MyPrayers />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                {/* Loop routes */}
-                <Route path="/loop/new" element={<LoopCreate />} />
-                <Route path="/loop/history" element={<LoopHistory />} />
-                <Route path="/loop/:loopId" element={<LoopDetail />} />
-                {/* Admin */}
-                <Route path="/admin" element={<Admin />} />
-            </Routes>
-        </Suspense>
+        <>
+            <Suspense fallback={<PageLoader />}>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/my-prayers" element={<MyPrayers />} />
+                    <Route path="/more" element={<More />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    {/* Loop routes */}
+                    <Route path="/loop/new" element={<LoopCreate />} />
+                    <Route path="/loop/history" element={<LoopHistory />} />
+                    <Route path="/loop/:loopId" element={<LoopDetail />} />
+                    {/* Admin */}
+                    <Route path="/admin" element={<Admin />} />
+                </Routes>
+            </Suspense>
+            {showTabBar && <TabBar />}
+        </>
     );
 }
 

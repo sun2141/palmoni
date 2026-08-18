@@ -6,6 +6,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  /* 탭 바(약 72px) + safe-area + 여백 */
+  padding-bottom: calc(2rem + 72px + env(safe-area-inset-bottom));
   min-height: 100vh;
   animation: pageEnter var(--duration-base, 250ms) var(--ease-out) both;
 }
@@ -727,6 +729,7 @@
 @media (max-width: 768px) {
   .my-prayers-page {
     padding: 1rem;
+    padding-bottom: calc(1rem + 72px + env(safe-area-inset-bottom));
   }
 
   .prayers-grid {
@@ -753,6 +756,7 @@
 @media (max-width: 360px) {
   .my-prayers-page {
     padding: 0.75rem;
+    padding-bottom: calc(0.75rem + 72px + env(safe-area-inset-bottom));
   }
 
   .prayers-header {
